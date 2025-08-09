@@ -24,6 +24,7 @@ class Command(BaseCommand):
             password='admin123',
             first_name='系統',
             last_name='管理員',
+            name='系統管理員',
             role='ADMIN',
             is_staff=True,
             is_superuser=True,
