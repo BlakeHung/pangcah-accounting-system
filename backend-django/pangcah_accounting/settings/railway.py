@@ -12,10 +12,18 @@ ALLOWED_HOSTS = ['*']
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if DATABASE_URL:
-    print("✅ Using DATABASE_URL from environment variables")
-    DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL)
-    }
+    # Clean up any template syntax artifacts
+    DATABASE_URL = DATABASE_URL.replace('}}', '').replace('{{', '')
+    print(f"✅ Using DATABASE_URL from environment: {DATABASE_URL[:50]}...")
+    
+    try:
+        DATABASES = {
+            'default': dj_database_url.parse(DATABASE_URL)
+        }
+        print(f"✅ Database parsed successfully: {DATABASES['default']['NAME']}")
+    except Exception as e:
+        print(f"❌ Database parsing failed: {e}")
+        raise
 else:
     raise Exception("DATABASE_URL environment variable not found!")
 
