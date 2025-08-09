@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "echo 'Testing hardcoded database connection...' && DJANGO_SETTINGS_MODULE=family_finance.settings.railway python manage.py check --database default && echo 'Database check passed! Running migrations...' && DJANGO_SETTINGS_MODULE=family_finance.settings.railway python manage.py migrate && python manage.py collectstatic --noinput && DJANGO_SETTINGS_MODULE=family_finance.settings.railway gunicorn family_finance.wsgi:application --bind 0.0.0.0:$PORT",
+    "startCommand": "DJANGO_SETTINGS_MODULE=family_finance.settings.railway python manage.py migrate && python manage.py collectstatic --noinput && DJANGO_SETTINGS_MODULE=family_finance.settings.railway gunicorn family_finance.wsgi:application --bind 0.0.0.0:$PORT",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
