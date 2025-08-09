@@ -21,7 +21,7 @@ import './App.css'
 const queryClient = new QueryClient()
 
 // 設置 axios 基礎 URL
-axios.defaults.baseURL = 'http://localhost:8000'
+axios.defaults.baseURL = 'https://pangcah-accounting-system-production.up.railway.app'
 
 // 私有路由組件
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {

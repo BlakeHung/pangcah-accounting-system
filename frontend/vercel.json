@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "family-finance-frontend",
+  "name": "pangcah-accounting-frontend",
   "builds": [
     {
       "src": "package.json",
