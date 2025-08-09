@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 資料庫
+  postgres:
+    image: postgres:15
+    container_name: family_finance_db
+    environment:
+      POSTGRES_DB: family_finance
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - family_finance_network
+
+  # Redis 快取
+  redis:
+    image: redis:7-alpine
+    container_name: family_finance_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - family_finance_network
+
+  # FastAPI 應用程序
+  api:
+    build: .
+    container_name: family_finance_api
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/family_finance
+      REDIS_URL: redis://redis:6379
+      DEBUG: "True"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - .:/app
+    networks:
+      - family_finance_network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:
+
+networks:
+  family_finance_network:
+    driver: bridge

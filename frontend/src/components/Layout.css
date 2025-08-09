@@ -1,0 +1,361 @@
+.layout {
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.layout-header {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-left h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0 0 4px 0;
+}
+
+.welcome-text {
+  color: #718096;
+  font-size: 14px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-role {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.logout-button {
+  padding: 8px 16px;
+  background: #e2e8f0;
+  color: #4a5568;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.logout-button:hover {
+  background: #cbd5e0;
+}
+
+/* 漢堡選單按鈕 - 預設隱藏 */
+.mobile-menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.mobile-menu-toggle span {
+  width: 100%;
+  height: 2px;
+  background-color: #4a5568;
+  border-radius: 1px;
+  transition: all 0.3s ease;
+}
+
+/* 桌面版導航欄 */
+.layout-nav.desktop-nav {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 80px;
+  z-index: 90;
+}
+
+.nav-content {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.nav-content::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  color: #718096;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-item:hover {
+  color: #4a5568;
+  background: #f7fafc;
+}
+
+.nav-item.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+  background: #f7faff;
+}
+
+.layout-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* 手機版導航選單 */
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background: white;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-nav.open {
+  transform: translateX(0);
+}
+
+.mobile-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.mobile-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-avatar {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.mobile-user-name {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.mobile-user-role {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.mobile-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.mobile-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-nav-content {
+  flex: 1;
+  padding: 20px 0;
+}
+
+.mobile-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  color: #4a5568;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.mobile-nav-item:hover {
+  background: #f7fafc;
+  color: #2d3748;
+}
+
+.mobile-nav-item.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.mobile-nav-item .nav-icon {
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+}
+
+.mobile-nav-footer {
+  padding: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.mobile-logout {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 20px;
+  background: #fed7d7;
+  border: none;
+  color: #c53030;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.mobile-logout:hover {
+  background: #feb2b2;
+}
+
+.mobile-logout .nav-icon {
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  /* 顯示漢堡選單按鈕 */
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  /* 隱藏桌面版右側選單和導航 */
+  .header-right {
+    display: none;
+  }
+
+  .layout-nav.desktop-nav {
+    display: none;
+  }
+
+  /* 顯示手機版導航選單 */
+  .mobile-nav-overlay {
+    display: block;
+  }
+
+  /* 調整header佈局 */
+  .header-content {
+    padding: 12px 16px;
+    justify-content: space-between;
+  }
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .header-left h1 {
+    font-size: 18px;
+    margin: 0;
+  }
+
+  .welcome-text {
+    font-size: 12px;
+  }
+
+  .layout-main {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content {
+    padding: 10px 12px;
+  }
+
+  .header-left h1 {
+    font-size: 16px;
+  }
+
+  .layout-main {
+    padding: 12px;
+  }
+
+  .mobile-nav {
+    width: 100%;
+  }
+}

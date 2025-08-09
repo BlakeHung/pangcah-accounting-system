@@ -1,0 +1,647 @@
+/* 新增活動頁面樣式 */
+
+.activity-new-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 32px;
+}
+
+.page-header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.back-button {
+  background: #e2e8f0;
+  color: #4a5568;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background: #cbd5e0;
+  transform: translateX(-2px);
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.activity-form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.form-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.form-section h2 {
+  margin: 0 0 20px 0;
+  color: #2d3748;
+  font-size: 18px;
+  font-weight: 600;
+  border-bottom: 2px solid #f7fafc;
+  padding-bottom: 12px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #718096;
+  font-style: italic;
+}
+
+/* 時間資訊 */
+.time-info {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f7fafc;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.duration-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.duration-label {
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.duration-value {
+  font-weight: 600;
+  color: #667eea;
+}
+
+/* 複選框樣式 */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  transform: scale(1.2);
+}
+
+.checkbox-text {
+  color: #2d3748;
+}
+
+/* 表單操作按鈕 */
+.form-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.cancel-btn,
+.submit-btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-width: 120px;
+}
+
+.cancel-btn {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.cancel-btn:hover {
+  background: #cbd5e0;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* 預覽區域 */
+.preview-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  height: fit-content;
+  position: sticky;
+  top: 24px;
+}
+
+.preview-section h3 {
+  margin: 0 0 16px 0;
+  color: #2d3748;
+  font-size: 16px;
+  font-weight: 600;
+  border-bottom: 2px solid #f7fafc;
+  padding-bottom: 8px;
+}
+
+.activity-preview {
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  background: #f7fafc;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.preview-header h4 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 16px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.preview-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.status-badge {
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.status-badge.active {
+  background: #f0fff4;
+  color: #2f855a;
+}
+
+.status-badge.completed {
+  background: #e6f3ff;
+  color: #2b6cb0;
+}
+
+.status-badge.cancelled {
+  background: #fed7d7;
+  color: #c53030;
+}
+
+.disabled-badge {
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: #edf2f7;
+  color: #718096;
+  text-align: center;
+}
+
+.preview-description {
+  margin: 8px 0;
+  color: #4a5568;
+  font-size: 13px;
+  line-height: 1.4;
+  background: white;
+  padding: 8px;
+  border-radius: 4px;
+  border-left: 2px solid #667eea;
+}
+
+.preview-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.date-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.date-label {
+  font-weight: 500;
+  color: #718096;
+  min-width: 45px;
+}
+
+.date-value {
+  color: #2d3748;
+  flex: 1;
+}
+
+/* 載入狀態 */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 16px;
+  color: #718096;
+}
+
+/* 響應式設計 */
+@media (max-width: 1024px) {
+  .activity-new-container {
+    grid-template-columns: 1fr;
+    max-width: 800px;
+  }
+
+  .preview-section {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .activity-new-container {
+    gap: 24px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 20px;
+  }
+
+  .form-section {
+    padding: 16px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .cancel-btn,
+  .submit-btn {
+    width: 100%;
+  }
+
+  .preview-section {
+    padding: 16px;
+  }
+
+  .preview-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .preview-badges {
+    flex-direction: row;
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header h1 {
+    font-size: 18px;
+  }
+
+  .form-section {
+    padding: 12px;
+  }
+
+  .form-section h2 {
+    font-size: 16px;
+  }
+
+  .preview-section {
+    padding: 12px;
+  }
+
+  .activity-preview {
+    padding: 12px;
+  }
+}
+
+/* 參與者選擇樣式 */
+.participants-selection {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  background: #f8fafc;
+}
+
+.selection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.select-all-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.select-all-btn:hover {
+  background: #2563eb;
+}
+
+.selection-count {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.participants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 8px;
+}
+
+.participant-checkbox {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.participant-checkbox:hover {
+  background: #f1f5f9;
+  border-color: #3b82f6;
+}
+
+.participant-checkbox input[type="checkbox"] {
+  margin-right: 12px;
+  width: 16px;
+  height: 16px;
+}
+
+.participant-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.participant-name {
+  font-weight: 500;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.participant-username {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+@media (max-width: 768px) {
+  .participants-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .selection-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* 活動編輯頁面參與者管理樣式 */
+.participants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.participants-list .participant-item {
+  background: white;
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.participants-list .participant-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.participants-list .participant-name {
+  font-weight: 500;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.participants-list .participant-details {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.invite-members {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.invite-item {
+  background: white;
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.member-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.member-name {
+  font-weight: 500;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.member-username {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.member-role {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 1px;
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.invite-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.invite-btn:hover {
+  background: #2563eb;
+}
+
+.invite-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.empty-state {
+  text-align: center;
+  color: #6b7280;
+  font-style: italic;
+  padding: 20px;
+}
