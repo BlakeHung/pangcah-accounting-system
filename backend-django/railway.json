@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "python manage.py makemigrations --settings=pangcah_accounting.settings.railway && python manage.py migrate --settings=pangcah_accounting.settings.railway && python manage.py collectstatic --noinput --settings=pangcah_accounting.settings.railway && gunicorn pangcah_accounting.wsgi:application --bind 0.0.0.0:$PORT",
+    "startCommand": "python manage.py makemigrations --settings=pangcah_accounting.settings.railway && python manage.py migrate --settings=pangcah_accounting.settings.railway && python manage.py create_initial_admin --settings=pangcah_accounting.settings.railway && python manage.py collectstatic --noinput --settings=pangcah_accounting.settings.railway && gunicorn pangcah_accounting.wsgi:application --bind 0.0.0.0:$PORT",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
