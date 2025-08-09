@@ -4,6 +4,7 @@ Production settings for Railway deployment
 
 from .base import *
 import os
+import dj_database_url
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -14,23 +15,41 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '.railway.app',
     '.vercel.app',
-    config('ALLOWED_HOST', default='family-finance-backend-production.up.railway.app'),
+    config('ALLOWED_HOST', default='*'),
 ]
 
 # Database - Railway provides DATABASE_URL
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('PGDATABASE'),
-        'USER': config('PGUSER'),
-        'PASSWORD': config('PGPASSWORD'),
-        'HOST': config('PGHOST'),
-        'PORT': config('PGPORT', default='5432'),
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+# Try DATABASE_URL first, then fall back to individual PG variables
+if config('DATABASE_URL', default=None):
+    DATABASES = {
+        'default': dj_database_url.parse(
+            config('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+elif config('PGDATABASE', default=None):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('PGDATABASE'),
+            'USER': config('PGUSER'),
+            'PASSWORD': config('PGPASSWORD'),
+            'HOST': config('PGHOST'),
+            'PORT': config('PGPORT', default='5432'),
+            'OPTIONS': {
+                'sslmode': 'require',
+            },
+        }
+    }
+else:
+    # Fallback for local testing
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # CORS settings for production
 CORS_ALLOWED_ORIGINS = [
