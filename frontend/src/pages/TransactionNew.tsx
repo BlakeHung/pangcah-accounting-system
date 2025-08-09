@@ -208,7 +208,7 @@ const TransactionNew: React.FC = () => {
     const groupId = e.target.value
     setFormData(prev => ({
       ...prev,
-      group: groupId,
+      group: groupId === '' ? '' : parseInt(groupId),
       split_type: 'NONE',
       split_participants: []
     }))
@@ -219,7 +219,7 @@ const TransactionNew: React.FC = () => {
     const eventId = e.target.value
     setFormData(prev => ({
       ...prev,
-      event: eventId,
+      event: eventId === '' ? '' : parseInt(eventId),
       split_type: 'NONE',
       split_participants: []
     }))
@@ -366,7 +366,7 @@ const TransactionNew: React.FC = () => {
       const selectedEvent = events.find(e => e.id.toString() === formData.event.toString())
       if (selectedEvent && selectedEvent.status !== 'ACTIVE') {
         // 只有活動管理者和超級管理者可以在已結束的活動中新增支出
-        if (!selectedEvent.is_user_manager && currentUser.role !== 'ADMIN') {
+        if (!(selectedEvent as any).is_user_manager && currentUser.role !== 'ADMIN') {
           alert('活動已結束，只有活動管理者和超級管理者可以新增支出')
           return
         }
@@ -553,7 +553,7 @@ const TransactionNew: React.FC = () => {
                 <option value="">無</option>
                 {events.map(event => {
                   const canCreateExpense = event.status === 'ACTIVE' || 
-                    event.is_user_manager || 
+                    (event as any).is_user_manager || 
                     currentUser?.role === 'ADMIN'
                   
                   return (
@@ -564,7 +564,7 @@ const TransactionNew: React.FC = () => {
                     >
                       {event.name}
                       {currentUser?.role === 'ADMIN' ? ' 👑' : ''}
-                      {event.is_user_manager ? ' 🔧' : ''}
+                      {(event as any).is_user_manager ? ' 🔧' : ''}
                       {event.allow_split ? ' 🔄' : ''}
                       {event.status === 'COMPLETED' ? ' (已完成)' : ''}
                       {event.status === 'CANCELLED' ? ' (已取消)' : ''}

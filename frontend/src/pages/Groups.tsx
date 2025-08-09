@@ -282,12 +282,12 @@ const Groups: React.FC = () => {
 
                   <div className="info-item">
                     <span className="label">🎉 相關活動:</span>
-                    <span className="value">{group.events?.length || 0} 個</span>
+                    <span className="value">{(group as any).events?.length || 0} 個</span>
                   </div>
                   
                   <div className="info-item">
                     <span className="label">💰 支出記錄:</span>
-                    <span className="value">{group.expenses?.length || 0} 筆</span>
+                    <span className="value">{(group as any).expenses?.length || 0} 筆</span>
                   </div>
                 </div>
 
