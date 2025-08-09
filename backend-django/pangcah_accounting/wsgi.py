@@ -1,5 +1,5 @@
 """
-WSGI config for family_finance project.
+WSGI config for pangcah_accounting project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'family_finance.settings.production')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pangcah_accounting.settings.railway')
 
 application = get_wsgi_application()

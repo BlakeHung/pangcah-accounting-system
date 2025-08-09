@@ -1,5 +1,5 @@
 """
-Family Finance URL Configuration
+Pangcah Accounting URL Configuration
 """
 
 from django.contrib import admin
@@ -11,7 +11,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 
 def api_root(request):
     return JsonResponse({
-        'message': 'Family Finance API',
+        'message': 'Pangcah Accounting API',
         'version': '1.0.0',
         'endpoints': {
             'api_docs': '/api/docs/',

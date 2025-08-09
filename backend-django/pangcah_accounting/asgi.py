@@ -1,5 +1,5 @@
 """
-ASGI config for family_finance project.
+ASGI config for pangcah_accounting project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'family_finance.settings.production')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pangcah_accounting.settings.production')
 
 application = get_asgi_application()

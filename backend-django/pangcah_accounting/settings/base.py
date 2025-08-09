@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'family_finance.urls'
+ROOT_URLCONF = 'pangcah_accounting.urls'
 
 TEMPLATES = [
     {
@@ -68,13 +68,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'family_finance.wsgi.application'
+WSGI_APPLICATION = 'pangcah_accounting.wsgi.application'
 
 # Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='family_finance'),
+        'NAME': config('DB_NAME', default='pangcah_accounting'),
         'USER': config('DB_USER', default='postgres'),
         'PASSWORD': config('DB_PASSWORD', default='password'),
         'HOST': config('DB_HOST', default='localhost'),
@@ -147,7 +147,7 @@ SIMPLE_JWT = {
 
 # API Documentation
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Family Finance API',
+    'TITLE': 'Pangcah Accounting API',
     'DESCRIPTION': '阿美族家族記帳系統 API',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
