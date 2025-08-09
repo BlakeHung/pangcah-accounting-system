@@ -398,7 +398,7 @@ class ActivityLog(models.Model):
     
     action_type = models.CharField(
         "操作類型",
-        max_length=20,
+        max_length=30,
         choices=ActionType.choices,
         help_text="執行的操作類型"
     )
