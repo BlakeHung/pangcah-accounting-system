@@ -31,21 +31,27 @@ else:
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# WhiteNoise
-MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+# WhiteNoise - 插入在 SecurityMiddleware 之後
+# 找到 SecurityMiddleware 的位置並在其後插入 WhiteNoise
+for i, mw in enumerate(MIDDLEWARE):
+    if 'SecurityMiddleware' in mw:
+        MIDDLEWARE.insert(i + 1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+        break
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# CORS
+# CORS - 確保 middleware 順序正確
+# corsheaders.middleware.CorsMiddleware 必須在 CommonMiddleware 之前
+
 CORS_ALLOWED_ORIGINS = [
+    "https://pangcah-accounting-system.vercel.app",  # 你的 Vercel 前端
     "https://pangcah-accounting-frontend.vercel.app",
-    "https://*.vercel.app",
     "http://localhost:3000",
     "http://localhost:5173",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:5173",
 ]
 
-# Allow all origins temporarily for testing
+# 暫時允許所有來源以進行測試
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = [

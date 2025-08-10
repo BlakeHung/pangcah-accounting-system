@@ -7,12 +7,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
+@csrf_exempt
 def api_root(request):
     return JsonResponse({
         'message': 'Pangcah Accounting API',
         'version': '1.0.0',
+        'status': 'running',
         'endpoints': {
             'api_docs': '/api/docs/',
             'api_redoc': '/api/redoc/',
@@ -25,9 +28,14 @@ def api_root(request):
         }
     })
 
+@csrf_exempt 
+def health_check(request):
+    return JsonResponse({'status': 'healthy', 'service': 'pangcah-accounting-api'})
+
 urlpatterns = [
     # Root API info
     path('', api_root, name='api-root'),
+    path('health/', health_check, name='health-check'),
     
     # Admin
     path('admin/', admin.site.urls),
