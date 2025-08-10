@@ -1,6 +1,11 @@
 #!/bin/bash
 echo "Starting Pangcah Accounting API..."
-echo "PORT: ${PORT:-8000}"
+
+# 設定 PORT 預設值
+if [ -z "$PORT" ]; then
+    PORT=8000
+fi
+echo "PORT: $PORT"
 
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --settings=pangcah_accounting.settings.railway
@@ -8,5 +13,8 @@ python manage.py collectstatic --noinput --settings=pangcah_accounting.settings.
 echo "Running database migrations..."
 python manage.py migrate --settings=pangcah_accounting.settings.railway
 
-echo "Using gunicorn to start server..."
-gunicorn pangcah_accounting.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 2 --log-level info
+echo "Initializing data..."
+python manage.py init_data --settings=pangcah_accounting.settings.railway || true
+
+echo "Starting server on port $PORT..."
+python manage.py runserver 0.0.0.0:$PORT
