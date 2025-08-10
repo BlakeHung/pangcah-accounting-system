@@ -16,8 +16,8 @@ python manage.py migrate --settings=pangcah_accounting.settings.railway
 echo "Initializing data..."
 python manage.py init_data --settings=pangcah_accounting.settings.railway || true
 
-echo "Creating Amis community data..."
-python manage.py create_amis_community --settings=pangcah_accounting.settings.railway || true
+echo "Creating minimal Amis community data..."
+python manage.py create_minimal_amis --settings=pangcah_accounting.settings.railway || true
 
 echo "Starting server on port $PORT..."
 python manage.py runserver 0.0.0.0:$PORT
