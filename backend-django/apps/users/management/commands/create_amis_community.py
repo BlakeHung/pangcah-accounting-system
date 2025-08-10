@@ -99,6 +99,9 @@ class Command(BaseCommand):
         
         if created:
             self.stdout.write(self.style.SUCCESS('✅ 長光部落群組創建成功'))
+            # 系統管理員也是部落總管理者
+            self.main_group.managers.add(admin)
+            self.stdout.write('    👤 指定系統管理員為部落總管理者')
         else:
             self.stdout.write(self.style.WARNING('⚠️ 長光部落群組已存在'))
 
@@ -275,25 +278,29 @@ class Command(BaseCommand):
                 'name': '播種祭 Misapalaway',
                 'month': 3,  # 春季 - 3月
                 'description': '春季播種祭典，祈求一年豐收，準備開始耕作',
-                'duration_days': 4
+                'duration_days': 4,
+                'lead_families': ['Cilangasan', 'Nakao']  # 主辦家族
             },
             {
                 'name': '豐年祭 Ilisin', 
                 'month': 7,  # 夏季 - 7月
                 'description': '年度最重要的豐年祭典，慶祝豐收與祖靈祭祀',
-                'duration_days': 4
+                'duration_days': 4,
+                'lead_families': ['Cilangasan', 'Paketaolan', 'Tayal']  # 最重要祭典，多家族主辦
             },
             {
                 'name': '收穫祭 Misaopisaw',
                 'month': 10,  # 秋季 - 10月
                 'description': '秋季收穫祭典，感謝豐收，家族間交換禮物',
-                'duration_days': 4
+                'duration_days': 4,
+                'lead_families': ['Lifok', 'Sakizaya']  # 主辦家族
             },
             {
                 'name': '團聚祭 Misakero',
                 'month': 12,  # 冬季 - 12月
                 'description': '冬季團聚祭典，家族聚會，長者分享智慧',
-                'duration_days': 4
+                'duration_days': 4,
+                'lead_families': ['Tayal', 'Paketaolan']  # 主辦家族
             }
         ]
         
@@ -313,6 +320,17 @@ class Command(BaseCommand):
                     'created_by': User.objects.get(username='admin')
                 }
             )
+            
+            # 指定活動管理者（來自主辦家族）
+            if created:
+                for family_name in event_data['lead_families']:
+                    if family_name in self.families:
+                        family_group = self.families[family_name]
+                        # 從主辦家族中選擇管理者（父親和母親）
+                        family_managers = family_group.managers.all()
+                        for manager in family_managers:
+                            event.managers.add(manager)
+                            self.stdout.write(f'    👤 指定 {manager.name} ({family_name}家族) 為活動管理者')
             
             self.events[event_data['name']] = event
             
