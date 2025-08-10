@@ -241,30 +241,21 @@ class Command(BaseCommand):
         self.stdout.write('\n📂 創建阿美族文化相關支出分類...')
         
         cultural_categories = [
-            {'name': '祭典用品', 'description': '傳統服飾、祭器、裝飾品等'},
-            {'name': '祭典食材', 'description': '糯米、檳榔、米酒、豬肉等祭祀食材'},
-            {'name': '文化表演', 'description': '舞蹈道具、樂器、演出費用'},
-            {'name': '住宿費用', 'description': '4天3夜活動的住宿安排'},
-            {'name': '交通費用', 'description': '族人往返交通、物資運送'},
-            {'name': '場地費用', 'description': '祭祀場地、活動會場租用'},
-            {'name': '禮品交換', 'description': '家族間的禮品互贈'},
-            {'name': '長者照護', 'description': '長者參與活動的特殊需求'},
-            {'name': '傳統工藝', 'description': '編織材料、雕刻工具等'},
-            {'name': '文化教育', 'description': '族語教學、文化傳承活動'},
+            '祭典用品', '祭典食材', '文化表演', '住宿費用', '交通費用',
+            '場地費用', '禮品交換', '長者照護', '傳統工藝', '文化教育'
         ]
         
-        for cat_data in cultural_categories:
+        for cat_name in cultural_categories:
             category, created = Category.objects.get_or_create(
-                name=cat_data['name'],
+                name=cat_name,
                 defaults={
                     'type': 'EXPENSE',
-                    'description': cat_data['description'],
                     'is_default': False
                 }
             )
             
             if created:
-                self.stdout.write(self.style.SUCCESS(f'✅ 創建分類: {cat_data["name"]}'))
+                self.stdout.write(self.style.SUCCESS(f'✅ 創建分類: {cat_name}'))
 
     def create_seasonal_events(self):
         """創建一年四季的文化活動"""
@@ -522,7 +513,6 @@ class Command(BaseCommand):
             name='家族借貸',
             defaults={
                 'type': 'EXPENSE',
-                'description': '家族間的金錢借貸往來',
                 'is_default': False
             }
         )
@@ -531,7 +521,6 @@ class Command(BaseCommand):
             name='借貸償還',
             defaults={
                 'type': 'EXPENSE',
-                'description': '償還家族間的借貸',
                 'is_default': False
             }
         )
@@ -623,24 +612,19 @@ class Command(BaseCommand):
         income_categories = {}
         
         income_types = [
-            {'name': '農產品銷售', 'description': '稻米、蔬果等農產品銷售收入'},
-            {'name': '手工藝品銷售', 'description': '傳統編織、雕刻作品銷售'},
-            {'name': '觀光導覽', 'description': '文化觀光導覽服務收入'},
-            {'name': '補助津貼', 'description': '政府原住民補助與津貼'},
-            {'name': '季節性工作', 'description': '農忙期間的季節性工作收入'},
+            '農產品銷售', '手工藝品銷售', '觀光導覽', '補助津貼', '季節性工作'
         ]
         
         for income_type in income_types:
             # 注意：在這個系統中我們用支出來記錄，但金額為負數表示收入
             category, _ = Category.objects.get_or_create(
-                name=income_type['name'],
+                name=income_type,
                 defaults={
                     'type': 'EXPENSE',
-                    'description': income_type['description'],
                     'is_default': False
                 }
             )
-            income_categories[income_type['name']] = category
+            income_categories[income_type] = category
         
         income_records = []
         
