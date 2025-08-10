@@ -6,6 +6,9 @@ from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.management import call_command
+from io import StringIO
+import sys
 from .models import User, UserPreferences
 from .serializers import UserSerializer, UserDetailSerializer, UserCreateSerializer, LoginSerializer, UserPreferencesSerializer
 
@@ -113,3 +116,52 @@ class UserViewSet(viewsets.ModelViewSet):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def initialize_amis_community(self, request):
+        """手動初始化阿美族社群資料"""
+        
+        # 只有系統管理員可以執行
+        if request.user.role != 'ADMIN':
+            return Response(
+                {'error': '只有系統管理員可以執行此操作'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        try:
+            # 捕獲命令輸出
+            stdout_backup = sys.stdout
+            stderr_backup = sys.stderr
+            
+            stdout_capture = StringIO()
+            stderr_capture = StringIO()
+            
+            sys.stdout = stdout_capture
+            sys.stderr = stderr_capture
+            
+            # 執行管理命令
+            call_command('create_amis_community')
+            
+            # 還原標準輸出
+            sys.stdout = stdout_backup
+            sys.stderr = stderr_backup
+            
+            output = stdout_capture.getvalue()
+            error_output = stderr_capture.getvalue()
+            
+            return Response({
+                'success': True,
+                'message': '阿美族社群資料初始化成功',
+                'output': output,
+                'errors': error_output if error_output else None
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            # 還原標準輸出
+            sys.stdout = stdout_backup 
+            sys.stderr = stderr_backup
+            
+            return Response({
+                'success': False,
+                'error': f'初始化失敗: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
