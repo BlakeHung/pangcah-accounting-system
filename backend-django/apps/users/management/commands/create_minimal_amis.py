@@ -86,10 +86,9 @@ class Command(BaseCommand):
             name='豐年祭測試',
             group=main_group,
             defaults={
-                'description': '測試用豐年祭活動',
+                'description': '測試用豐年祭活動\n地點：測試祭祀場地',
                 'start_date': datetime(2024, 7, 15),
                 'end_date': datetime(2024, 7, 18),
-                'location': '測試祭祀場地',
                 'created_by': admin
             }
         )

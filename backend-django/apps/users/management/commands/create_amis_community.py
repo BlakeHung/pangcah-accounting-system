@@ -313,10 +313,9 @@ class Command(BaseCommand):
                 name=event_data['name'],
                 group=self.main_group,
                 defaults={
-                    'description': event_data['description'],
+                    'description': event_data['description'] + '\n地點：海岸阿美族傳統祭祀場地',
                     'start_date': start_date,
                     'end_date': end_date,
-                    'location': '海岸阿美族傳統祭祀場地',
                     'created_by': User.objects.get(username='admin')
                 }
             )
