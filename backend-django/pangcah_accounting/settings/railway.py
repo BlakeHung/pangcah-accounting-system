@@ -39,40 +39,24 @@ for i, mw in enumerate(MIDDLEWARE):
         break
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# CORS - 確保 middleware 順序正確
-# corsheaders.middleware.CorsMiddleware 必須在 CommonMiddleware 之前
+# CORS 設定 - 最寬鬆的設定來修復問題
+CORS_ALLOW_ALL_ORIGINS = True  # 允許所有來源
+CORS_ALLOW_CREDENTIALS = True  # 允許 cookies
+CORS_ALLOW_METHODS = ['*']  # 允許所有方法
+CORS_ALLOW_HEADERS = ['*']  # 允許所有 headers
 
+# 如果上面的設定還不行，明確列出來源
 CORS_ALLOWED_ORIGINS = [
-    "https://pangcah-accounting-system.vercel.app",  # 你的 Vercel 前端
+    "https://pangcah-accounting-system.vercel.app",
     "https://pangcah-accounting-frontend.vercel.app",
     "http://localhost:3000",
     "http://localhost:5173",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:5173",
 ]
 
-# 暫時允許所有來源以進行測試
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-]
+# 確保 CORS middleware 在最前面
+if 'corsheaders.middleware.CorsMiddleware' in MIDDLEWARE:
+    MIDDLEWARE.remove('corsheaders.middleware.CorsMiddleware')
+MIDDLEWARE.insert(0, 'corsheaders.middleware.CorsMiddleware')
 
 # Security
 SECURE_SSL_REDIRECT = False  # Railway handles HTTPS
