@@ -8,4 +8,4 @@ nixPkgs = ["python311", "gcc"]
 cmds = ["pip install -r requirements.txt"]
 
 [start]
-cmd = "python manage.py migrate --settings=pangcah_accounting.settings.railway && python create_admin.py && python manage.py collectstatic --noinput --settings=pangcah_accounting.settings.railway && gunicorn pangcah_accounting.wsgi:application --bind 0.0.0.0:$PORT"
+cmd = "python manage.py migrate --settings=pangcah_accounting.settings.railway && python manage.py collectstatic --noinput --settings=pangcah_accounting.settings.railway && gunicorn pangcah_accounting.wsgi:application --bind 0.0.0.0:$PORT"
