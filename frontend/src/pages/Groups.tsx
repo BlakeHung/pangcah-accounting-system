@@ -66,8 +66,17 @@ const Groups: React.FC = () => {
   const { data: groups, isLoading } = useQuery({
     queryKey: ['groups'],
     queryFn: async () => {
-      const response = await axios.get('/api/v1/groups/')
-      return response.data.results as Group[]
+      try {
+        const response = await axios.get('/api/v1/groups/')
+        // 檢查是否為佔位資料
+        if (response.data[0]?.status === 'placeholder') {
+          return [] // 返回空陣列
+        }
+        return response.data.results || []
+      } catch (error) {
+        console.warn('無法獲取群組列表:', error)
+        return []
+      }
     }
   })
 
@@ -75,45 +84,48 @@ const Groups: React.FC = () => {
   const { data: allUsers } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const response = await axios.get('/api/v1/users/')
-      return response.data.results as User[]
+      try {
+        const response = await axios.get('/api/v1/users/')
+        return response.data.results || []
+      } catch (error) {
+        console.warn('無法獲取用戶列表:', error)
+        return []
+      }
     }
   })
 
-  // 創建群組
+  // 創建群組 - 暫時顯示提示訊息
   const createGroupMutation = useMutation({
     mutationFn: async (data: GroupForm) => {
-      const response = await axios.post('/api/v1/groups/', data)
-      return response.data
+      // API 尚未實作，顯示提示訊息
+      throw new Error('群組創建功能尚在開發中')
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['groups'] })
-      setShowCreateForm(false)
-      resetForm()
+    onError: (error: any) => {
+      alert(error.message || '群組創建功能尚在開發中')
     }
   })
 
-  // 更新群組
+  // 更新群組 - 暫時顯示提示訊息
   const updateGroupMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number, data: GroupForm }) => {
-      const response = await axios.patch(`/api/v1/groups/${id}/`, data)
-      return response.data
+      // API 尚未實作，顯示提示訊息
+      throw new Error('群組更新功能尚在開發中')
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['groups'] })
+    onError: (error: any) => {
+      alert(error.message || '群組更新功能尚在開發中')
       setEditingGroup(null)
       resetForm()
     }
   })
 
-  // 刪除群組
+  // 刪除群組 - 暫時顯示提示訊息
   const deleteGroupMutation = useMutation({
     mutationFn: async (id: number) => {
-      await axios.delete(`/api/v1/groups/${id}/`)
+      // API 尚未實作，顯示提示訊息
+      throw new Error('群組刪除功能尚在開發中')
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['groups'] })
-      setSelectedGroup(null)
+    onError: (error: any) => {
+      alert(error.message || '群組刪除功能尚在開發中')
     }
   })
 
@@ -127,11 +139,11 @@ const Groups: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (editingGroup) {
-      updateGroupMutation.mutate({ id: editingGroup.id, data: groupForm })
-    } else {
-      createGroupMutation.mutate(groupForm)
-    }
+    // 顯示功能尚在開發中的提示
+    alert('群組管理功能尚在開發中，敬請期待！')
+    setShowCreateForm(false)
+    setEditingGroup(null)
+    resetForm()
   }
 
   const startEdit = (group: Group) => {
@@ -265,9 +277,7 @@ const Groups: React.FC = () => {
                           </button>
                           <button
                             onClick={() => {
-                              if (confirm('確定要刪除這個群組嗎？')) {
-                                deleteGroupMutation.mutate(group.id)
-                              }
+                              alert('群組刪除功能尚在開發中')
                             }}
                             className="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center text-sm"
                             title="刪除群組"
@@ -309,15 +319,13 @@ const Groups: React.FC = () => {
               </div>
             ) : (
               <div className="bg-white rounded-xl p-12 shadow-papa-soft text-center">
-                <div className="text-6xl mb-4 opacity-50">👥</div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">暫無群組</h3>
-                <p className="text-gray-600 mb-6">尚未建立任何群組，點擊上方按鈕開始建立您的第一個群組。</p>
-                <button
-                  onClick={() => setShowCreateForm(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
-                >
-                  ➕ 建立群組
-                </button>
+                <div className="text-6xl mb-4 opacity-50">🔧</div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">群組功能建置中</h3>
+                <p className="text-gray-600 mb-6">群組管理功能正在開發中，即將推出。敬請期待！</p>
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-sm">
+                  <span>⚠️</span>
+                  <span>此功能尚在開發中</span>
+                </div>
               </div>
             )}
           </div>
@@ -404,20 +412,10 @@ const Groups: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    disabled={createGroupMutation.isPending || updateGroupMutation.isPending}
-                    className="flex-1 px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                    className="flex-1 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
                   >
-                    {(createGroupMutation.isPending || updateGroupMutation.isPending) ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        <span>處理中...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>✓</span>
-                        <span>{editingGroup ? '更新群組' : '建立群組'}</span>
-                      </>
-                    )}
+                    <span>✓</span>
+                    <span>{editingGroup ? '更新群組' : '建立群組'}</span>
                   </button>
                 </div>
               </form>
