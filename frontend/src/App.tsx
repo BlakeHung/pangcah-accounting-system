@@ -2,21 +2,28 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import axios from 'axios'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SnackbarProvider } from './contexts/SnackbarContext'
+
+// PAPA 主題頁面
 import LoginPage from './pages/LoginPage'
+
+// 傳統頁面（暫時保留作為備份）
 import Dashboard from './pages/Dashboard'
 import Groups from './pages/Groups'
+import Activities from './pages/Activities'
 import Users from './pages/Users'
 import Transactions from './pages/Transactions'
 import TransactionNew from './pages/TransactionNew'
 import TransactionDetail from './pages/TransactionDetail'
-import Activities from './pages/Activities'
 import ActivityNew from './pages/ActivityNew'
 import ActivityDetail from './pages/ActivityDetail'
 import ActivityEdit from './pages/ActivityEdit'
 import ActivityManager from './pages/ActivityManager'
 import Categories from './pages/Categories'
 import Settings from './pages/Settings'
+
+// 樣式
 import './App.css'
+import './styles/papa-tailwind.css'
 
 const queryClient = new QueryClient()
 
@@ -28,15 +35,7 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem('access_token')
   const user = localStorage.getItem('user')
   
-  // 調試信息
-  console.log('PrivateRoute check:', { 
-    hasToken: !!token, 
-    hasUser: !!user,
-    tokenLength: token?.length || 0
-  })
-  
   if (!token || !user) {
-    console.log('Redirecting to login - missing token or user data')
     return <Navigate to="/login" replace />
   }
   
@@ -52,7 +51,7 @@ function App() {
             {/* 公開路由 */}
             <Route path="/login" element={<LoginPage />} />
             
-            {/* 私有路由 */}
+            {/* PAPA 主題私有路由 */}
             <Route path="/dashboard" element={
               <PrivateRoute>
                 <Dashboard />
@@ -65,6 +64,13 @@ function App() {
               </PrivateRoute>
             } />
             
+            <Route path="/activities" element={
+              <PrivateRoute>
+                <Activities />
+              </PrivateRoute>
+            } />
+            
+            {/* 暫時使用傳統頁面的路由 - 待 PAPA 化 */}
             <Route path="/users" element={
               <PrivateRoute>
                 <Users />
@@ -86,12 +92,6 @@ function App() {
             <Route path="/transactions/:id" element={
               <PrivateRoute>
                 <TransactionDetail />
-              </PrivateRoute>
-            } />
-            
-            <Route path="/activities" element={
-              <PrivateRoute>
-                <Activities />
               </PrivateRoute>
             } />
             
@@ -128,6 +128,25 @@ function App() {
             <Route path="/settings" element={
               <PrivateRoute>
                 <Settings />
+              </PrivateRoute>
+            } />
+            
+            {/* 傳統版本備份路由 */}
+            <Route path="/classic/dashboard" element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            } />
+            
+            <Route path="/classic/groups" element={
+              <PrivateRoute>
+                <Groups />
+              </PrivateRoute>
+            } />
+            
+            <Route path="/classic/activities" element={
+              <PrivateRoute>
+                <Activities />
               </PrivateRoute>
             } />
             

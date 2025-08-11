@@ -46,8 +46,8 @@ else:
 
 # CORS settings for production
 CORS_ALLOWED_ORIGINS = [
-    "https://family-finance-frontend.vercel.app",  # Your Vercel domain
-    config('FRONTEND_URL', default='https://family-finance-frontend.vercel.app'),
+    "https://pangcah-accounting.vercel.app",  # Your Vercel domain
+    config('FRONTEND_URL', default='https://pangcah-accounting.vercel.app'),
 ]
 
 CORS_ALLOW_CREDENTIALS = True

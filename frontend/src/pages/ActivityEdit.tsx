@@ -4,7 +4,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import Layout from '../components/Layout'
 import { useSnackbar } from '../contexts/SnackbarContext'
-import './ActivityNew.css' // 重用新增活動的樣式
 
 interface User {
   id: number

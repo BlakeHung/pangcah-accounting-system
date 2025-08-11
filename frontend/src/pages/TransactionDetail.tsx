@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import Layout from '../components/Layout'
-import './TransactionDetail.css'
 
 interface User {
   id: number
@@ -194,7 +193,12 @@ const TransactionDetail: React.FC = () => {
   if (isLoading) {
     return (
       <Layout user={currentUser}>
-        <div className="loading">載入中...</div>
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">載入交易詳情中...</p>
+          </div>
+        </div>
       </Layout>
     )
   }
@@ -202,12 +206,18 @@ const TransactionDetail: React.FC = () => {
   if (error || !transaction) {
     return (
       <Layout user={currentUser}>
-        <div className="error-container">
-          <h2>找不到支出記錄</h2>
-          <p>您要查看的支出記錄不存在或已被刪除。</p>
-          <button onClick={() => navigate('/transactions')} className="back-btn">
-            返回支出記錄
-          </button>
+        <div className="max-w-2xl mx-auto mt-16">
+          <div className="bg-white rounded-xl p-8 shadow-papa-soft text-center">
+            <div className="text-6xl mb-4 opacity-50">📊</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">找不到交易記錄</h2>
+            <p className="text-gray-600 mb-6">您要查看的交易記錄不存在或已被刪除。</p>
+            <button 
+              onClick={() => navigate('/transactions')}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+            >
+              ← 返回交易列表
+            </button>
+          </div>
         </div>
       </Layout>
     )
@@ -215,103 +225,180 @@ const TransactionDetail: React.FC = () => {
 
   return (
     <Layout user={currentUser}>
-      <div className="transaction-detail-container">
+      <div className="max-w-4xl mx-auto space-y-6">
         {/* 頁面標題 */}
-        <div className="page-header">
-          <button 
-            className="back-button"
-            onClick={() => navigate('/transactions')}
-          >
-            ← 返回
-          </button>
-          <h1>
-            {transaction.type === 'EXPENSE' ? '💸' : '💰'} 
-            {getTypeDisplay(transaction.type)}記錄詳情
-          </h1>
-          {canManageTransaction() && (
-            <div className="header-actions">
+        <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-4">
               <button 
-                className="edit-btn"
-                onClick={() => navigate(`/transactions/${id}/edit`)}
+                onClick={() => navigate('/transactions')}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
-                編輯
+                <span className="text-xl">←</span>
+                <span className="text-sm font-medium">返回列表</span>
               </button>
-              <button 
-                className="delete-btn"
-                onClick={handleDelete}
-                disabled={deleteTransactionMutation.isPending}
-              >
-                {deleteTransactionMutation.isPending ? '刪除中...' : '刪除'}
-              </button>
+              <div className="h-6 w-px bg-gray-300"></div>
+              <div className="flex items-center gap-3">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl ${
+                  transaction.type === 'EXPENSE' ? 'bg-red-100' : 'bg-green-100'
+                }`}>
+                  {transaction.type === 'EXPENSE' ? '💸' : '💰'}
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-800">
+                    {getTypeDisplay(transaction.type)}記錄詳情
+                  </h1>
+                  <p className="text-gray-600 text-sm">ID: {transaction.id}</p>
+                </div>
+              </div>
             </div>
-          )}
+            {canManageTransaction() && (
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => navigate(`/transactions/${id}/edit`)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2"
+                >
+                  <span>✏️</span>
+                  <span>編輯</span>
+                </button>
+                <button 
+                  onClick={handleDelete}
+                  disabled={deleteTransactionMutation.isPending}
+                  className="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2"
+                >
+                  {deleteTransactionMutation.isPending ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>刪除中</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>🗑️</span>
+                      <span>刪除</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* 基本資訊卡片 */}
-        <div className="info-card main-info">
-          <div className="amount-section">
-            <div className="amount-label">金額</div>
-            <div className={`amount ${transaction.type.toLowerCase()}`}>
-              {transaction.type === 'EXPENSE' ? '-' : '+'}NT$ {parseFloat(transaction.amount).toLocaleString()}
-            </div>
-          </div>
-          
-          <div className="basic-info">
-            <div className="info-row">
-              <span className="label">📂 分類:</span>
-              <span className="value">{transaction.category.name}</span>
-            </div>
-            <div className="info-row">
-              <span className="label">📅 日期:</span>
-              <span className="value">{new Date(transaction.date).toLocaleString()}</span>
-            </div>
-            <div className="info-row">
-              <span className="label">👤 記錄者:</span>
-              <span className="value">{transaction.user.name}</span>
-            </div>
-            {transaction.group && (
-              <div className="info-row">
-                <span className="label">👥 群組:</span>
-                <span className="value">{transaction.group.name}</span>
+        {/* 主資訊卡片 */}
+        <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* 金額顯示 */}
+            <div className="lg:col-span-1">
+              <div className={`text-center p-6 rounded-xl ${
+                transaction.type === 'EXPENSE' ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'
+              }`}>
+                <div className="text-sm text-gray-600 mb-2">交易金額</div>
+                <div className={`text-3xl font-bold ${
+                  transaction.type === 'EXPENSE' ? 'text-red-600' : 'text-green-600'
+                }`}>
+                  {transaction.type === 'EXPENSE' ? '-' : '+'}NT$ {parseFloat(transaction.amount).toLocaleString()}
+                </div>
+                <div className="text-xs text-gray-500 mt-2">
+                  {transaction.type === 'EXPENSE' ? '支出' : '收入'}
+                </div>
               </div>
-            )}
-            {transaction.event && (
-              <div className="info-row">
-                <span className="label">🎉 活動:</span>
-                <span className="value">{transaction.event.name}</span>
+            </div>
+            
+            {/* 基本資訊 */}
+            <div className="lg:col-span-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="text-lg">📂</div>
+                    <div>
+                      <div className="text-sm text-gray-600">分類</div>
+                      <div className="font-medium">{transaction.category.name}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-lg">📅</div>
+                    <div>
+                      <div className="text-sm text-gray-600">日期</div>
+                      <div className="font-medium">{new Date(transaction.date).toLocaleString('zh-TW')}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-lg">👤</div>
+                    <div>
+                      <div className="text-sm text-gray-600">記錄者</div>
+                      <div className="font-medium">{transaction.user.name || transaction.user.username}</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  {transaction.group && (
+                    <div className="flex items-center gap-3">
+                      <div className="text-lg">👥</div>
+                      <div>
+                        <div className="text-sm text-gray-600">群組</div>
+                        <div className="font-medium">{transaction.group.name}</div>
+                      </div>
+                    </div>
+                  )}
+                  {transaction.event && (
+                    <div className="flex items-center gap-3">
+                      <div className="text-lg">🎉</div>
+                      <div>
+                        <div className="text-sm text-gray-600">活動</div>
+                        <div className="font-medium">{transaction.event.name}</div>
+                      </div>
+                    </div>
+                  )}
+                  {(!transaction.group && !transaction.event) && (
+                    <div className="text-gray-500 text-sm">無關聯群組或活動</div>
+                  )}
+                </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
 
         {/* 描述 */}
         {transaction.description && (
-          <div className="info-card">
-            <h3>📝 描述</h3>
-            <p className="description">{transaction.description}</p>
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span className="text-xl">📝</span>
+              描述
+            </h3>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <p className="text-gray-700 leading-relaxed">{transaction.description}</p>
+            </div>
           </div>
         )}
 
 
         {/* 費用分攤 */}
         {transaction.type === 'EXPENSE' && transaction.event && (
-          <div className="info-card split-card">
-            <div className="split-header">
-              <h3>💰 費用分攤</h3>
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <span className="text-xl">💰</span>
+                費用分攤
+              </h3>
               {transaction.can_user_edit && (
-                <div className="split-actions">
+                <div className="flex items-center gap-3">
                   <button 
-                    className="auto-split-btn"
                     onClick={() => autoSplitMutation.mutate()}
                     disabled={autoSplitMutation.isPending}
+                    className="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center gap-2"
                   >
-                    平均分攤
+                    {autoSplitMutation.isPending ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                      <span>⚖️</span>
+                    )}
+                    <span>平均分攤</span>
                   </button>
                   <button 
-                    className="edit-split-btn"
                     onClick={openSplitModal}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center gap-2"
                   >
-                    調整分攤
+                    <span>✏️</span>
+                    <span>調整分攤</span>
                   </button>
                 </div>
               )}

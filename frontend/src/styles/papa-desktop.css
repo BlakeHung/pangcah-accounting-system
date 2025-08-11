@@ -1,0 +1,478 @@
+/* ============================================
+   PAPA 桌面版儀表板設計
+   ============================================ */
+
+/* 導入基礎主題 */
+@import './papa-theme.css';
+
+/* 主容器 - 背山面海設計 */
+.papa-desktop-container {
+  min-height: 100vh;
+  background: var(--papa-sea-mist);
+  position: relative;
+}
+
+/* 頂部導航 - 石坑土褐色 */
+.papa-navbar {
+  background: linear-gradient(135deg, var(--papa-stone-brown) 0%, #6d4c41 100%);
+  color: var(--papa-text-white);
+  padding: var(--papa-space-md) var(--papa-space-xl);
+  box-shadow: var(--papa-shadow-medium);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.papa-navbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.papa-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--papa-space-md);
+  font-family: var(--papa-font-display);
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.papa-brand-logo {
+  width: 40px;
+  height: 40px;
+  background: var(--papa-dawn-gold);
+  border-radius: var(--papa-radius-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.papa-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.papa-brand-main {
+  font-size: 20px;
+}
+
+.papa-brand-sub {
+  font-size: 12px;
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+/* 用戶資訊 */
+.papa-user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--papa-space-md);
+}
+
+.papa-user-avatar {
+  width: 36px;
+  height: 36px;
+  background: var(--papa-ocean-pink);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+/* 主內容區 - 井字格設計 */
+.papa-main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--papa-space-xl);
+  display: grid;
+  gap: var(--papa-space-xl);
+}
+
+/* 統計卡片網格 - 部落分層概念 */
+.papa-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--papa-space-lg);
+  margin-bottom: var(--papa-space-xl);
+}
+
+.papa-stat-card {
+  background: white;
+  border-radius: var(--papa-radius-large);
+  padding: var(--papa-space-xl);
+  box-shadow: var(--papa-shadow-soft);
+  border-left: 4px solid transparent;
+  transition: all var(--papa-transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.papa-stat-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(84, 54, 34, 0.03) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.papa-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--papa-shadow-medium);
+}
+
+/* 收入卡片 */
+.papa-stat-card.income {
+  border-left-color: var(--papa-emerald-green);
+}
+
+.papa-stat-card.income .papa-stat-icon {
+  background: linear-gradient(135deg, var(--papa-emerald-green), #66BB6A);
+  color: white;
+}
+
+/* 支出卡片 */
+.papa-stat-card.expense {
+  border-left-color: var(--papa-tide-orange);
+}
+
+.papa-stat-card.expense .papa-stat-icon {
+  background: linear-gradient(135deg, var(--papa-tide-orange), #FF8A65);
+  color: white;
+}
+
+/* 群組卡片 */
+.papa-stat-card.groups {
+  border-left-color: var(--papa-ocean-pink);
+}
+
+.papa-stat-card.groups .papa-stat-icon {
+  background: linear-gradient(135deg, var(--papa-ocean-pink), #EC407A);
+  color: white;
+}
+
+/* 活動卡片 */
+.papa-stat-card.events {
+  border-left-color: var(--papa-dawn-gold);
+}
+
+.papa-stat-card.events .papa-stat-icon {
+  background: linear-gradient(135deg, var(--papa-dawn-gold), #FFB74D);
+  color: white;
+}
+
+.papa-stat-content {
+  position: relative;
+  z-index: 1;
+}
+
+.papa-stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--papa-space-md);
+}
+
+.papa-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--papa-radius-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.papa-stat-title {
+  color: var(--papa-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.papa-stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--papa-text-primary);
+  margin: var(--papa-space-sm) 0 0 0;
+  font-family: var(--papa-font-mono);
+}
+
+.papa-stat-trend {
+  font-size: 12px;
+  color: var(--papa-text-light);
+  display: flex;
+  align-items: center;
+  gap: var(--papa-space-xs);
+  margin-top: var(--papa-space-sm);
+}
+
+/* 圖表區域 - 井字格佈局 */
+.papa-charts-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--papa-space-xl);
+  margin-bottom: var(--papa-space-xl);
+}
+
+.papa-chart-card {
+  background: white;
+  border-radius: var(--papa-radius-large);
+  padding: var(--papa-space-xl);
+  box-shadow: var(--papa-shadow-soft);
+  position: relative;
+  overflow: hidden;
+}
+
+.papa-chart-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    var(--papa-ocean-pink), 
+    var(--papa-dawn-gold), 
+    var(--papa-emerald-green)
+  );
+}
+
+.papa-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--papa-space-lg);
+}
+
+.papa-chart-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--papa-text-primary);
+  margin: 0;
+  font-family: var(--papa-font-display);
+}
+
+.papa-chart-subtitle {
+  font-size: 14px;
+  color: var(--papa-text-secondary);
+  margin-top: var(--papa-space-xs);
+}
+
+.papa-chart-container {
+  height: 300px;
+  position: relative;
+}
+
+/* 快速操作區 - 背山面海排列 */
+.papa-actions-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--papa-space-lg);
+}
+
+.papa-action-card {
+  background: white;
+  border-radius: var(--papa-radius-large);
+  padding: var(--papa-space-lg);
+  box-shadow: var(--papa-shadow-soft);
+  transition: all var(--papa-transition-normal);
+  cursor: pointer;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.papa-action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--papa-shadow-medium);
+  border-color: var(--papa-ocean-pink);
+}
+
+.papa-action-card:active {
+  transform: translateY(0);
+  box-shadow: var(--papa-shadow-soft);
+}
+
+.papa-action-header {
+  display: flex;
+  align-items: center;
+  gap: var(--papa-space-md);
+  margin-bottom: var(--papa-space-md);
+}
+
+.papa-action-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--papa-ocean-pink), #EC407A);
+  color: white;
+  border-radius: var(--papa-radius-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.papa-action-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--papa-text-primary);
+  margin: 0;
+  font-family: var(--papa-font-display);
+}
+
+.papa-action-desc {
+  font-size: 14px;
+  color: var(--papa-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* 文化裝飾元素 */
+.papa-decoration {
+  position: absolute;
+  pointer-events: none;
+}
+
+.papa-decoration.corner-tl {
+  top: 16px;
+  left: 16px;
+  width: 24px;
+  height: 24px;
+  background: radial-gradient(circle, var(--papa-dawn-gold) 30%, transparent 50%);
+  border-radius: 50%;
+  opacity: 0.1;
+}
+
+.papa-decoration.corner-br {
+  bottom: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(45deg, transparent 40%, var(--papa-tribal-brown-10) 50%, transparent 60%);
+}
+
+/* 載入狀態 - 太陽升起動畫 */
+.papa-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: var(--papa-space-md);
+}
+
+.papa-sun-loading {
+  width: 48px;
+  height: 48px;
+  background: var(--papa-dawn-gold);
+  border-radius: 50%;
+  position: relative;
+  animation: papa-sun-rise 2s ease-in-out infinite;
+}
+
+.papa-sun-loading::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border: 2px solid transparent;
+  border-top-color: var(--papa-dawn-gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes papa-sun-rise {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.papa-loading-text {
+  color: var(--papa-text-secondary);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* 響應式設計 */
+@media (max-width: 1200px) {
+  .papa-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .papa-charts-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .papa-actions-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .papa-main-content {
+    padding: var(--papa-space-md);
+  }
+  
+  .papa-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .papa-actions-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .papa-stat-card {
+    padding: var(--papa-space-lg);
+  }
+  
+  .papa-stat-value {
+    font-size: 28px;
+  }
+  
+  .papa-navbar-content {
+    padding: 0 var(--papa-space-md);
+  }
+  
+  .papa-brand {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .papa-stat-card {
+    padding: var(--papa-space-md);
+    text-align: center;
+  }
+  
+  .papa-stat-header {
+    flex-direction: column;
+    gap: var(--papa-space-sm);
+  }
+  
+  .papa-chart-card {
+    padding: var(--papa-space-md);
+  }
+  
+  .papa-chart-container {
+    height: 250px;
+  }
+}

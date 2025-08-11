@@ -1,0 +1,311 @@
+/* ============================================
+   Pangcah-Accounting (PAPA) 阿美族長光部落文化主題
+   ============================================ */
+
+/* 文化色彩系統 */
+:root {
+  /* === 主要色彩 === */
+  --papa-stone-brown: #543622;      /* 石坑土褐 - 導航/標題 */
+  --papa-ocean-pink: #E91E63;       /* PAPA海洋粉紅 - 主要按鈕 */
+  --papa-emerald-green: #4CAF50;    /* 金剛翠綠 - 收入數據 */
+  --papa-tide-orange: #FF7043;      /* 潮間帶橙 - 支出數據 */
+  --papa-sea-mist: #ECEFF1;         /* 海霧白 - 背景 */
+  --papa-betel-green: #689F38;      /* 檳榔綠 - 次要按鈕 */
+  --papa-dawn-gold: #FF8F00;        /* 晨曦金 - accent色 */
+  --papa-cave-gray: #546E7A;        /* 岩穴灰 - 分隔線 */
+
+  /* === 文化輔助色 === */
+  --papa-tribal-brown: #6D4C41;     /* 達魯岸棕 */
+  --papa-tribal-brown-10: rgba(109, 76, 65, 0.1);  /* 達魯岸棕 10% */
+  --papa-ocean-blue: #1976D2;       /* 海浪藍 */
+  --papa-sunset-red: #D32F2F;       /* 夕陽紅 */
+  
+  /* === 功能色彩擴展 === */
+  --papa-success: var(--papa-emerald-green);
+  --papa-warning: var(--papa-dawn-gold);
+  --papa-error: var(--papa-tide-orange);
+  --papa-info: var(--papa-ocean-blue);
+  
+  /* === 文字色彩 === */
+  --papa-text-primary: var(--papa-stone-brown);
+  --papa-text-secondary: var(--papa-cave-gray);
+  --papa-text-light: rgba(84, 54, 34, 0.7);
+  --papa-text-white: #FFFFFF;
+  
+  /* === 陰影系統 === */
+  --papa-shadow-soft: 0 2px 8px rgba(84, 54, 34, 0.08);
+  --papa-shadow-medium: 0 4px 16px rgba(84, 54, 34, 0.12);
+  --papa-shadow-strong: 0 8px 24px rgba(84, 54, 34, 0.16);
+  
+  /* === 圓角系統 === */
+  --papa-radius-small: 8px;
+  --papa-radius-medium: 12px;
+  --papa-radius-large: 16px;
+  --papa-radius-xl: 24px;
+  
+  /* === 間距系統 === */
+  --papa-space-xs: 4px;
+  --papa-space-sm: 8px;
+  --papa-space-md: 16px;
+  --papa-space-lg: 24px;
+  --papa-space-xl: 32px;
+  --papa-space-2xl: 48px;
+  
+  /* === 動畫時間 === */
+  --papa-transition-fast: 0.15s;
+  --papa-transition-normal: 0.3s;
+  --papa-transition-slow: 0.5s;
+}
+
+/* 字體系統 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --papa-font-display: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+  --papa-font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --papa-font-mono: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+}
+
+/* 基礎重設 */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--papa-font-body);
+  background-color: var(--papa-sea-mist);
+  color: var(--papa-text-primary);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* 文化紋樣背景 */
+.papa-pattern-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.papa-pattern-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(84, 54, 34, 0.02) 10px,
+      rgba(84, 54, 34, 0.02) 20px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 10px,
+      rgba(233, 30, 99, 0.01) 10px,
+      rgba(233, 30, 99, 0.01) 20px
+    );
+  z-index: -1;
+}
+
+/* 太陽八角星圖標 */
+.papa-sun-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.papa-sun-icon::before {
+  content: '✦';
+  color: var(--papa-dawn-gold);
+  font-size: 1.2em;
+  animation: papa-sun-pulse 3s ease-in-out infinite;
+}
+
+@keyframes papa-sun-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+/* 山形圖標 (支出) */
+.papa-mountain-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.papa-mountain-icon::before {
+  content: '⛰️';
+  font-size: 1em;
+}
+
+/* 波浪圖標 (收入) */
+.papa-wave-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.papa-wave-icon::before {
+  content: '🌊';
+  font-size: 1em;
+}
+
+/* 達魯岸聚會所圖標 (群組) */
+.papa-house-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.papa-house-icon::before {
+  content: '🏘️';
+  font-size: 1em;
+}
+
+/* 檳榔樹圖標 (設定) */
+.papa-betel-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.papa-betel-icon::before {
+  content: '🌴';
+  font-size: 1em;
+}
+
+/* 水波擴散效果 */
+@keyframes papa-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.papa-ripple-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.papa-ripple-effect::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  animation: papa-ripple 0.6s ease-out;
+  pointer-events: none;
+}
+
+/* 流水動畫 */
+@keyframes papa-flow {
+  0% { transform: translateX(-100%); opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+.papa-flow-animation {
+  position: relative;
+  overflow: hidden;
+}
+
+.papa-flow-animation::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    var(--papa-ocean-pink), 
+    transparent
+  );
+  animation: papa-flow 2s ease-in-out;
+}
+
+/* 潮汐淡入淡出效果 */
+.papa-tide-enter {
+  animation: papa-tide-in 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.papa-tide-exit {
+  animation: papa-tide-out 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes papa-tide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes papa-tide-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+}
+
+/* 波浪形數值變化 */
+@keyframes papa-wave-pulse {
+  0%, 100% { transform: scaleY(1); }
+  25% { transform: scaleY(1.1); }
+  50% { transform: scaleY(0.9); }
+  75% { transform: scaleY(1.05); }
+}
+
+.papa-wave-data {
+  animation: papa-wave-pulse 2s ease-in-out infinite;
+}
+
+/* 文化裝飾線條 */
+.papa-divider {
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent,
+    var(--papa-tribal-brown-10),
+    var(--papa-cave-gray),
+    var(--papa-tribal-brown-10),
+    transparent
+  );
+  margin: var(--papa-space-lg) 0;
+  position: relative;
+}
+
+.papa-divider::after {
+  content: '◈';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--papa-sea-mist);
+  color: var(--papa-tribal-brown);
+  padding: 0 var(--papa-space-sm);
+  font-size: 12px;
+}

@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import Layout from '../components/Layout'
-import './ActivityDetail.css'
 
 interface User {
   id: number

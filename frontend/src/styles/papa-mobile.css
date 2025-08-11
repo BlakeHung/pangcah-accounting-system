@@ -1,0 +1,583 @@
+/* ============================================
+   PAPA 行動版界面設計
+   ============================================ */
+
+/* 導入基礎主題 */
+@import './papa-theme.css';
+
+/* 行動版容器 */
+.papa-mobile-container {
+  min-height: 100vh;
+  background: var(--papa-sea-mist);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 頂部狀態欄 */
+.papa-mobile-header {
+  background: linear-gradient(135deg, var(--papa-stone-brown) 0%, #6d4c41 100%);
+  color: var(--papa-text-white);
+  padding: var(--papa-space-md);
+  box-shadow: var(--papa-shadow-soft);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.papa-mobile-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.papa-mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--papa-space-sm);
+  font-family: var(--papa-font-display);
+  font-weight: 600;
+}
+
+.papa-mobile-logo {
+  width: 32px;
+  height: 32px;
+  background: var(--papa-dawn-gold);
+  border-radius: var(--papa-radius-small);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.papa-mobile-title {
+  font-size: 18px;
+  margin: 0;
+}
+
+.papa-mobile-subtitle {
+  font-size: 12px;
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+/* 用戶頭像 */
+.papa-mobile-avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--papa-ocean-pink);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* 主內容區 */
+.papa-mobile-content {
+  flex: 1;
+  padding: var(--papa-space-md);
+  overflow-y: auto;
+}
+
+/* 歡迎卡片 */
+.papa-welcome-card {
+  background: white;
+  border-radius: var(--papa-radius-large);
+  padding: var(--papa-space-lg);
+  margin-bottom: var(--papa-space-lg);
+  box-shadow: var(--papa-shadow-soft);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.papa-welcome-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, 
+    var(--papa-ocean-pink), 
+    var(--papa-dawn-gold), 
+    var(--papa-emerald-green)
+  );
+}
+
+.papa-welcome-image {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--papa-radius-medium);
+  margin: 0 auto var(--papa-space-md);
+  background: linear-gradient(135deg, var(--papa-tribal-brown-10), var(--papa-sea-mist));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.papa-welcome-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="tribal" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><polygon points="10,2 18,10 10,18 2,10" fill="%23543622" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23tribal)"/></svg>');
+}
+
+.papa-balance-display {
+  margin-top: var(--papa-space-md);
+}
+
+.papa-balance-label {
+  font-size: 14px;
+  color: var(--papa-text-secondary);
+  margin-bottom: var(--papa-space-xs);
+}
+
+.papa-balance-amount {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--papa-emerald-green);
+  font-family: var(--papa-font-mono);
+  margin: 0;
+}
+
+/* 快速操作按鈕 */
+.papa-quick-actions {
+  display: flex;
+  gap: var(--papa-space-md);
+  margin-bottom: var(--papa-space-lg);
+}
+
+.papa-quick-btn {
+  flex: 1;
+  background: white;
+  border: none;
+  border-radius: var(--papa-radius-medium);
+  padding: var(--papa-space-md);
+  box-shadow: var(--papa-shadow-soft);
+  cursor: pointer;
+  transition: all var(--papa-transition-normal);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--papa-space-sm);
+  font-family: var(--papa-font-body);
+  position: relative;
+  overflow: hidden;
+}
+
+.papa-quick-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--papa-shadow-medium);
+}
+
+.papa-quick-btn:active {
+  transform: translateY(0);
+}
+
+.papa-quick-btn.expense {
+  border-top: 3px solid var(--papa-tide-orange);
+}
+
+.papa-quick-btn.income {
+  border-top: 3px solid var(--papa-emerald-green);
+}
+
+.papa-quick-btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: white;
+}
+
+.papa-quick-btn.expense .papa-quick-btn-icon {
+  background: var(--papa-tide-orange);
+}
+
+.papa-quick-btn.income .papa-quick-btn-icon {
+  background: var(--papa-emerald-green);
+}
+
+.papa-quick-btn-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--papa-text-primary);
+  margin: 0;
+}
+
+/* 統計卡片網格 */
+.papa-mobile-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--papa-space-md);
+  margin-bottom: var(--papa-space-lg);
+}
+
+.papa-mobile-stat-card {
+  background: white;
+  border-radius: var(--papa-radius-medium);
+  padding: var(--papa-space-md);
+  box-shadow: var(--papa-shadow-soft);
+  text-align: center;
+  border-left: 4px solid transparent;
+}
+
+.papa-mobile-stat-card.groups {
+  border-left-color: var(--papa-ocean-pink);
+}
+
+.papa-mobile-stat-card.events {
+  border-left-color: var(--papa-dawn-gold);
+}
+
+.papa-mobile-stat-title {
+  font-size: 12px;
+  color: var(--papa-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 var(--papa-space-xs) 0;
+}
+
+.papa-mobile-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--papa-text-primary);
+  margin: 0;
+  font-family: var(--papa-font-mono);
+}
+
+/* 最近活動 */
+.papa-recent-section {
+  margin-bottom: var(--papa-space-lg);
+}
+
+.papa-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--papa-space-md);
+}
+
+.papa-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--papa-text-primary);
+  margin: 0;
+  font-family: var(--papa-font-display);
+}
+
+.papa-section-link {
+  font-size: 14px;
+  color: var(--papa-ocean-pink);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.papa-transaction-list {
+  background: white;
+  border-radius: var(--papa-radius-medium);
+  overflow: hidden;
+  box-shadow: var(--papa-shadow-soft);
+}
+
+.papa-transaction-item {
+  display: flex;
+  align-items: center;
+  padding: var(--papa-space-md);
+  border-bottom: 1px solid var(--papa-tribal-brown-10);
+  transition: background-color var(--papa-transition-fast);
+}
+
+.papa-transaction-item:last-child {
+  border-bottom: none;
+}
+
+.papa-transaction-item:hover {
+  background-color: var(--papa-sea-mist);
+}
+
+.papa-transaction-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--papa-radius-small);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: white;
+  margin-right: var(--papa-space-md);
+}
+
+.papa-transaction-icon.expense {
+  background: var(--papa-tide-orange);
+}
+
+.papa-transaction-icon.income {
+  background: var(--papa-emerald-green);
+}
+
+.papa-transaction-details {
+  flex: 1;
+}
+
+.papa-transaction-desc {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--papa-text-primary);
+  margin: 0 0 var(--papa-space-xs) 0;
+}
+
+.papa-transaction-meta {
+  font-size: 12px;
+  color: var(--papa-text-secondary);
+  margin: 0;
+}
+
+.papa-transaction-amount {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--papa-font-mono);
+}
+
+.papa-transaction-amount.expense {
+  color: var(--papa-tide-orange);
+}
+
+.papa-transaction-amount.income {
+  color: var(--papa-emerald-green);
+}
+
+/* 底部導航 - 海浪造型 */
+.papa-mobile-nav {
+  background: white;
+  border-top: 2px solid var(--papa-tribal-brown-10);
+  padding: var(--papa-space-sm) 0;
+  box-shadow: 0 -2px 8px rgba(84, 54, 34, 0.08);
+  position: relative;
+}
+
+.papa-mobile-nav::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    var(--papa-ocean-pink) 0%, 
+    var(--papa-dawn-gold) 50%, 
+    var(--papa-emerald-green) 100%
+  );
+}
+
+.papa-nav-items {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--papa-space-md);
+}
+
+.papa-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--papa-space-xs);
+  padding: var(--papa-space-sm);
+  border-radius: var(--papa-radius-small);
+  cursor: pointer;
+  transition: all var(--papa-transition-fast);
+  min-width: 60px;
+}
+
+.papa-nav-item:hover {
+  background: var(--papa-tribal-brown-10);
+}
+
+.papa-nav-item.active {
+  background: var(--papa-ocean-pink);
+  color: white;
+}
+
+.papa-nav-item.active .papa-nav-icon {
+  background: white;
+  color: var(--papa-ocean-pink);
+}
+
+.papa-nav-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--papa-radius-small);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background: var(--papa-tribal-brown-10);
+  color: var(--papa-text-primary);
+  transition: all var(--papa-transition-fast);
+}
+
+.papa-nav-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+}
+
+/* 側邊選單 */
+.papa-mobile-sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100vh;
+  background: linear-gradient(180deg, var(--papa-stone-brown) 0%, #6d4c41 100%);
+  color: var(--papa-text-white);
+  z-index: 2000;
+  transition: left var(--papa-transition-normal);
+  box-shadow: var(--papa-shadow-strong);
+  overflow-y: auto;
+}
+
+.papa-mobile-sidebar.open {
+  left: 0;
+}
+
+.papa-sidebar-header {
+  padding: var(--papa-space-xl) var(--papa-space-lg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.papa-sidebar-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--papa-space-md);
+  margin-bottom: var(--papa-space-lg);
+}
+
+.papa-sidebar-avatar {
+  width: 48px;
+  height: 48px;
+  background: var(--papa-dawn-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--papa-stone-brown);
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.papa-sidebar-user {
+  flex: 1;
+}
+
+.papa-sidebar-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 var(--papa-space-xs) 0;
+}
+
+.papa-sidebar-role {
+  font-size: 12px;
+  opacity: 0.8;
+  margin: 0;
+}
+
+.papa-sidebar-nav {
+  padding: var(--papa-space-lg);
+}
+
+.papa-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: var(--papa-space-md);
+  padding: var(--papa-space-md);
+  border-radius: var(--papa-radius-small);
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all var(--papa-transition-fast);
+  margin-bottom: var(--papa-space-xs);
+}
+
+.papa-sidebar-item:hover,
+.papa-sidebar-item.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.papa-sidebar-item-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.papa-sidebar-item-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 遮罩層 */
+.papa-mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1500;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--papa-transition-normal);
+}
+
+.papa-mobile-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 響應式調整 */
+@media (max-width: 360px) {
+  .papa-mobile-content {
+    padding: var(--papa-space-sm);
+  }
+  
+  .papa-welcome-card {
+    padding: var(--papa-space-md);
+  }
+  
+  .papa-balance-amount {
+    font-size: 28px;
+  }
+  
+  .papa-mobile-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 文化裝飾動畫 */
+@keyframes papa-cultural-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+.papa-cultural-decoration {
+  animation: papa-cultural-float 3s ease-in-out infinite;
+}

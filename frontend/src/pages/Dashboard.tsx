@@ -16,7 +16,6 @@ import {
 } from 'chart.js'
 import { Line, Doughnut, Bar } from 'react-chartjs-2'
 import Layout from '../components/Layout'
-import './Dashboard.css'
 
 // 註冊 Chart.js 組件
 ChartJS.register(
@@ -48,79 +47,61 @@ interface Group {
   managers: User[]
   members: Array<{
     id: number
+    username: string
     name: string
-    user?: User
-    is_system_user: boolean
   }>
   member_count: number
-  created_at: string
 }
 
 interface Category {
   id: number
   name: string
-  type: 'EXPENSE' | 'INCOME'
-  color: string
-  is_default: boolean
-  created_at: string
+  description: string
+  is_income: boolean
 }
 
-interface Activity {
+interface Event {
   id: number
   name: string
   description: string
-  status: 'ACTIVE' | 'COMPLETED' | 'PLANNED' | 'CANCELLED'
   start_date: string
-  end_date?: string
-  budget?: number
-  group: {
-    id: number
-    name: string
-  }
-  created_by: User
-  managers: User[]
-  created_at: string
+  end_date: string
+  location: string
+  group: number
 }
 
 interface Expense {
   id: number
-  amount: number
-  type: 'EXPENSE' | 'INCOME'
-  date: string
+  amount: string
   description: string
-  user: User
-  category: Category
-  event?: Activity
-  group?: Group
-  created_at: string
+  date: string
+  category: number
+  category_name: string
+  group: number
+  group_name: string
+  event?: number
+  event_name?: string
+  user_name: string
+  splits: Array<{
+    user: number
+    user_name: string
+    amount: string
+  }>
 }
 
-interface DashboardStats {
-  totalExpenses: number
-  monthlyExpenses: number
-  activeEvents: number
-  totalCategories: number
-  managedGroups: number
-  participatingGroups: number
-  expensesTrend: Array<{
-    date: string
-    amount: number
-  }>
-  categoryDistribution: Array<{
-    category: string
-    amount: number
-  }>
-  groupExpenses: Array<{
-    groupName: string
-    amount: number
-  }>
+// PAPA 文化圖標組件
+const PAPAIcons = {
+  Sun: () => <span className="papa-sun-icon" />,
+  Mountain: () => <span className="papa-mountain-icon" />,
+  Wave: () => <span className="papa-wave-icon" />,
+  House: () => <span className="papa-house-icon" />,
+  Betel: () => <span className="papa-betel-icon" />,
 }
 
 const Dashboard: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null)
   const navigate = useNavigate()
+  const [user, setUser] = useState<User | null>(null)
 
-  // 檢查登入狀態
   useEffect(() => {
     const token = localStorage.getItem('access_token')
     const userData = localStorage.getItem('user')
@@ -129,487 +110,564 @@ const Dashboard: React.FC = () => {
       navigate('/login')
       return
     }
-    
+
     try {
       const parsedUser = JSON.parse(userData)
       setUser(parsedUser)
+      
+      // 設置 axios 認證頭
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     } catch (error) {
-      console.error('用戶資料解析失敗:', error)
+      console.error('Failed to parse user data:', error)
       navigate('/login')
     }
   }, [navigate])
 
-  // 使用 React Query 獲取數據
-  const { data: groups = [], isLoading: groupsLoading } = useQuery({
-    queryKey: ['groups'],
+  // 獲取統計資料 - 保留原有邏輯
+  const { data: dashboardData, isLoading } = useQuery({
+    queryKey: ['dashboard'],
     queryFn: async () => {
       try {
-        const response = await axios.get('/api/v1/groups/')
-        return Array.isArray(response.data.results) ? response.data.results : 
-               Array.isArray(response.data) ? response.data : []
-      } catch (error) {
-        console.warn('Failed to fetch groups:', error)
-        return []
-      }
-    },
-    enabled: !!user,
-    retry: 2,
-  })
+        const [groupsRes, categoriesRes, eventsRes, expensesRes] = await Promise.all([
+          axios.get('/api/v1/groups/'),
+          axios.get('/api/v1/categories/'),
+          axios.get('/api/v1/events/'),
+          axios.get('/api/v1/expenses/')
+        ])
 
-  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => {
-      try {
-        const response = await axios.get('/api/v1/categories/')
-        return Array.isArray(response.data.results) ? response.data.results : 
-               Array.isArray(response.data) ? response.data : []
-      } catch (error) {
-        console.warn('Failed to fetch categories:', error)
-        return []
-      }
-    },
-    enabled: !!user,
-    retry: 2,
-  })
+        const groups: Group[] = groupsRes.data.results || []
+        const categories: Category[] = categoriesRes.data.results || []
+        const events: Event[] = eventsRes.data.results || []
+        const expenses: Expense[] = expensesRes.data.results || []
 
-  const { data: activities = [], isLoading: activitiesLoading } = useQuery({
-    queryKey: ['activities'],
-    queryFn: async () => {
-      try {
-        const response = await axios.get('/api/v1/events/')
-        return Array.isArray(response.data.results) ? response.data.results : 
-               Array.isArray(response.data) ? response.data : []
-      } catch (error) {
-        console.warn('Failed to fetch activities:', error)
-        return []
-      }
-    },
-    enabled: !!user,
-    retry: 2,
-  })
+        // 計算統計數據
+        // 注意：後端儲存邏輯 - 負數代表支出，正數代表收入
+        const totalExpenses = expenses.reduce((sum, expense) => {
+          const amount = parseFloat(expense.amount)
+          // 負數金額代表支出，取絕對值
+          return sum + (amount < 0 ? Math.abs(amount) : 0)
+        }, 0)
 
-  const { data: expenses = [], isLoading: expensesLoading, error: expensesError } = useQuery({
-    queryKey: ['expenses'],
-    queryFn: async () => {
-      try {
-        const response = await axios.get('/api/v1/expenses/')
-        return Array.isArray(response.data.results) ? response.data.results : 
-               Array.isArray(response.data) ? response.data : []
-      } catch (error) {
-        console.warn('Failed to fetch expenses:', error)
-        return []
-      }
-    },
-    enabled: !!user,
-    retry: 2,
-  })
+        const totalIncome = expenses.reduce((sum, expense) => {
+          const amount = parseFloat(expense.amount)
+          // 正數金額代表收入
+          return sum + (amount > 0 ? amount : 0)
+        }, 0)
 
-  // 計算真實統計數據
-  const calculateStats = (): DashboardStats => {
-    if (!user) {
-      return {
-        totalExpenses: 0,
-        monthlyExpenses: 0,
-        activeEvents: 0,
-        totalCategories: 0,
-        managedGroups: 0,
-        participatingGroups: 0,
-        expensesTrend: [],
-        categoryDistribution: [],
-        groupExpenses: []
-      }
-    }
+        const balance = totalIncome - totalExpenses
 
-    // 群組統計 - 檢查 managed_groups 而不是 managers 數組
-    const managedGroups = user.managed_groups ? user.managed_groups.length : 0
-    const participatingGroups = groups.filter(group =>
-      group.members.some(member => 
-        member.user && member.user.username === user.username
-      )
-    ).length
-
-    // 活動統計
-    const activeEvents = activities.filter(activity => 
-      activity.status === 'ACTIVE' || activity.status === 'PLANNED'
-    ).length
-
-    // 分類統計
-    const expenseCategories = categories.filter(cat => cat.type === 'EXPENSE')
-    const totalCategories = expenseCategories.length
-    // 支出統計（使用真實數據）
-    const totalExpenses = expenses.reduce((sum: number, expense: any) => 
-      sum + parseFloat(expense.amount || 0), 0)
-    
-    const currentMonth = new Date().getMonth()
-    const currentYear = new Date().getFullYear()
-    const monthlyExpenses = expenses
-      .filter((expense: any) => {
-        const expenseDate = new Date(expense.date || expense.created_at)
-        return expenseDate.getMonth() === currentMonth && 
-               expenseDate.getFullYear() === currentYear
-      })
-      .reduce((sum: number, expense: any) => sum + parseFloat(expense.amount || 0), 0)
-
-    // 真實的月度趨勢數據（過去6個月）
-    const expensesTrend = Array.from({ length: 6 }, (_, i) => {
-      const date = new Date()
-      date.setMonth(date.getMonth() - 5 + i)
-      const monthExpenses = expenses
-        .filter((expense: any) => {
-          const expenseDate = new Date(expense.date || expense.created_at)
-          return expenseDate.getMonth() === date.getMonth() && 
-                 expenseDate.getFullYear() === date.getFullYear()
+        // 按分類統計
+        const categoryStats = categories.map(category => {
+          const categoryExpenses = expenses.filter(expense => 
+            expense.category === category.id
+          )
+          const total = categoryExpenses.reduce((sum, expense) => 
+            sum + Math.abs(parseFloat(expense.amount)), 0
+          )
+          return { ...category, total, count: categoryExpenses.length }
         })
-        .reduce((sum: number, expense: any) => sum + parseFloat(expense.amount || 0), 0)
-      
-      return {
-        date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
-        amount: monthExpenses
-      }
-    })
 
-    // 真實的分類分布數據
-    const categoryDistribution = expenseCategories.map(category => {
-      const categoryExpenses = expenses
-        .filter((expense: any) => expense.category && expense.category.id === category.id)
-        .reduce((sum: number, expense: any) => sum + parseFloat(expense.amount || 0), 0)
-      
-      return {
-        category: category.name,
-        amount: categoryExpenses
-      }
-    }).filter(item => item.amount > 0) // 只顯示有支出的分類
+        // 最近交易
+        const recentTransactions = expenses
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .slice(0, 10)
 
-    // 調試信息
-    console.log('🔍 分類分布調試信息:')
-    console.log('expenseCategories:', expenseCategories)
-    console.log('expenses count:', expenses.length)
-    console.log('expenses sample:', expenses.slice(0, 2))
-    console.log('categoryDistribution result:', categoryDistribution)
+        // 月度趨勢數據
+        const monthlyData = calculateMonthlyTrend(expenses)
+
+        return {
+          summary: {
+            totalExpenses,
+            totalIncome,
+            balance,
+            groupCount: groups.length,
+            eventCount: events.length
+          },
+          groups,
+          categories,
+          events,
+          expenses,
+          categoryStats,
+          recentTransactions,
+          monthlyData
+        }
+      } catch (error) {
+        console.error('Dashboard data fetch error:', error)
+        throw error
+      }
+    },
+    enabled: !!user
+  })
+
+  // 計算月度趨勢 - 保留原有邏輯
+  const calculateMonthlyTrend = (expenses: Expense[]) => {
+    const monthlyStats: { [key: string]: { income: number, expense: number } } = {}
     
-    // 詳細調試每個分類的匹配情況
-    expenseCategories.forEach(category => {
-      const matchingExpenses = expenses.filter((expense: any) => 
-        expense.category && expense.category.id === category.id
-      )
-      console.log(`分類 ${category.name} (ID: ${category.id}):`, matchingExpenses.length, '筆支出')
-      if (matchingExpenses.length > 0) {
-        console.log('  樣本:', matchingExpenses[0])
+    expenses.forEach(expense => {
+      const date = new Date(expense.date)
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+      const amount = parseFloat(expense.amount)
+      
+      if (!monthlyStats[monthKey]) {
+        monthlyStats[monthKey] = { income: 0, expense: 0 }
+      }
+      
+      // 後端邏輯：正數=收入，負數=支出
+      if (amount > 0) {
+        monthlyStats[monthKey].income += amount
+      } else {
+        monthlyStats[monthKey].expense += Math.abs(amount)
       }
     })
 
-    // 真實的群組支出分布
-    const groupExpenses = groups.map(group => {
-      const groupExpensesAmount = expenses
-        .filter((expense: any) => expense.group && expense.group.id === group.id)
-        .reduce((sum: number, expense: any) => sum + parseFloat(expense.amount || 0), 0)
-      
-      return {
-        groupName: group.name,
-        amount: groupExpensesAmount
-      }
-    }).filter(item => item.amount > 0) // 只顯示有支出的群組
+    const labels = Object.keys(monthlyStats).sort().slice(-6)
+    const incomeData = labels.map(label => monthlyStats[label]?.income || 0)
+    const expenseData = labels.map(label => monthlyStats[label]?.expense || 0)
 
-    return {
-      totalExpenses,
-      monthlyExpenses,
-      activeEvents,
-      totalCategories,
-      managedGroups,
-      participatingGroups,
-      expensesTrend,
-      categoryDistribution,
-      groupExpenses
-    }
+    return { labels, incomeData, expenseData }
   }
 
-  const stats = calculateStats()
-  
-  // 用戶要求的測試輸出
-  console.log('📊 stats.categoryDistribution:', stats.categoryDistribution)
-
-
-  // 趨勢圖表配置
-  const trendChartData = {
-    labels: stats.expensesTrend.map(item => {
-      const date = new Date(item.date + '-01')
-      return `${date.getFullYear()}年${date.getMonth() + 1}月`
+  // 圖表配置
+  const lineChartData = dashboardData?.monthlyData ? {
+    labels: dashboardData.monthlyData.labels.map(label => {
+      const [year, month] = label.split('-')
+      return `${year}年${month}月`
     }),
     datasets: [
       {
-        label: '月度支出 (NT$)',
-        data: stats.expensesTrend.map(item => item.amount),
-        borderColor: 'rgb(102, 126, 234)',
-        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+        label: '收入 (部落進項)',
+        data: dashboardData.monthlyData.incomeData,
+        borderColor: '#4CAF50', // papa-emerald
+        backgroundColor: 'rgba(76, 175, 80, 0.1)',
         tension: 0.4,
-        fill: true,
-        pointBackgroundColor: 'rgb(102, 126, 234)',
-        pointBorderColor: '#fff',
-        pointBorderWidth: 2,
-        pointRadius: 5,
       },
-    ],
-  }
-
-  // 分類分布圖表配置
-  const categoryChartData = {
-    labels: stats.categoryDistribution.map(item => item.category),
-    datasets: [
       {
-        data: stats.categoryDistribution.map(item => item.amount),
-        backgroundColor: [
-          'rgba(102, 126, 234, 0.8)',
-          'rgba(118, 75, 162, 0.8)',
-          'rgba(255, 159, 64, 0.8)',
-          'rgba(255, 99, 132, 0.8)',
-          'rgba(34, 197, 94, 0.8)',
-          'rgba(59, 130, 246, 0.8)',
-        ],
-        borderWidth: 0,
-      },
-    ],
-  }
+        label: '支出 (部落開銷)',
+        data: dashboardData.monthlyData.expenseData,
+        borderColor: '#FF7043', // papa-tide  
+        backgroundColor: 'rgba(255, 112, 67, 0.1)',
+        tension: 0.4,
+      }
+    ]
+  } : null
 
-  // 群組支出分布圖表配置
-  const groupExpensesChartData = {
-    labels: stats.groupExpenses.map(item => item.groupName),
-    datasets: [
-      {
-        label: '群組支出',
-        data: stats.groupExpenses.map(item => item.amount),
-        backgroundColor: [
-          'rgba(34, 197, 94, 0.8)',
-          'rgba(59, 130, 246, 0.8)',
-          'rgba(168, 85, 247, 0.8)',
-          'rgba(236, 72, 153, 0.8)',
-          'rgba(245, 158, 11, 0.8)',
-          'rgba(239, 68, 68, 0.8)',
-        ],
-        borderWidth: 0,
-      },
-    ],
-  }
+  const doughnutData = dashboardData?.categoryStats ? {
+    labels: dashboardData.categoryStats.filter(cat => cat.total > 0).map(cat => cat.name),
+    datasets: [{
+      data: dashboardData.categoryStats.filter(cat => cat.total > 0).map(cat => cat.total),
+      backgroundColor: [
+        '#4CAF50', // papa-emerald
+        '#FF7043', // papa-tide
+        '#E91E63', // papa-ocean
+        '#FF8F00', // papa-dawn
+        '#689F38', // papa-betel
+        '#546E7A', // papa-cave
+      ],
+      borderWidth: 2,
+      borderColor: '#FFFFFF',
+    }]
+  } : null
 
-  if (!user) {
-    return (
-      <div className="loading-container">
-        <div className="loading-spinner">載入中...</div>
-      </div>
-    )
-  }
-
-  // 顯示載入狀態
-  if (groupsLoading || categoriesLoading || activitiesLoading || expensesLoading) {
+  if (isLoading) {
     return (
       <Layout user={user}>
-        <div className="loading-container">
-          <div className="loading-spinner">載入統計數據中...</div>
+        <div className="papa-loading">
+          <div className="papa-sun-loading"></div>
+          <p className="papa-loading-text">載入中...</p>
         </div>
       </Layout>
     )
   }
 
-  // 顯示錯誤狀態（如果有錯誤但仍有部分資料）
-  if (expensesError && expenses.length === 0) {
-    console.warn('Dashboard expenses loading error:', expensesError)
-  }
+  const stats = dashboardData?.summary
 
   return (
-    <Layout user={user}>
-      <div className="dashboard-content">
-        {/* 統計卡片 */}
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon">💰</div>
-            <div className="stat-content">
-              <h3>總支出</h3>
-              <p className="stat-value">NT$ {stats.totalExpenses.toLocaleString()}</p>
+    <Layout user={user} dashboardData={dashboardData}>
+      <div className="space-y-8 md:block hidden">
+        {/* 桌面版內容 */}
+        {/* 歡迎區域與快速操作 */}
+        <section className="rounded-2xl p-6" style={{ backgroundColor: '#543622' }}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-white mb-1">
+                歡迎回來，{user?.name || user?.username}
+              </h1>
+              <p className="text-white/80 text-sm">
+                今日記帳管理
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate('/transactions/new')}
+                className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <span>➕</span>
+                <span>新增記錄</span>
+              </button>
+              <button
+                onClick={() => navigate('/transactions')}
+                className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <span>📊</span>
+                <span>查看記錄</span>
+              </button>
             </div>
           </div>
-          
-          <div className="stat-card">
-            <div className="stat-icon">📅</div>
-            <div className="stat-content">
-              <h3>本月支出</h3>
-              <p className="stat-value">NT$ {stats.monthlyExpenses.toLocaleString()}</p>
-            </div>
-          </div>
-          
-          <div className="stat-card">
-            <div className="stat-icon">👑</div>
-            <div className="stat-content">
-              <h3>管理群組</h3>
-              <p className="stat-value">{stats.managedGroups} 個</p>
-              {user.role === 'ADMIN' && <small>（超級管理員）</small>}
-            </div>
-          </div>
-          
-          <div className="stat-card">
-            <div className="stat-icon">👥</div>
-            <div className="stat-content">
-              <h3>參與群組</h3>
-              <p className="stat-value">{stats.participatingGroups} 個</p>
-            </div>
-          </div>
-          
-          <div className="stat-card">
-            <div className="stat-icon">🎉</div>
-            <div className="stat-content">
-              <h3>進行中活動</h3>
-              <p className="stat-value">{stats.activeEvents} 個</p>
-            </div>
-          </div>
-          
-          <div className="stat-card">
-            <div className="stat-icon">📊</div>
-            <div className="stat-content">
-              <h3>支出分類</h3>
-              <p className="stat-value">{stats.totalCategories} 類</p>
-            </div>
-          </div>
-        </div>
+        </section>
 
-        {/* 圖表區域 */}
-        <div className="charts-grid">
-          <div className="chart-card">
-            <h3>支出趨勢</h3>
-            <div className="chart-container">
-              <Line 
-                data={trendChartData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                  },
-                  scales: {
-                    y: {
-                      beginAtZero: true,
-                      ticks: {
-                        callback: function(value: any) {
-                          return 'NT$ ' + Number(value).toLocaleString()
-                        }
-                      }
-                    },
-                    x: {
-                      ticks: {
-                        maxRotation: 45
-                      }
-                    }
-                  }
-                }}
-              />
+        {/* 統計卡片網格 - 文化化升級 */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* 總支出 - 上山總額 */}
+          <div className="bg-white rounded-lg p-6 shadow-papa-soft hover:shadow-papa-medium transition-all duration-300 border-l-4" style={{ borderLeftColor: '#FF7043', backgroundColor: 'rgba(255, 112, 67, 0.05)' }}>
+            <div className="flex items-center gap-4">
+              <div className="text-4xl opacity-80">⛰️</div>
+              <div>
+                <h3 className="text-sm font-medium text-papa-cave mb-1">總支出</h3>
+                <p className="text-2xl font-bold" style={{ color: '#FF7043' }}>
+                  NT$ {(stats?.totalExpenses || 0).toLocaleString()}
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="chart-card">
-            <h3>分類分布</h3>
-            <div className="chart-container">
-              {stats.categoryDistribution.length > 0 ? (
-                <Doughnut 
-                  data={categoryChartData}
+          {/* 本月支出 - 本月上山 */}
+          <div className="bg-white rounded-lg p-6 shadow-papa-soft hover:shadow-papa-medium transition-all duration-300 border-l-4" style={{ borderLeftColor: '#546E7A', backgroundColor: 'rgba(84, 106, 122, 0.05)' }}>
+            <div className="flex items-center gap-4">
+              <div className="text-4xl opacity-80">🌙</div>
+              <div>
+                <h3 className="text-sm font-medium text-papa-cave mb-1">本月支出</h3>
+                <p className="text-2xl font-bold" style={{ color: '#546E7A' }}>
+                  NT$ {(stats?.totalExpenses || 0).toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 總收入 - 下海總額 */}
+          <div className="bg-white rounded-lg p-6 shadow-papa-soft hover:shadow-papa-medium transition-all duration-300 border-l-4" style={{ borderLeftColor: '#4CAF50', backgroundColor: 'rgba(76, 175, 80, 0.05)' }}>
+            <div className="flex items-center gap-4">
+              <div className="text-4xl opacity-80">🌊</div>
+              <div>
+                <h3 className="text-sm font-medium text-papa-cave mb-1">總收入</h3>
+                <p className="text-2xl font-bold" style={{ color: '#4CAF50' }}>
+                  NT$ {(stats?.totalIncome || 0).toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 群組管理 - 部落共享 */}
+          <div className="bg-white rounded-lg p-6 shadow-papa-soft hover:shadow-papa-medium transition-all duration-300 border-l-4" style={{ borderLeftColor: '#689F38', backgroundColor: 'rgba(104, 159, 56, 0.05)' }}>
+            <div className="flex items-center gap-4">
+              <div className="text-4xl opacity-80">🏛️</div>
+              <div>
+                <h3 className="text-sm font-medium text-papa-cave mb-1">管理群組</h3>
+                <p className="text-2xl font-bold" style={{ color: '#689F38' }}>
+                  {stats?.groupCount || 0}
+                </p>
+                <span className="text-xs text-papa-cave opacity-60">個群組</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 圖表區域 - 文化化升級 */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white rounded-2xl p-6 shadow-papa-soft">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-papa-stone font-display">
+                  收支趨勢
+                </h3>
+                <p className="text-sm text-papa-cave opacity-70">近6個月收支變化</p>
+              </div>
+              <div className="text-2xl opacity-60">🌊</div>
+            </div>
+            <div className="h-80">
+              {lineChartData ? (
+                <Line 
+                  data={lineChartData}
                   options={{
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                      legend: {
-                        position: 'bottom' as const,
+                      legend: { 
+                        position: 'top',
+                        labels: {
+                          usePointStyle: true,
+                          font: { size: 12 }
+                        }
                       },
-                      tooltip: {
-                        callbacks: {
-                          label: function(context: any) {
-                            const label = context.label || ''
-                            const value = Number(context.raw || context.parsed || 0)
-                            const total = context.dataset.data.reduce((sum: number, val: number) => sum + val, 0)
-                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0
-                            return `${label}: NT$ ${value.toLocaleString()} (${percentage}%)`
-                          }
+                      title: { display: false }
+                    },
+                    scales: {
+                      y: { 
+                        beginAtZero: true,
+                        grid: {
+                          color: 'rgba(84, 106, 122, 0.1)'
+                        }
+                      },
+                      x: {
+                        grid: {
+                          color: 'rgba(84, 106, 122, 0.1)'
                         }
                       }
                     },
+                    elements: {
+                      line: {
+                        tension: 0.4
+                      }
+                    }
                   }}
                 />
               ) : (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#718096' }}>
-                  暫無分類分布資料
+                <div className="flex items-center justify-center h-full text-papa-cave">
+                  <div className="text-center">
+                    <div className="text-4xl opacity-60 mb-4">🌊</div>
+                    <p>暫無數據</p>
+                  </div>
                 </div>
               )}
             </div>
           </div>
-
-          {stats.groupExpenses.length > 0 && (
-            <div className="chart-card">
-              <h3>群組支出分布</h3>
-              <div className="chart-container">
-                <Bar 
-                  data={groupExpensesChartData}
+          
+          <div className="bg-white rounded-2xl p-6 shadow-papa-soft">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-papa-stone font-display">支出分類</h3>
+              </div>
+              <div className="text-2xl opacity-60">⛰️</div>
+            </div>
+            <div className="h-80">
+              {doughnutData ? (
+                <Doughnut 
+                  data={doughnutData}
                   options={{
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                      legend: {
-                        display: false,
-                      },
-                    },
-                    scales: {
-                      y: {
-                        beginAtZero: true,
-                        ticks: {
-                          callback: function(value: any) {
-                            return 'NT$ ' + Number(value).toLocaleString()
-                          }
-                        }
-                      },
-                      x: {
-                        ticks: {
-                          maxRotation: 45
+                      legend: { 
+                        position: 'bottom',
+                        labels: {
+                          usePointStyle: true,
+                          font: { size: 11 }
                         }
                       }
                     }
                   }}
                 />
-              </div>
+              ) : (
+                <div className="flex items-center justify-center h-full text-papa-cave">
+                  <div className="text-center">
+                    <div className="text-4xl opacity-60 mb-4">⛰️</div>
+                    <p>暫無分類數據</p>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+        </section>
 
-        {/* 快速操作 */}
-        <div className="quick-actions">
-          <h3>快速操作</h3>
-          <div className="actions-grid">
-            <button 
-              className="action-button"
+        {/* 快速操作區 */}
+        <section className="mb-8 bg-white rounded-2xl p-6 shadow-papa-soft">
+          <h3 className="text-lg font-bold text-papa-stone mb-4">常用功能</h3>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button
+              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 transition-colors"
               onClick={() => navigate('/transactions/new')}
             >
-              <span className="action-icon">➕</span>
-              新增支出
+              <div className="text-2xl">➕</div>
+              <span className="text-sm font-medium text-emerald-700">新增記錄</span>
             </button>
-            {(user.role === 'ADMIN' || (user.managed_groups && user.managed_groups.length > 0)) && (
-              <button 
-                className="action-button"
-                onClick={() => navigate('/activities/new')}
-              >
-                <span className="action-icon">🎯</span>
-                創建活動
-              </button>
-            )}
-            <button 
-              className="action-button"
+
+            <button
+              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors"
+              onClick={() => navigate('/transactions')}
+            >
+              <div className="text-2xl">📊</div>
+              <span className="text-sm font-medium text-blue-700">查看記錄</span>
+            </button>
+
+            <button
+              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-purple-50 hover:bg-purple-100 transition-colors"
+              onClick={() => navigate('/activities')}
+            >
+              <div className="text-2xl">🎉</div>
+              <span className="text-sm font-medium text-purple-700">活動管理</span>
+            </button>
+
+            <button
+              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-orange-50 hover:bg-orange-100 transition-colors"
               onClick={() => navigate('/groups')}
             >
-              <span className="action-icon">👥</span>
-              管理群組
+              <div className="text-2xl">👥</div>
+              <span className="text-sm font-medium text-orange-700">群組管理</span>
             </button>
+          </div>
+        </section>
+
+        {/* 最近交易 */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-papa-stone">
+              最近交易
+            </h3>
             <button 
-              className="action-button"
-              onClick={() => navigate('/analytics')}
+              onClick={() => navigate('/transactions')}
+              className="text-papa-ocean font-medium hover:text-papa-ocean/80 text-sm flex items-center gap-1"
             >
-              <span className="action-icon">📈</span>
-              查看報表
+              查看全部 →
             </button>
+          </div>
+          <div className="bg-white rounded-2xl shadow-papa-soft overflow-hidden" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(84, 54, 34, 0.005) 10px, rgba(84, 54, 34, 0.005) 20px)' }}>
+            {dashboardData?.recentTransactions?.length > 0 ? (
+              dashboardData.recentTransactions.map((transaction: Expense, index) => (
+                <div 
+                  key={transaction.id} 
+                  className={`flex items-center p-4 cursor-pointer hover:bg-papa-mist/30 transition-colors ${index !== dashboardData.recentTransactions.length - 1 ? 'border-b border-papa-cave/10' : ''}`}
+                  onClick={() => navigate(`/transactions/${transaction.id}`)}
+                  title="點擊查看詳情"
+                >
+                  <div className={`flex items-center justify-center w-12 h-12 rounded-full mr-4 ${parseFloat(transaction.amount) > 0 ? 'bg-emerald-50' : 'bg-orange-50'}`}>
+                    <span className="text-xl">
+                      {parseFloat(transaction.amount) > 0 ? '🌊' : '⛰️'}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-papa-stone truncate">
+                      {transaction.description || '交易記錄'}
+                    </p>
+                    <p className="text-sm text-papa-cave opacity-70">
+                      {transaction.category_name || '一般分類'} • 
+                      {transaction.group_name} • 
+                      {new Date(transaction.date).toLocaleDateString('zh-TW')}
+                    </p>
+                  </div>
+                  <div className={`text-right font-bold ${parseFloat(transaction.amount) > 0 ? 'text-emerald-600' : 'text-orange-600'}`}>
+                    {parseFloat(transaction.amount) > 0 ? '+' : ''}NT$ {Math.abs(parseFloat(transaction.amount)).toLocaleString()}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center text-papa-cave">
+                <div className="text-4xl mb-4 opacity-50">☀️</div>
+                <p>暫無交易記錄</p>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+
+      {/* 移動版內容 */}
+      <div className="block md:hidden">
+        {/* 快速動作卡片 */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <button
+            onClick={() => navigate('/transactions/new')}
+            className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-4 text-white text-center shadow-lg active:scale-95 transition-transform"
+          >
+            <div className="text-2xl mb-2">➕</div>
+            <div className="text-sm font-medium">新增記錄</div>
+          </button>
+          <button
+            onClick={() => navigate('/transactions')}
+            className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-4 text-white text-center shadow-lg active:scale-95 transition-transform"
+          >
+            <div className="text-2xl mb-2">📊</div>
+            <div className="text-sm font-medium">查看記錄</div>
+          </button>
+        </div>
+        
+        {/* 餘額顯示卡片 */}
+        <div className="bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-2xl p-6 text-white text-center shadow-lg mb-6">
+          <div className="text-sm opacity-90 mb-2">目前餘額</div>
+          <div className="text-3xl font-bold mb-2">
+            NT$ {((stats?.totalIncome || 0) - (stats?.totalExpenses || 0)).toLocaleString()}
+          </div>
+          <div className="text-xs opacity-80">
+            收入 NT${(stats?.totalIncome || 0).toLocaleString()} - 支出 NT${(stats?.totalExpenses || 0).toLocaleString()}
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
+          <h3 className="text-lg font-bold text-gray-800 mb-4 text-center">財務概覽</h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            {/* 總收入 */}
+            <div className="text-center p-4 bg-emerald-50 rounded-lg">
+              <div className="text-2xl mb-2">🌊</div>
+              <p className="text-xs text-gray-600 mb-1">總收入</p>
+              <p className="font-bold text-emerald-600 text-sm">NT$ {(stats?.totalIncome || 0).toLocaleString()}</p>
+            </div>
+            
+            {/* 總支出 */}
+            <div className="text-center p-4 bg-orange-50 rounded-lg">
+              <div className="text-2xl mb-2">⛰️</div>
+              <p className="text-xs text-gray-600 mb-1">總支出</p>
+              <p className="font-bold text-orange-600 text-sm">NT$ {(stats?.totalExpenses || 0).toLocaleString()}</p>
+            </div>
+            
+            {/* 群組数量 */}
+            <div className="text-center p-4 bg-purple-50 rounded-lg">
+              <div className="text-2xl mb-2">👥</div>
+              <p className="text-xs text-gray-600 mb-1">群組数量</p>
+              <p className="font-bold text-purple-600 text-sm">{stats?.groupCount || 0}</p>
+            </div>
+            
+            {/* 活動数量 */}
+            <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <div className="text-2xl mb-2">🎉</div>
+              <p className="text-xs text-gray-600 mb-1">活動数量</p>
+              <p className="font-bold text-blue-600 text-sm">{stats?.eventCount || 0}</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* 最近交易 */}
+        <div className="mt-6 bg-white rounded-2xl p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-800">最近交易</h3>
+            <button 
+              onClick={() => navigate('/transactions')}
+              className="text-blue-600 text-sm font-medium"
+            >
+              查看全部
+            </button>
+          </div>
+          <div className="space-y-3">
+            {dashboardData?.recentTransactions?.slice(0, 5).map((transaction: Expense) => (
+              <div 
+                key={transaction.id} 
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg active:bg-gray-100 transition-colors"
+                onClick={() => navigate(`/transactions/${transaction.id}`)}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="text-lg">
+                    {parseFloat(transaction.amount) > 0 ? '🌊' : '⛰️'}
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">{transaction.description || '交易記錄'}</p>
+                    <p className="text-xs text-gray-500">{new Date(transaction.date).toLocaleDateString('zh-TW')}</p>
+                  </div>
+                </div>
+                <div className={`font-bold text-sm ${parseFloat(transaction.amount) > 0 ? 'text-emerald-600' : 'text-orange-600'}`}>
+                  {parseFloat(transaction.amount) > 0 ? '+' : ''}NT$ {Math.abs(parseFloat(transaction.amount)).toLocaleString()}
+                </div>
+              </div>
+            ))}
+            {(!dashboardData?.recentTransactions || dashboardData.recentTransactions.length === 0) && (
+              <div className="text-center py-8 text-gray-500">
+                <div className="text-4xl mb-2">📊</div>
+                <p className="text-sm">還沒有交易記錄</p>
+                <button
+                  onClick={() => navigate('/transactions/new')}
+                  className="mt-2 text-blue-600 text-sm font-medium"
+                >
+                  立即新增一筆
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

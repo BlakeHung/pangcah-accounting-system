@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import './LoginPage.css'
 
 interface LoginFormData {
   username: string
@@ -115,61 +114,141 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <div className="login-header">
-          <h1>🏠 阿美族家族記帳系統</h1>
-          <p>請登入以繼續</p>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="login-form">
-          {error && (
-            <div className="error-message">
-              {error}
+    <div className="min-h-screen bg-gradient-to-br from-papa-stone to-papa-cave flex items-center justify-center relative overflow-hidden">
+      {/* 部落幾何紋樣背景 */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="w-full h-full" style={{
+          backgroundImage: `repeating-linear-gradient(
+            45deg,
+            rgba(255,255,255,0.1) 0px,
+            rgba(255,255,255,0.1) 20px,
+            transparent 20px,
+            transparent 40px
+          ),
+          repeating-linear-gradient(
+            -45deg,
+            rgba(255,255,255,0.05) 0px,
+            rgba(255,255,255,0.05) 30px,
+            transparent 30px,
+            transparent 60px
+          )`
+        }} />
+      </div>
+      
+      {/* 登入卡片 */}
+      <div className="relative z-10 w-full max-w-md mx-4">
+        <div className="bg-white rounded-3xl shadow-papa-deep p-8 backdrop-blur-sm border border-white/20">
+          {/* 頭部 - PAPA品牌設計 */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#543622' }}>
+              <div className="text-3xl text-white">✦</div>
             </div>
-          )}
-          
-          <div className="form-group">
-            <label htmlFor="username">帳號</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleInputChange}
-              required
-              disabled={loading}
-              placeholder="請輸入帳號"
-            />
+            <h1 className="text-2xl font-bold text-papa-stone mb-2 font-display">
+              PAPA
+            </h1>
+            <p className="text-papa-stone opacity-80 text-sm font-medium">
+              Pangcah Accounting Platform
+            </p>
+            <p className="text-papa-cave opacity-60 text-xs mt-1">
+              長光部落記帳系統
+            </p>
           </div>
           
-          <div className="form-group">
-            <label htmlFor="password">密碼</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              required
+          {/* 登入表單 */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                ⚠️ {error}
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <label htmlFor="username" className="block text-sm font-medium text-papa-stone">
+                使用者名稱
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  required
+                  disabled={loading}
+                  placeholder="請輸入使用者名稱"
+                  className="w-full px-4 py-3 pl-12 border border-papa-cave/20 rounded-xl focus:ring-2 focus:ring-papa-ocean focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                />
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-papa-cave opacity-40">
+                  👤
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="password" className="block text-sm font-medium text-papa-stone">
+                密碼
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                  disabled={loading}
+                  placeholder="請輸入密碼"
+                  className="w-full px-4 py-3 pl-12 border border-papa-cave/20 rounded-xl focus:ring-2 focus:ring-papa-ocean focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                />
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-papa-cave opacity-40">
+                  🔒
+                </div>
+              </div>
+            </div>
+            
+            <button 
+              type="submit" 
               disabled={loading}
-              placeholder="請輸入密碼"
-            />
+              className="w-full py-4 rounded-xl font-semibold text-white transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:transform-none shadow-papa-medium hover:shadow-papa-deep"
+              style={{
+                background: loading 
+                  ? 'linear-gradient(135deg, #94a3b8 0%, #64748b 100%)' 
+                  : 'linear-gradient(135deg, #E91E63 0%, #AD1457 100%)'
+              }}
+            >
+              {loading ? (
+                <div className="flex items-center justify-center gap-3">
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>登入中...</span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-2">
+                  <span>🚀</span>
+                  <span>進入系統</span>
+                </div>
+              )}
+            </button>
+          </form>
+          
+          {/* 測試帳號資訊 */}
+          <div className="mt-8 pt-6 border-t border-papa-cave/10">
+            <div className="text-center text-sm text-papa-cave opacity-70">
+              <div className="bg-papa-mist rounded-xl p-4">
+                <p className="font-medium text-papa-stone mb-2">測試帳號</p>
+                <div className="space-y-1 text-xs">
+                  <p><span className="font-mono bg-white px-2 py-1 rounded">admin</span> / <span className="font-mono bg-white px-2 py-1 rounded">admin</span> (系統管理員)</p>
+                  <p><span className="font-mono bg-white px-2 py-1 rounded">alice</span> / <span className="font-mono bg-white px-2 py-1 rounded">password123</span> (一般用戶)</p>
+                </div>
+              </div>
+            </div>
           </div>
           
-          <button 
-            type="submit" 
-            className="login-button"
-            disabled={loading}
-          >
-            {loading ? '登入中...' : '登入'}
-          </button>
-        </form>
-        
-        <div className="login-footer">
-          <p>測試帳號：admin / admin (系統管理員)</p>
-          <p>或使用：alice / password123 (一般用戶)</p>
-          <small>Django + React 架構系統</small>
+          {/* 版權資訊 */}
+          <div className="text-center mt-6">
+            <p className="text-xs text-papa-cave opacity-50">
+              © 2024 長光部落 · 文化與科技的融合
+            </p>
+          </div>
         </div>
       </div>
     </div>

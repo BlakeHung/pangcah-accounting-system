@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Layout from '../components/Layout'
-import './Groups.css'
 
 interface User {
   id: number
@@ -36,82 +35,48 @@ interface GroupForm {
   managers: number[]
 }
 
+// PAPA 文化圖標
+const PAPAIcons = {
+  House: () => <span className="text-2xl">🏘️</span>,
+  Add: () => <span>➕</span>,
+  Edit: () => <span>✏️</span>,
+  Delete: () => <span>🗑️</span>,
+  User: () => <span>👤</span>,
+  Users: () => <span>👥</span>,
+  Manager: () => <span>👑</span>,
+}
+
 const Groups: React.FC = () => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [editingGroup, setEditingGroup] = useState<Group | null>(null)
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null)
   const [groupForm, setGroupForm] = useState<GroupForm>({
     name: '',
     description: '',
     managers: []
   })
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null)
 
-  const queryClient = useQueryClient()
-  const navigate = useNavigate()
-
-  // 檢查當前用戶並設置 axios headers
-  useEffect(() => {
-    const token = localStorage.getItem('access_token')
-    const userData = localStorage.getItem('user')
-    
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    }
-    
-    if (userData) {
-      const user = JSON.parse(userData)
-      setCurrentUser(user)
-    }
-  }, [])
+  // 獲取當前用戶
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
 
   // 獲取群組列表
-  const { data: groups, isLoading: groupsLoading, error: groupsError } = useQuery({
+  const { data: groups, isLoading } = useQuery({
     queryKey: ['groups'],
-    queryFn: async (): Promise<Group[]> => {
-      try {
-        const response = await axios.get('/api/v1/groups/')
-        console.log('Groups API response:', response.data)
-        
-        // 確保返回數組
-        if (Array.isArray(response.data)) {
-          return response.data
-        } else if (response.data && Array.isArray(response.data.results)) {
-          // 處理分頁響應
-          return response.data.results
-        } else {
-          console.error('API 返回數據不是數組:', response.data)
-          return []
-        }
-      } catch (error) {
-        console.error('獲取群組列表失敗:', error)
-        throw error
-      }
+    queryFn: async () => {
+      const response = await axios.get('/api/v1/groups/')
+      return response.data.results as Group[]
     }
   })
 
-  // 獲取所有用戶（用於指定管理者）
+  // 獲取所有用戶（用於管理員選擇）
   const { data: allUsers } = useQuery({
     queryKey: ['users'],
-    queryFn: async (): Promise<User[]> => {
-      try {
-        const response = await axios.get('/api/v1/auth/users/')
-        console.log('Users API response in Groups:', response.data)
-        
-        // 確保返回數組
-        if (Array.isArray(response.data)) {
-          return response.data
-        } else if (response.data && Array.isArray(response.data.results)) {
-          // 處理分頁響應
-          return response.data.results
-        } else {
-          console.error('用戶 API 返回數據不是數組:', response.data)
-          return []
-        }
-      } catch (error) {
-        console.error('獲取用戶列表失敗:', error)
-        return []  // 返回空數組而不是拋出錯誤，避免影響群組功能
-      }
+    queryFn: async () => {
+      const response = await axios.get('/api/v1/users/')
+      return response.data.results as User[]
     }
   })
 
@@ -130,8 +95,8 @@ const Groups: React.FC = () => {
 
   // 更新群組
   const updateGroupMutation = useMutation({
-    mutationFn: async (data: { id: number; groupData: GroupForm }) => {
-      const response = await axios.put(`/api/v1/groups/${data.id}/`, data.groupData)
+    mutationFn: async ({ id, data }: { id: number, data: GroupForm }) => {
+      const response = await axios.patch(`/api/v1/groups/${id}/`, data)
       return response.data
     },
     onSuccess: () => {
@@ -143,8 +108,8 @@ const Groups: React.FC = () => {
 
   // 刪除群組
   const deleteGroupMutation = useMutation({
-    mutationFn: async (groupId: number) => {
-      await axios.delete(`/api/v1/groups/${groupId}/`)
+    mutationFn: async (id: number) => {
+      await axios.delete(`/api/v1/groups/${id}/`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['groups'] })
@@ -163,13 +128,13 @@ const Groups: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (editingGroup) {
-      updateGroupMutation.mutate({ id: editingGroup.id, groupData: groupForm })
+      updateGroupMutation.mutate({ id: editingGroup.id, data: groupForm })
     } else {
       createGroupMutation.mutate(groupForm)
     }
   }
 
-  const handleEdit = (group: Group) => {
+  const startEdit = (group: Group) => {
     setEditingGroup(group)
     setGroupForm({
       name: group.name,
@@ -179,35 +144,19 @@ const Groups: React.FC = () => {
     setShowCreateForm(true)
   }
 
-  const handleDelete = (group: Group) => {
-    if (window.confirm(`確定要刪除群組「${group.name}」嗎？`)) {
-      deleteGroupMutation.mutate(group.id)
-    }
+  const canManageGroup = (group: Group) => {
+    return currentUser.role === 'ADMIN' || 
+           group.managers.some(m => m.id === currentUser.id)
   }
 
-  const canManageGroup = (group: Group): boolean => {
-    if (!currentUser) return false
-    if (currentUser.role === 'ADMIN') return true
-    return group.managers.some(m => m.username === currentUser.username)
-  }
-
-  const canCreateGroups = (): boolean => {
-    return currentUser?.role === 'ADMIN'
-  }
-
-  if (groupsLoading) {
+  if (isLoading) {
     return (
       <Layout user={currentUser}>
-        <div className="loading">載入中...</div>
-      </Layout>
-    )
-  }
-
-  if (groupsError) {
-    return (
-      <Layout user={currentUser}>
-        <div className="loading">
-          載入群組列表失敗: {groupsError instanceof Error ? groupsError.message : '未知錯誤'}
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">載入群組中...</p>
+          </div>
         </div>
       </Layout>
     )
@@ -215,241 +164,386 @@ const Groups: React.FC = () => {
 
   return (
     <Layout user={currentUser}>
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* 頁面標題 */}
+        <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 flex items-center gap-3">
+                <span className="text-2xl">👥</span>
+                群組管理
+              </h1>
+              <p className="text-gray-600 text-sm md:text-base">
+                管理所有群組成員和設定
+              </p>
+            </div>
+            <button
+              onClick={() => setShowCreateForm(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
+            >
+              <span>➕</span>
+              <span className="hidden sm:inline">建立新群組</span>
+              <span className="sm:hidden">新建</span>
+            </button>
+          </div>
+        </div>
 
-      <div className="groups-header">
-        <h1>👨‍👩‍👧‍👦 群組管理</h1>
-        {canCreateGroups() && (
-          <button 
-            className="create-button"
-            onClick={() => setShowCreateForm(true)}
-          >
-            + 創建群組
-          </button>
-        )}
-      </div>
+        {/* 群組統計 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-blue-400">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">總群組數</h3>
+                <p className="text-2xl font-bold text-blue-600">{groups?.length || 0}</p>
+              </div>
+              <div className="text-3xl opacity-80">🏘️</div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-green-400">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">總成員數</h3>
+                <p className="text-2xl font-bold text-green-600">
+                  {groups?.reduce((sum, g) => sum + g.member_count, 0) || 0}
+                </p>
+              </div>
+              <div className="text-3xl opacity-80">👥</div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-purple-400">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">我管理的群組</h3>
+                <p className="text-2xl font-bold text-purple-600">
+                  {groups?.filter(g => canManageGroup(g)).length || 0}
+                </p>
+              </div>
+              <div className="text-3xl opacity-80">👑</div>
+            </div>
+          </div>
+        </div>
 
-      <div className="groups-content">
-        <div className="groups-list">
-          <h2>家族群組 ({groups?.length || 0})</h2>
-          <div className="groups-grid">
-            {groups?.map(group => (
-              <div key={group.id} className="group-card">
-                <div className="group-header">
-                  <h3>{group.name}</h3>
-                  <div className="group-actions">
-                    {canManageGroup(group) && (
-                      <>
-                        <button 
-                          className="edit-btn"
-                          onClick={() => handleEdit(group)}
-                        >
-                          ✏️
-                        </button>
-                        {currentUser?.role === 'ADMIN' && (
-                          <button 
-                            className="delete-btn"
-                            onClick={() => handleDelete(group)}
+        {/* 群組列表 */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-800">
+              群組列表 ({groups?.length || 0})
+            </h2>
+            <div className="text-sm text-gray-500">
+              共 {groups?.reduce((sum, g) => sum + g.member_count, 0) || 0} 位成員
+            </div>
+          </div>
+          
+          <div className="space-y-3">
+            {groups && groups.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {groups.map(group => (
+                  <div
+                    key={group.id}
+                    className="bg-white rounded-xl p-6 shadow-papa-soft hover:shadow-papa-medium transition-all duration-200 cursor-pointer"
+                    onClick={() => setSelectedGroup(group)}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-xl">
+                          🏘️
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-base font-semibold text-gray-800 truncate">{group.name}</h3>
+                        </div>
+                      </div>
+                      {canManageGroup(group) && (
+                        <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            onClick={() => startEdit(group)}
+                            className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors flex items-center justify-center text-sm"
+                            title="編輯群組"
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (confirm('確定要刪除這個群組嗎？')) {
+                                deleteGroupMutation.mutate(group.id)
+                              }
+                            }}
+                            className="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center text-sm"
+                            title="刪除群組"
                           >
                             🗑️
                           </button>
-                        )}
-                      </>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{group.description}</p>
+                    
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                      <span className="flex items-center gap-1">
+                        👥 {group.member_count} 位成員
+                      </span>
+                      <span className="text-xs">
+                        {new Date(group.created_at).toLocaleDateString('zh-TW')}
+                      </span>
+                    </div>
+                    
+                    {group.managers.length > 0 && (
+                      <div className="border-t border-gray-100 pt-3">
+                        <p className="text-xs text-gray-500 mb-2">管理者</p>
+                        <div className="flex flex-wrap gap-1">
+                          {group.managers.map(manager => (
+                            <span
+                              key={manager.id}
+                              className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
+                            >
+                              {manager.name || manager.username}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </div>
-                </div>
-                
-                <p className="group-description">{group.description}</p>
-                
-                <div className="group-info">
-                  <div className="info-item">
-                    <span className="label">👑 管理者:</span>
-                    <span className="value">
-                      {group.managers?.map(m => m.name).join(', ') || '無'}
-                    </span>
-                  </div>
-                  
-                  <div className="info-item">
-                    <span className="label">👥 成員數:</span>
-                    <span className="value">{group.member_count} 人</span>
-                  </div>
-                  
-                  <div className="info-item">
-                    <span className="label">📅 創建時間:</span>
-                    <span className="value">
-                      {new Date(group.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-
-                  <div className="info-item">
-                    <span className="label">🎉 相關活動:</span>
-                    <span className="value">{(group as any).events?.length || 0} 個</span>
-                  </div>
-                  
-                  <div className="info-item">
-                    <span className="label">💰 支出記錄:</span>
-                    <span className="value">{(group as any).expenses?.length || 0} 筆</span>
-                  </div>
-                </div>
-
-                <button 
-                  className="view-details-btn"
-                  onClick={() => setSelectedGroup(group)}
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-xl p-12 shadow-papa-soft text-center">
+                <div className="text-6xl mb-4 opacity-50">👥</div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">暫無群組</h3>
+                <p className="text-gray-600 mb-6">尚未建立任何群組，點擊上方按鈕開始建立您的第一個群組。</p>
+                <button
+                  onClick={() => setShowCreateForm(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
                 >
-                  查看詳情
+                  ➕ 建立群組
                 </button>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
-        {/* 群組詳情側邊欄 */}
-        {selectedGroup && (
-          <div className="group-details-sidebar">
-            <div className="sidebar-header">
-              <h3>{selectedGroup.name}</h3>
-              <button 
-                className="close-btn"
-                onClick={() => setSelectedGroup(null)}
-              >
-                ✕
-              </button>
+        {/* 創建/編輯表單 Modal */}
+        {showCreateForm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                {editingGroup ? '編輯群組' : '建立新群組'}
+              </h2>
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    群組名稱 *
+                  </label>
+                  <input
+                    type="text"
+                    value={groupForm.name}
+                    onChange={(e) => setGroupForm({ ...groupForm, name: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="輸入群組名稱"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    群組描述 *
+                  </label>
+                  <textarea
+                    value={groupForm.description}
+                    onChange={(e) => setGroupForm({ ...groupForm, description: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                    rows={3}
+                    placeholder="描述這個群組的目的和用途..."
+                    required
+                  />
+                </div>
+                
+                {currentUser.role === 'ADMIN' && allUsers && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      群組管理者
+                    </label>
+                    <select
+                      multiple
+                      value={groupForm.managers.map(String)}
+                      onChange={(e) => {
+                        const selectedOptions = Array.from(e.target.selectedOptions)
+                        setGroupForm({
+                          ...groupForm,
+                          managers: selectedOptions.map(option => parseInt(option.value))
+                        })
+                      }}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      size={5}
+                    >
+                      {allUsers.map(user => (
+                        <option key={user.id} value={user.id}>
+                          {user.name || user.username}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">
+                      按住 Ctrl/Cmd 可多選管理者
+                    </p>
+                  </div>
+                )}
+                
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCreateForm(false)
+                      setEditingGroup(null)
+                      resetForm()
+                    }}
+                    className="flex-1 sm:flex-none sm:px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                  >
+                    取消
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={createGroupMutation.isPending || updateGroupMutation.isPending}
+                    className="flex-1 px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                  >
+                    {(createGroupMutation.isPending || updateGroupMutation.isPending) ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>處理中...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>✓</span>
+                        <span>{editingGroup ? '更新群組' : '建立群組'}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
             </div>
-            
-            <div className="sidebar-content">
-              <div className="detail-section">
-                <h4>📝 描述</h4>
-                <p>{selectedGroup.description}</p>
-              </div>
+          </div>
+        )}
 
-              <div className="detail-section">
-                <h4>👑 管理者 ({(selectedGroup.managers && Array.isArray(selectedGroup.managers)) ? selectedGroup.managers.length : 0})</h4>
-                <ul className="user-list">
-                  {(selectedGroup.managers && Array.isArray(selectedGroup.managers)) 
-                    ? selectedGroup.managers.map(manager => (
-                      <li key={manager.id} className="user-item manager">
-                        <span>{manager.name}</span>
-                        <span className="username">@{manager.username}</span>
-                      </li>
-                    ))
-                    : <li className="no-data">沒有管理者</li>
-                  }
-                </ul>
+        {/* 群組詳情 Modal */}
+        {selectedGroup && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {selectedGroup.name}
+                </h2>
+                <button
+                  onClick={() => setSelectedGroup(null)}
+                  className="text-gray-400 hover:text-gray-600 text-2xl transition-colors"
+                >
+                  ✕
+                </button>
               </div>
-
-              <div className="detail-section">
-                <h4>👥 成員 ({(selectedGroup.members && Array.isArray(selectedGroup.members)) ? selectedGroup.members.length : 0})</h4>
-                <ul className="user-list">
-                  {(selectedGroup.members && Array.isArray(selectedGroup.members)) 
-                    ? selectedGroup.members.map(member => (
-                      <li key={member.id} className="user-item">
-                        <span>{member.name}</span>
-                        {member.user && (
-                          <span className="username">@{member.user.username}</span>
-                        )}
-                        {!member.is_system_user && (
-                          <span className="guest-badge">訪客</span>
-                        )}
-                      </li>
-                    ))
-                    : <li className="no-data">沒有成員</li>
-                  }
-                </ul>
+              
+              <p className="text-gray-600 mb-6">{selectedGroup.description}</p>
+              
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                      <span>ℹ️</span>
+                      群組資訊
+                    </h3>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-600">👤 創建者：</span>
+                        <span className="text-gray-800 font-medium">
+                          {selectedGroup.created_by.name || selectedGroup.created_by.username}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-600">📅 創建時間：</span>
+                        <span className="text-gray-800 font-medium">
+                          {new Date(selectedGroup.created_at).toLocaleDateString('zh-TW')}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-600">👥 成員總數：</span>
+                        <span className="text-gray-800 font-medium">
+                          {selectedGroup.member_count} 人
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                      <span>👑</span>
+                      管理者 ({selectedGroup.managers.length})
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedGroup.managers.length > 0 ? (
+                        selectedGroup.managers.map(manager => (
+                          <div
+                            key={manager.id}
+                            className="bg-blue-100 text-blue-700 px-3 py-2 rounded-lg flex items-center gap-2 text-sm"
+                          >
+                            <span>👑</span>
+                            <span className="font-medium">{manager.name || manager.username}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-gray-500 text-sm">暫無管理者</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <span>👥</span>
+                    成員列表 ({selectedGroup.members.length})
+                  </h3>
+                  {selectedGroup.members.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-60 overflow-y-auto">
+                      {selectedGroup.members.map(member => (
+                        <div
+                          key={member.id}
+                          className="bg-gray-50 px-3 py-2 rounded-lg flex items-center gap-2"
+                        >
+                          <span className="text-sm">👤</span>
+                          <span className="text-sm flex-1 truncate">{member.name}</span>
+                          {!member.is_system_user && (
+                            <span className="text-xs text-orange-600 bg-orange-100 px-1 py-0.5 rounded">
+                              外部
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-gray-500 text-center py-8">
+                      此群組暫無成員
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                  <button
+                    onClick={() => navigate('/activities/new')}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                  >
+                    <span>🎉</span>
+                    <span>為此群組建立活動</span>
+                  </button>
+                  <button
+                    onClick={() => setSelectedGroup(null)}
+                    className="flex-1 sm:flex-none sm:px-6 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg transition-colors font-medium"
+                  >
+                    關閉
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         )}
       </div>
-
-      {/* 創建/編輯群組表單 */}
-      {showCreateForm && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h3>{editingGroup ? '編輯群組' : '創建群組'}</h3>
-              <button 
-                className="close-btn"
-                onClick={() => {
-                  setShowCreateForm(false)
-                  setEditingGroup(null)
-                  resetForm()
-                }}
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="group-form">
-              <div className="form-group">
-                <label>群組名稱</label>
-                <input
-                  type="text"
-                  value={groupForm.name}
-                  onChange={(e) => setGroupForm({ ...groupForm, name: e.target.value })}
-                  required
-                  placeholder="輸入群組名稱"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>群組描述</label>
-                <textarea
-                  value={groupForm.description}
-                  onChange={(e) => setGroupForm({ ...groupForm, description: e.target.value })}
-                  placeholder="輸入群組描述"
-                  rows={3}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>群組管理者</label>
-                <div className="managers-selection">
-                  {(allUsers && Array.isArray(allUsers)) ? allUsers.filter(user => user.role === 'USER').map(user => (
-                    <label key={user.id} className="checkbox-label">
-                      <input
-                        type="checkbox"
-                        checked={groupForm.managers.includes(user.id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setGroupForm({
-                              ...groupForm,
-                              managers: [...groupForm.managers, user.id]
-                            })
-                          } else {
-                            setGroupForm({
-                              ...groupForm,
-                              managers: groupForm.managers.filter(id => id !== user.id)
-                            })
-                          }
-                        }}
-                      />
-                      <span>{user.name} (@{user.username})</span>
-                    </label>
-                  )) : (
-                    <p>載入用戶列表中...</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="form-actions">
-                <button type="submit" className="submit-btn">
-                  {editingGroup ? '更新群組' : '創建群組'}
-                </button>
-                <button 
-                  type="button" 
-                  className="cancel-btn"
-                  onClick={() => {
-                    setShowCreateForm(false)
-                    setEditingGroup(null)
-                    resetForm()
-                  }}
-                >
-                  取消
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </Layout>
   )
 }

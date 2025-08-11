@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import Layout from '../components/Layout'
-import './Settings.css'
 
 interface User {
   id: number
@@ -370,7 +369,7 @@ const Settings: React.FC = () => {
             <div className="info-card">
               <div className="info-icon">📱</div>
               <div className="info-content">
-                <h3>阿美族家族記帳系統</h3>
+                <h3>阿美族部落記帳系統</h3>
                 <p>版本 1.0.0</p>
               </div>
             </div>

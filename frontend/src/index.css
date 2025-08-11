@@ -1,3 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* PAPA Layout 覆蓋樣式 - 確保優先級高於 Layout.css */
+.papa-mobile-container {
+  /* 覆蓋 Layout.css 的樣式 */
+  min-height: 100vh !important;
+  background-color: white !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* 確保移動版下隱藏原有的layout樣式 */
+@media (max-width: 768px) {
+  .layout-header,
+  .layout-nav,
+  .mobile-nav-overlay,
+  .mobile-nav {
+    display: none !important;
+  }
+  
+  .layout-main {
+    padding: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+  
+  .layout {
+    background-color: white !important;
+  }
+}
+
+/* PAPA 自定義組件類 */
+@layer components {
+  .papa-pattern-bg {
+    @apply bg-papa-mist;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(84, 54, 34, 0.02) 10px,
+      rgba(84, 54, 34, 0.02) 20px
+    ), repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 10px,
+      rgba(233, 30, 99, 0.01) 10px,
+      rgba(233, 30, 99, 0.01) 20px
+    );
+  }
+  
+  /* 桌面版導航 */
+  .papa-navbar {
+    @apply sticky top-0 z-50 border-b;
+    background: linear-gradient(135deg, #543622 0%, #6d4c41 100%);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .papa-navbar-content {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between;
+  }
+  
+  .papa-brand {
+    @apply flex items-center gap-3;
+  }
+  
+  .papa-brand-logo {
+    @apply w-8 h-8 text-yellow-300 text-2xl flex items-center justify-center;
+  }
+  
+  .papa-brand-text {
+    @apply text-white;
+  }
+  
+  .papa-brand-main {
+    @apply text-lg font-bold;
+  }
+  
+  .papa-brand-sub {
+    @apply text-xs opacity-80;
+  }
+  
+  .papa-nav-links {
+    @apply flex items-center gap-1;
+  }
+  
+  .papa-nav-link {
+    @apply px-4 py-2 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200 flex items-center gap-2 text-sm font-medium;
+  }
+  
+  .papa-nav-link.active {
+    @apply text-white bg-white/20;
+  }
+  
+  .papa-user-info {
+    @apply flex items-center gap-3 text-white;
+  }
+  
+  .papa-user-avatar {
+    @apply w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-medium;
+  }
+  
+  .papa-logout-btn {
+    @apply p-2 hover:bg-white/10 rounded-lg transition-colors;
+  }
+  
+  .papa-main-content {
+    @apply flex-1 p-6;
+  }
+  
+  .papa-action-card {
+    @apply bg-papa-ocean text-white font-medium rounded-xl transition-all duration-300;
+    box-shadow: 0 2px 8px rgba(84, 54, 34, 0.08);
+  }
+  
+  .papa-action-card:hover {
+    @apply bg-papa-ocean/90;
+    box-shadow: 0 4px 16px rgba(84, 54, 34, 0.12);
+  }
+  
+  .papa-stat-card {
+    @apply bg-white rounded-2xl p-6 transition-all duration-300;
+    box-shadow: 0 2px 8px rgba(84, 54, 34, 0.08);
+  }
+  
+  .papa-stat-card:hover {
+    box-shadow: 0 4px 16px rgba(84, 54, 34, 0.12);
+  }
+  
+  .papa-stat-card.expense {
+    @apply border-l-4 border-papa-tide;
+  }
+  
+  .papa-stat-card.income {
+    @apply border-l-4 border-papa-emerald;
+  }
+  
+  .papa-stat-card.groups {
+    @apply border-l-4 border-papa-dawn;
+  }
+  
+  .papa-stat-content {
+    @apply flex items-center gap-4;
+  }
+  
+  .papa-stat-icon {
+    @apply text-4xl opacity-80;
+  }
+  
+  .papa-stat-title {
+    @apply text-sm font-medium text-papa-cave mb-1;
+  }
+  
+  .papa-stat-value {
+    @apply text-2xl font-bold text-papa-stone;
+  }
+  
+  .papa-divider {
+    @apply h-0.5;
+    background: linear-gradient(to right, transparent, rgba(84, 106, 122, 0.2), transparent);
+  }
+  
+  .papa-loading {
+    @apply flex flex-col items-center justify-center py-12;
+  }
+  
+  .papa-loading-text {
+    @apply text-papa-cave mt-4;
+  }
+  
+  .papa-sun-loading {
+    @apply w-8 h-8 border-2 rounded-full animate-spin;
+    border-color: rgba(233, 30, 99, 0.2);
+    border-top-color: #E91E63;
+  }
+  
+  .papa-cultural-float {
+    animation: papa-cultural-float 3s ease-in-out infinite;
+  }
+  
+  /* 阿美族幾何紋樣背景 */
+  .tribal-pattern-bg {
+    background-image: 
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 20px,
+        rgba(59, 130, 246, 0.1) 20px,
+        rgba(59, 130, 246, 0.1) 40px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 15px,
+        rgba(16, 185, 129, 0.1) 15px,
+        rgba(16, 185, 129, 0.1) 30px
+      ),
+      radial-gradient(
+        circle at 25% 25%,
+        rgba(239, 68, 68, 0.05) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 75% 75%,
+        rgba(245, 158, 11, 0.05) 0%,
+        transparent 50%
+      );
+  }
+  
+  /* 移動版自定義顏色 */
+  .bg-coral-400 {
+    background-color: #ff7875;
+  }
+  
+  .bg-coral-500 {
+    background-color: #ff6b6b;
+  }
+  
+  .hover\:bg-coral-500:hover {
+    background-color: #ff6b6b;
+  }
+  
+  .bg-brown-600 {
+    background-color: #8b4513;
+  }
+  
+  /* 底部導航優化 */
+  .bottom-nav-fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    z-index: 50;
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+  
+  /* iPhone 安全區域支持 */
+  @supports (padding: max(0px)) {
+    .bottom-nav-fixed {
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    }
+  }
+}
+
+/* 動畫定義 */
+@keyframes papa-cultural-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
 * {
   margin: 0;
   padding: 0;

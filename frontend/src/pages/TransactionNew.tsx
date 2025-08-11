@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import Layout from '../components/Layout'
-import './TransactionNew.css'
 
 interface User {
   id: number
@@ -419,165 +418,234 @@ const TransactionNew: React.FC = () => {
   if (!currentUser) {
     return (
       <Layout user={currentUser}>
-        <div className="loading">載入中...</div>
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">載入中...</p>
+          </div>
+        </div>
       </Layout>
     )
   }
 
   return (
     <Layout user={currentUser}>
-      <div className="transaction-new-container">
-        <div className="page-header">
-          <button 
-            className="back-button"
-            onClick={() => navigate('/transactions')}
-          >
-            ← 返回
-          </button>
-          <h1>➕ 新增{formData.type === 'EXPENSE' ? '支出' : '收入'}記錄</h1>
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* 頁面標題 */}
+        <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="flex items-center gap-4 mb-4">
+            <button 
+              onClick={() => navigate('/transactions')}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <span className="text-xl">←</span>
+              <span className="text-sm font-medium">返回列表</span>
+            </button>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl ${
+              formData.type === 'EXPENSE' ? 'bg-red-100' : 'bg-green-100'
+            }`}>
+              {formData.type === 'EXPENSE' ? '💸' : '💰'}
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">
+                新增{formData.type === 'EXPENSE' ? '支出' : '收入'}記錄
+              </h1>
+              <p className="text-gray-600 text-sm">填寫以下資訊來記錄您的交易</p>
+            </div>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="transaction-form">
-          <div className="form-section">
-            <h2>基本資訊</h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* 基本資訊 */}
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+            <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+              <span className="text-xl">📝</span>
+              基本資訊
+            </h2>
             
-            <div className="form-group">
-              <label>類型 *</label>
-              <div className="type-toggle">
-                <button
-                  type="button"
-                  className={`type-btn ${formData.type === 'EXPENSE' ? 'active' : ''}`}
-                  onClick={() => setFormData(prev => ({ ...prev, type: 'EXPENSE' }))}
-                >
-                  💸 支出
-                </button>
-                <button
-                  type="button"
-                  className={`type-btn ${formData.type === 'INCOME' ? 'active' : ''}`}
-                  onClick={() => setFormData(prev => ({ ...prev, type: 'INCOME' }))}
-                >
-                  💰 收入
-                </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* 類型選擇 */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-3">交易類型 *</label>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, type: 'EXPENSE' }))}
+                    className={`flex-1 p-4 rounded-lg border-2 transition-all duration-200 ${
+                      formData.type === 'EXPENSE' 
+                        ? 'border-red-500 bg-red-50 text-red-700' 
+                        : 'border-gray-200 bg-white text-gray-600 hover:border-red-300'
+                    }`}
+                  >
+                    <div className="text-2xl mb-2">💸</div>
+                    <div className="font-semibold">支出</div>
+                    <div className="text-xs opacity-75">費用、購買等</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, type: 'INCOME' }))}
+                    className={`flex-1 p-4 rounded-lg border-2 transition-all duration-200 ${
+                      formData.type === 'INCOME' 
+                        ? 'border-green-500 bg-green-50 text-green-700' 
+                        : 'border-gray-200 bg-white text-gray-600 hover:border-green-300'
+                    }`}
+                  >
+                    <div className="text-2xl mb-2">💰</div>
+                    <div className="font-semibold">收入</div>
+                    <div className="text-xs opacity-75">薪水、獎金等</div>
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div className="form-group">
-              <label htmlFor="amount">金額 *</label>
-              <div className="amount-input">
-                <span className="currency">NT$</span>
+              {/* 金額 */}
+              <div>
+                <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">金額 *</label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-semibold">
+                    NT$
+                  </div>
+                  <input
+                    type="number"
+                    id="amount"
+                    name="amount"
+                    value={formData.amount}
+                    onChange={handleInputChange}
+                    placeholder="0"
+                    step="1"
+                    min="0"
+                    required
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg font-semibold"
+                  />
+                </div>
+              </div>
+
+              {/* 日期時間 */}
+              <div>
+                <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">日期時間 *</label>
                 <input
-                  type="number"
-                  id="amount"
-                  name="amount"
-                  value={formData.amount}
+                  type="datetime-local"
+                  id="date"
+                  name="date"
+                  value={formData.date}
                   onChange={handleInputChange}
-                  placeholder="0.00"
-                  step="0.01"
-                  min="0"
                   required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
               </div>
             </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            <div className="form-group">
-              <label htmlFor="date">日期時間 *</label>
-              <input
-                type="datetime-local"
-                id="date"
-                name="date"
-                value={formData.date}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+              {/* 分類 */}
+              <div>
+                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">分類 *</label>
+                <select
+                  id="category"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
+                >
+                  <option value="">📝 請選擇分類</option>
+                  {categories.map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="category">分類 *</label>
-              <select
-                id="category"
-                name="category"
-                value={formData.category}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">請選擇分類</option>
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="description">描述</label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="詳細描述這筆記錄..."
-                rows={3}
-              />
+              {/* 描述 */}
+              <div className="md:col-span-2">
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">描述</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="詳細描述這筆記錄..."
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="form-section">
-            <h2>關聯資訊</h2>
+          {/* 關聯資訊 */}
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+            <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+              <span className="text-xl">🔗</span>
+              關聯資訊
+            </h2>
             
-            <div className="form-group">
-              <label htmlFor="group">群組</label>
-              <select
-                id="group"
-                name="group"
-                value={formData.group}
-                onChange={handleGroupChange}
-              >
-                <option value="">無</option>
-                {groups.map(group => (
-                  <option key={group.id} value={group.id}>
-                    {group.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="event">活動</label>
-              <select
-                id="event"
-                name="event"
-                value={formData.event}
-                onChange={handleEventChange}
-              >
-                <option value="">無</option>
-                {events.map(event => {
-                  const canCreateExpense = event.status === 'ACTIVE' || 
-                    (event as any).is_user_manager || 
-                    currentUser?.role === 'ADMIN'
-                  
-                  return (
-                    <option 
-                      key={event.id} 
-                      value={event.id}
-                      disabled={!canCreateExpense}
-                    >
-                      {event.name}
-                      {currentUser?.role === 'ADMIN' ? ' 👑' : ''}
-                      {(event as any).is_user_manager ? ' 🔧' : ''}
-                      {event.allow_split ? ' 🔄' : ''}
-                      {event.status === 'COMPLETED' ? ' (已完成)' : ''}
-                      {event.status === 'CANCELLED' ? ' (已取消)' : ''}
-                      {!event.enabled ? ' (已停用)' : ''}
-                      {!canCreateExpense ? ' 🚫' : ''}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* 群組 */}
+              <div>
+                <label htmlFor="group" className="block text-sm font-medium text-gray-700 mb-2">
+                  👥 所屬群組
+                </label>
+                <select
+                  id="group"
+                  name="group"
+                  value={formData.group}
+                  onChange={handleGroupChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
+                >
+                  <option value="">🚫 不指定群組</option>
+                  {groups.map(group => (
+                    <option key={group.id} value={group.id}>
+                      {group.name}
                     </option>
-                  )
-                })}
-              </select>
-              <small className="form-hint">
-                📌 只有進行中的活動、或您管理的活動可以新增支出
-                {currentUser?.role === 'ADMIN' && ' (系統管理員可新增支出到任何活動)'}
-              </small>
+                  ))}
+                </select>
+                <p className="text-xs text-gray-500 mt-1">可選擇群組來進行分帳管理</p>
+              </div>
+
+              {/* 活動 */}
+              <div>
+                <label htmlFor="event" className="block text-sm font-medium text-gray-700 mb-2">
+                  🎉 相關活動
+                </label>
+                <select
+                  id="event"
+                  name="event"
+                  value={formData.event}
+                  onChange={handleEventChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
+                >
+                  <option value="">🚫 不指定活動</option>
+                  {events.map(event => {
+                    const canCreateExpense = event.status === 'ACTIVE' || 
+                      (event as any).is_user_manager || 
+                      currentUser?.role === 'ADMIN'
+                    
+                    return (
+                      <option 
+                        key={event.id} 
+                        value={event.id}
+                        disabled={!canCreateExpense}
+                        className={!canCreateExpense ? 'text-gray-400' : ''}
+                      >
+                        {event.name}
+                        {event.status === 'COMPLETED' ? ' (已完成)' : ''}
+                        {event.status === 'CANCELLED' ? ' (已取消)' : ''}
+                        {!event.enabled ? ' (已停用)' : ''}
+                      </option>
+                    )
+                  })}
+                </select>
+                {(formData.event && events.find(e => e.id.toString() === formData.event.toString())?.allow_split) && (
+                  <div className="mt-2 p-2 bg-blue-50 rounded-lg">
+                    <p className="text-xs text-blue-700 flex items-center gap-1">
+                      🔄 此活動支持分帳功能
+                    </p>
+                  </div>
+                )}
+                <p className="text-xs text-gray-500 mt-1">關聯特定活動可启用分帳功能</p>
+              </div>
             </div>
           </div>
 
@@ -719,49 +787,93 @@ const TransactionNew: React.FC = () => {
             </div>
           )}
 
-          <div className="form-section">
-            <h2>附件圖片</h2>
+          {/* 附件圖片 */}
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+            <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+              <span className="text-xl">🖼️</span>
+              附件圖片
+            </h2>
             
-            <div className="images-section">
-              <div className="images-list">
-                {formData.images.map((image, index) => (
-                  <div key={index} className="image-item">
-                    <img src={image} alt={`附件 ${index + 1}`} />
-                    <button
-                      type="button"
-                      className="remove-image-btn"
-                      onClick={() => handleImageRemove(index)}
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
+            <div className="space-y-4">
+              {formData.images.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {formData.images.map((image, index) => (
+                    <div key={index} className="relative group">
+                      <img 
+                        src={image} 
+                        alt={`附件 ${index + 1}`} 
+                        className="w-full h-24 object-cover rounded-lg border border-gray-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleImageRemove(index)}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
               <button
                 type="button"
-                className="add-image-btn"
                 onClick={handleImageAdd}
+                className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"
               >
-                + 新增圖片
+                <span className="text-xl">+</span>
+                <span>新增圖片</span>
               </button>
+              <p className="text-xs text-gray-500">可以上傳收據、發票等相關圖片</p>
             </div>
           </div>
 
-          <div className="form-actions">
-            <button
-              type="button"
-              className="cancel-btn"
-              onClick={() => navigate('/transactions')}
-            >
-              取消
-            </button>
-            <button
-              type="submit"
-              className="submit-btn"
-              disabled={createTransactionMutation.isPending}
-            >
-              {createTransactionMutation.isPending ? '處理中...' : '創建記錄'}
-            </button>
+          {/* 表單操作 */}
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                type="button"
+                onClick={() => navigate('/transactions')}
+                className="flex-1 sm:flex-none sm:px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                取消
+              </button>
+              <button
+                type="submit"
+                disabled={createTransactionMutation.isPending}
+                className="flex-1 px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+              >
+                {createTransactionMutation.isPending ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>處理中...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>✓</span>
+                    <span>創建{formData.type === 'EXPENSE' ? '支出' : '收入'}記錄</span>
+                  </>
+                )}
+              </button>
+            </div>
+            {(formData.amount && formData.category) && (
+              <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                <div className="text-sm text-gray-600">
+                  <span className="font-medium">預覽：</span>
+                  <span className={formData.type === 'EXPENSE' ? 'text-red-600' : 'text-green-600'}>
+                    {formData.type === 'EXPENSE' ? '-' : '+'}NT$ {parseFloat(formData.amount || '0').toLocaleString()}
+                  </span>
+                  <span className="mx-2">·</span>
+                  <span>{categories.find(c => c.id.toString() === formData.category.toString())?.name}</span>
+                  {formData.description && (
+                    <>
+                      <span className="mx-2">·</span>
+                      <span>{formData.description}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </form>
       </div>
