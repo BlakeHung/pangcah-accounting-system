@@ -165,3 +165,52 @@ class UserViewSet(viewsets.ModelViewSet):
                 'success': False,
                 'error': f'初始化失敗: {str(e)}'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def create_test_expenses(self, request):
+        """創建測試支出記錄"""
+        
+        # 只有系統管理員可以執行
+        if request.user.role != 'ADMIN':
+            return Response(
+                {'error': '只有系統管理員可以執行此操作'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        try:
+            # 捕獲命令輸出
+            stdout_backup = sys.stdout
+            stderr_backup = sys.stderr
+            
+            stdout_capture = StringIO()
+            stderr_capture = StringIO()
+            
+            sys.stdout = stdout_capture
+            sys.stderr = stderr_capture
+            
+            # 執行管理命令
+            call_command('create_simple_expenses')
+            
+            # 還原標準輸出
+            sys.stdout = stdout_backup
+            sys.stderr = stderr_backup
+            
+            output = stdout_capture.getvalue()
+            error_output = stderr_capture.getvalue()
+            
+            return Response({
+                'success': True,
+                'message': '測試支出記錄創建成功',
+                'output': output,
+                'errors': error_output if error_output else None
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            # 還原標準輸出
+            sys.stdout = stdout_backup 
+            sys.stderr = stderr_backup
+            
+            return Response({
+                'success': False,
+                'error': f'測試支出創建失敗: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
