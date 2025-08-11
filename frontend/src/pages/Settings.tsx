@@ -22,7 +22,8 @@ const Settings: React.FC = () => {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [currentUser, setCurrentUser] = useState<User | null>(null)
-  const [activeTab, setActiveTab] = useState<'preferences' | 'profile'>('profile')
+  const [activeTab, setActiveTab] = useState<'profile' | 'preferences' | 'system'>('profile')
+  const [isMobile, setIsMobile] = useState(false)
   
   // 用戶設定狀態
   const [userSettings, setUserSettings] = useState<UserSettings>({
@@ -39,6 +40,18 @@ const Settings: React.FC = () => {
     new_password: '',
     confirm_password: ''
   })
+
+  // 檢查裝置類型
+  useEffect(() => {
+    const checkDevice = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkDevice()
+    window.addEventListener('resize', checkDevice)
+    
+    return () => window.removeEventListener('resize', checkDevice)
+  }, [])
 
   // 檢查當前用戶
   useEffect(() => {
@@ -182,110 +195,176 @@ const Settings: React.FC = () => {
   if (!currentUser) {
     return (
       <Layout user={currentUser}>
-        <div className="loading">載入中...</div>
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">載入中...</p>
+          </div>
+        </div>
       </Layout>
     )
   }
 
   return (
     <Layout user={currentUser}>
-      <div className="settings-container">
-        <div className="settings-header">
-          <h1>⚙️ 系統設定</h1>
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* 頁面標題 */}
+        <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-2xl">
+              ⚙️
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-800">系統設定</h1>
+              <p className="text-gray-600 text-sm md:text-base">管理個人資料和系統偏好設定</p>
+            </div>
+          </div>
         </div>
 
         {/* 標籤選單 */}
-        <div className="settings-tabs">
-          <button 
-            className={`tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
-            onClick={() => setActiveTab('profile')}
-          >
-            👤 個人資料
-          </button>
-          <button 
-            className={`tab-btn ${activeTab === 'preferences' ? 'active' : ''}`}
-            onClick={() => setActiveTab('preferences')}
-          >
-            ⚙️ 偏好設定
-          </button>
+        <div className="bg-white rounded-xl p-2 shadow-papa-soft">
+          <div className="flex gap-2 overflow-x-auto">
+            <button 
+              className={`flex-1 min-w-fit px-4 py-3 rounded-lg transition-all font-medium flex items-center justify-center gap-2 ${
+                activeTab === 'profile' 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() => setActiveTab('profile')}
+            >
+              <span>👤</span>
+              <span>個人資料</span>
+            </button>
+            <button 
+              className={`flex-1 min-w-fit px-4 py-3 rounded-lg transition-all font-medium flex items-center justify-center gap-2 ${
+                activeTab === 'preferences' 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() => setActiveTab('preferences')}
+            >
+              <span>🎨</span>
+              <span>偏好設定</span>
+            </button>
+            <button 
+              className={`flex-1 min-w-fit px-4 py-3 rounded-lg transition-all font-medium flex items-center justify-center gap-2 ${
+                activeTab === 'system' 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() => setActiveTab('system')}
+            >
+              <span>🔧</span>
+              <span>系統管理</span>
+            </button>
+          </div>
         </div>
 
         {/* 個人資料設定 */}
         {activeTab === 'profile' && (
-          <div className="settings-section">
-            <div className="section-header">
-              <h2>個人資料</h2>
-              <p>管理您的個人資料和帳戶安全設定</p>
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+            <div className="mb-6">
+              <h2 className="text-lg font-bold text-gray-800 mb-2">個人資料</h2>
+              <p className="text-gray-600 text-sm">管理您的個人資料和帳戶安全設定</p>
             </div>
             
-            <form onSubmit={handleProfileSubmit} className="settings-form">
-              <div className="form-group">
-                <label htmlFor="name">姓名 *</label>
-                <input
-                  type="text"
-                  id="name"
-                  value={profileForm.name}
-                  onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="email">電子郵件 *</label>
-                <input
-                  type="email"
-                  id="email"
-                  value={profileForm.email}
-                  onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
-                  required
-                />
-              </div>
-
-              <div className="form-divider">
-                <span>密碼變更</span>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="current_password">目前密碼</label>
-                <input
-                  type="password"
-                  id="current_password"
-                  value={profileForm.current_password}
-                  onChange={(e) => setProfileForm({...profileForm, current_password: e.target.value})}
-                  placeholder="若要變更密碼請輸入目前密碼"
-                />
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="new_password">新密碼</label>
+            <form onSubmit={handleProfileSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                    姓名 *
+                  </label>
                   <input
-                    type="password"
-                    id="new_password"
-                    value={profileForm.new_password}
-                    onChange={(e) => setProfileForm({...profileForm, new_password: e.target.value})}
-                    placeholder="至少 8 個字元"
+                    type="text"
+                    id="name"
+                    value={profileForm.name}
+                    onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    required
                   />
                 </div>
-                <div className="form-group">
-                  <label htmlFor="confirm_password">確認新密碼</label>
+
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    電子郵件 *
+                  </label>
                   <input
-                    type="password"
-                    id="confirm_password"
-                    value={profileForm.confirm_password}
-                    onChange={(e) => setProfileForm({...profileForm, confirm_password: e.target.value})}
-                    placeholder="再次輸入新密碼"
+                    type="email"
+                    id="email"
+                    value={profileForm.email}
+                    onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    required
                   />
                 </div>
               </div>
 
-              <div className="form-actions">
+              <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-base font-semibold text-gray-800 mb-4">密碼變更</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="current_password" className="block text-sm font-medium text-gray-700 mb-2">
+                      目前密碼
+                    </label>
+                    <input
+                      type="password"
+                      id="current_password"
+                      value={profileForm.current_password}
+                      onChange={(e) => setProfileForm({...profileForm, current_password: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="若要變更密碼請輸入目前密碼"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="new_password" className="block text-sm font-medium text-gray-700 mb-2">
+                        新密碼
+                      </label>
+                      <input
+                        type="password"
+                        id="new_password"
+                        value={profileForm.new_password}
+                        onChange={(e) => setProfileForm({...profileForm, new_password: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        placeholder="至少 8 個字元"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-2">
+                        確認新密碼
+                      </label>
+                      <input
+                        type="password"
+                        id="confirm_password"
+                        value={profileForm.confirm_password}
+                        onChange={(e) => setProfileForm({...profileForm, confirm_password: e.target.value})}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        placeholder="再次輸入新密碼"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="submit-btn"
                   disabled={updateProfileMutation.isPending}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors font-medium flex items-center gap-2"
                 >
-                  {updateProfileMutation.isPending ? '更新中...' : '更新個人資料'}
+                  {updateProfileMutation.isPending ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>更新中...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>✓</span>
+                      <span>更新個人資料</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -294,108 +373,257 @@ const Settings: React.FC = () => {
 
         {/* 偏好設定 */}
         {activeTab === 'preferences' && (
-          <div className="settings-section">
-            <div className="section-header">
-              <h2>偏好設定</h2>
-              <p>自訂您的使用體驗偏好</p>
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+            <div className="mb-6">
+              <h2 className="text-lg font-bold text-gray-800 mb-2">偏好設定</h2>
+              <p className="text-gray-600 text-sm">自訂您的使用體驗偏好</p>
             </div>
             
-            <form onSubmit={handleUserSettingsSubmit} className="settings-form">
-              <div className="form-group">
-                <label htmlFor="theme">介面主題</label>
-                <select
-                  id="theme"
-                  value={userSettings.theme}
-                  onChange={(e) => setUserSettings({...userSettings, theme: e.target.value as 'light' | 'dark'})}
-                >
-                  <option value="light">淺色主題</option>
-                  <option value="dark">深色主題</option>
-                </select>
-                <small className="form-hint">選擇您偏好的介面外觀</small>
+            <form onSubmit={handleUserSettingsSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="theme" className="block text-sm font-medium text-gray-700 mb-2">
+                    介面主題
+                  </label>
+                  <select
+                    id="theme"
+                    value={userSettings.theme}
+                    onChange={(e) => setUserSettings({...userSettings, theme: e.target.value as 'light' | 'dark'})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
+                  >
+                    <option value="light">☀️ 淺色主題</option>
+                    <option value="dark">🌙 深色主題</option>
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">選擇您偏好的介面外觀</p>
+                </div>
+
+                <div>
+                  <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-2">
+                    預設貨幣顯示
+                  </label>
+                  <select
+                    id="currency"
+                    value={userSettings.currency}
+                    onChange={(e) => setUserSettings({...userSettings, currency: e.target.value})}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
+                  >
+                    <option value="TWD">🇹🇼 新台幣 (NT$)</option>
+                    <option value="USD">🇺🇸 美元 ($)</option>
+                    <option value="EUR">🇪🇺 歐元 (€)</option>
+                    <option value="JPY">🇯🇵 日圓 (¥)</option>
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">影響金額顯示格式</p>
+                </div>
               </div>
 
-              <div className="form-group">
-                <label htmlFor="currency">預設貨幣顯示</label>
-                <select
-                  id="currency"
-                  value={userSettings.currency}
-                  onChange={(e) => setUserSettings({...userSettings, currency: e.target.value})}
-                >
-                  <option value="TWD">新台幣 (NT$)</option>
-                  <option value="USD">美元 ($)</option>
-                  <option value="EUR">歐元 (€)</option>
-                  <option value="JPY">日圓 (¥)</option>
-                </select>
-                <small className="form-hint">影響金額顯示格式</small>
+              <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-base font-semibold text-gray-800 mb-4">通知設定</h3>
+                
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={userSettings.notifications}
+                      onChange={(e) => setUserSettings({...userSettings, notifications: e.target.checked})}
+                      className="mt-1 w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <div>
+                      <span className="text-sm font-medium text-gray-700">啟用應用內通知</span>
+                      <p className="text-xs text-gray-500 mt-1">顯示新活動、支出等通知提醒</p>
+                    </div>
+                  </label>
+                </div>
               </div>
 
-              <div className="form-divider">
-                <span>通知設定</span>
-              </div>
-
-              <div className="checkbox-group">
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={userSettings.notifications}
-                    onChange={(e) => setUserSettings({...userSettings, notifications: e.target.checked})}
-                  />
-                  <span className="checkbox-text">啟用應用內通知</span>
-                </label>
-                <small className="form-hint">顯示新活動、支出等通知提醒</small>
-              </div>
-
-              <div className="form-actions">
+              <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="submit-btn"
                   disabled={updateUserSettingsMutation.isPending}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors font-medium flex items-center gap-2"
                 >
-                  {updateUserSettingsMutation.isPending ? '儲存中...' : '儲存偏好設定'}
+                  {updateUserSettingsMutation.isPending ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>儲存中...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>✓</span>
+                      <span>儲存偏好設定</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>
           </div>
         )}
 
+        {/* 系統管理 */}
+        {activeTab === 'system' && (
+          <div className="space-y-6">
+            {/* 快速導航 - 在行動版顯示不在底部導航的功能 */}
+            {(isMobile || currentUser.role === 'ADMIN') && (
+              <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+                <div className="mb-6">
+                  <h2 className="text-lg font-bold text-gray-800 mb-2">系統功能</h2>
+                  <p className="text-gray-600 text-sm">快速存取系統管理功能</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <button
+                    onClick={() => navigate('/categories')}
+                    className="bg-gray-50 hover:bg-gray-100 rounded-lg p-4 transition-colors text-left group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-xl group-hover:bg-blue-200 transition-colors">
+                        🏷️
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-800">分類管理</h3>
+                        <p className="text-sm text-gray-600">管理收支分類項目</p>
+                      </div>
+                      <div className="text-gray-400 group-hover:text-gray-600">
+                        →
+                      </div>
+                    </div>
+                  </button>
 
-        {/* 應用資訊 */}
-        <div className="settings-section info-section">
-          <div className="section-header">
-            <h2>應用資訊</h2>
+                  {currentUser.role === 'ADMIN' && (
+                    <button
+                      onClick={() => navigate('/users')}
+                      className="bg-gray-50 hover:bg-gray-100 rounded-lg p-4 transition-colors text-left group"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-xl group-hover:bg-purple-200 transition-colors">
+                          👥
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-800">用戶管理</h3>
+                          <p className="text-sm text-gray-600">管理系統用戶帳號</p>
+                        </div>
+                        <div className="text-gray-400 group-hover:text-gray-600">
+                          →
+                        </div>
+                      </div>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => navigate('/activities')}
+                    className="bg-gray-50 hover:bg-gray-100 rounded-lg p-4 transition-colors text-left group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-xl group-hover:bg-green-200 transition-colors">
+                        🎉
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-800">活動管理</h3>
+                        <p className="text-sm text-gray-600">管理活動和事件</p>
+                      </div>
+                      <div className="text-gray-400 group-hover:text-gray-600">
+                        →
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => navigate('/groups')}
+                    className="bg-gray-50 hover:bg-gray-100 rounded-lg p-4 transition-colors text-left group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-xl group-hover:bg-orange-200 transition-colors">
+                        👥
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-800">群組管理</h3>
+                        <p className="text-sm text-gray-600">管理群組和成員</p>
+                      </div>
+                      <div className="text-gray-400 group-hover:text-gray-600">
+                        →
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* 應用資訊 */}
+            <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+              <div className="mb-6">
+                <h2 className="text-lg font-bold text-gray-800 mb-2">應用資訊</h2>
+                <p className="text-gray-600 text-sm">系統和帳號相關資訊</p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      📱
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">PAPA 記帳系統</h3>
+                      <p className="text-sm text-gray-600">版本 1.0.0</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                      👤
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">{currentUser.name || currentUser.username}</h3>
+                      <p className="text-sm text-gray-600">
+                        {currentUser.role === 'ADMIN' ? '系統管理員' : '一般用戶'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                      🎨
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">介面主題</h3>
+                      <p className="text-sm text-gray-600">
+                        {userSettings.theme === 'light' ? '淺色主題' : '深色主題'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                      💰
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">貨幣顯示</h3>
+                      <p className="text-sm text-gray-600">{userSettings.currency}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 關於系統 */}
+            <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <span className="text-3xl">💼</span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">Pangcah Accounting System</h3>
+                <p className="text-gray-600 text-sm mb-4">專為團體記帳設計的管理系統</p>
+                <div className="text-xs text-gray-500">
+                  © 2024 PAPA. All rights reserved.
+                </div>
+              </div>
+            </div>
           </div>
-          
-          <div className="info-grid">
-            <div className="info-card">
-              <div className="info-icon">📱</div>
-              <div className="info-content">
-                <h3>阿美族部落記帳系統</h3>
-                <p>版本 1.0.0</p>
-              </div>
-            </div>
-            <div className="info-card">
-              <div className="info-icon">👤</div>
-              <div className="info-content">
-                <h3>當前用戶</h3>
-                <p>{currentUser.name} ({currentUser.role === 'ADMIN' ? '管理員' : '成員'})</p>
-              </div>
-            </div>
-            <div className="info-card">
-              <div className="info-icon">🎨</div>
-              <div className="info-content">
-                <h3>目前主題</h3>
-                <p>{userSettings.theme === 'light' ? '淺色主題' : '深色主題'}</p>
-              </div>
-            </div>
-            <div className="info-card">
-              <div className="info-icon">💰</div>
-              <div className="info-content">
-                <h3>貨幣顯示</h3>
-                <p>{userSettings.currency}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </Layout>
   )
