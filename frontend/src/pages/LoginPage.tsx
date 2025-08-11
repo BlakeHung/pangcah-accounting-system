@@ -34,7 +34,7 @@ interface UserProfile {
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState<LoginFormData>({
     username: 'admin',
-    password: 'admin'
+    password: 'admin123'
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -55,7 +55,7 @@ const LoginPage: React.FC = () => {
 
     try {
       // 步驟1：登入獲取token
-      const loginResponse = await axios.post<LoginResponse>('/api/v1/auth/login/', formData)
+      const loginResponse = await axios.post<LoginResponse>('/api/v1/auth/users/login/', formData)
       
       // 儲存 token 到 localStorage
       localStorage.setItem('access_token', loginResponse.data.access)
