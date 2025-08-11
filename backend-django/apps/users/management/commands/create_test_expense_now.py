@@ -39,8 +39,7 @@ class Command(BaseCommand):
                 amount=Decimal('5000'),
                 description='Railway測試支出',
                 date=timezone.now(),
-                paid_by=user,
-                created_by=user
+                user=user  # 正確的欄位名稱
             )
             
             self.stdout.write(self.style.SUCCESS(f'✅ 成功創建支出 ID: {expense.id}'))

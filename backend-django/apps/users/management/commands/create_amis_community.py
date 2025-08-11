@@ -395,8 +395,7 @@ class Command(BaseCommand):
                             amount=Decimal(str(exp_data['amount'])),
                             description=exp_data['description'],
                             date=event.start_date + timedelta(days=random.randint(0, 3)),
-                            paid_by=payer,
-                            created_by=payer
+                            user=payer  # 修正欄位名稱
                         )
                         
                         # 創建支出分攤 (六大家族平分)
@@ -407,9 +406,9 @@ class Command(BaseCommand):
                             if family_members:
                                 ExpenseSplit.objects.create(
                                     expense=expense,
-                                    user=family_members[0].user,  # 家族代表
-                                    amount=amount_per_family,
-                                    percentage=Decimal(str(round(100 / len(self.families), 2)))  # 100/6 ≈ 16.67%
+                                    participant=family_members[0].user,  # 家族代表
+                                    split_value=Decimal(str(round(100 / len(self.families), 2))),  # 百分比
+                                    calculated_amount=amount_per_family
                                 )
                         
                         self.stdout.write(f'    💰 {exp_data["category"]}: NT$ {exp_data["amount"]:,}')
@@ -481,9 +480,7 @@ class Command(BaseCommand):
                         amount=Decimal(str(amount)),
                         description=description,
                         date=current_date,
-                        paid_by=payer,
-                        created_by=payer
-                    )
+                        user=payer                    )
                     
                     # 家族內部分攤（只有成年人分攤）
                     adult_members = [m for m in family_members if m.user.name and ('父親' in m.user.name or '母親' in m.user.name or '爺爺' in m.user.name or '奶奶' in m.user.name)]
@@ -493,9 +490,9 @@ class Command(BaseCommand):
                         for member in adult_members:
                             ExpenseSplit.objects.create(
                                 expense=expense,
-                                user=member.user,
-                                amount=amount_per_adult,
-                                percentage=Decimal(str(100 / len(adult_members)))
+                                participant=member.user,
+                                split_value=Decimal(str(100 / len(adult_members))),
+                                calculated_amount=amount_per_adult
                             )
                     
                     daily_transactions.append(expense)
@@ -569,9 +566,7 @@ class Command(BaseCommand):
                         amount=Decimal(str(amount)),
                         description=f'借給{borrower.name} - {reason}',
                         date=lending_date,
-                        paid_by=lender,
-                        created_by=lender
-                    )
+                        user=lender                    )
                     
                     # 創建借入記錄 (對借入家族來說也是支出，但實際是負債)
                     borrowing_expense = Expense.objects.create(
@@ -580,9 +575,7 @@ class Command(BaseCommand):
                         amount=Decimal(str(amount)),
                         description=f'向{lender.name}借款 - {reason}',
                         date=lending_date,
-                        paid_by=borrower,
-                        created_by=borrower
-                    )
+                        user=borrower                    )
                     
                     lending_records.append((lending_expense, borrowing_expense))
                     
@@ -598,7 +591,7 @@ class Command(BaseCommand):
                             amount=Decimal(str(amount)),
                             description=f'償還{lender.name}借款 - {reason}',
                             date=repayment_date,
-                            paid_by=borrower,
+                            user=borrower,
                             created_by=borrower
                         )
         
@@ -648,9 +641,7 @@ class Command(BaseCommand):
                         amount=Decimal(str(-amount)),  # 負數表示收入
                         description=f'{family_name}家族 {["春季", "春季", "", "", "", "", "", "", "", "", "秋季", "秋季"][month-1]}農產品銷售',
                         date=date,
-                        paid_by=earner,
-                        created_by=earner
-                    )
+                        user=earner                    )
                     income_records.append(expense)
             
             # 手工藝品銷售 (全年)
@@ -669,9 +660,7 @@ class Command(BaseCommand):
                         amount=Decimal(str(-amount)),
                         description=f'{family_name}家族{craft}銷售',
                         date=date,
-                        paid_by=earner,
-                        created_by=earner
-                    )
+                        user=earner                    )
                     income_records.append(expense)
             
             # 觀光導覽 (夏季旺季)
@@ -687,9 +676,7 @@ class Command(BaseCommand):
                         amount=Decimal(str(-amount)),
                         description=f'{family_name}家族文化導覽服務',
                         date=date,
-                        paid_by=earner,
-                        created_by=earner
-                    )
+                        user=earner                    )
                     income_records.append(expense)
             
             # 政府補助 (每季一次)
@@ -708,9 +695,7 @@ class Command(BaseCommand):
                         amount=Decimal(str(-amount)),
                         description=f'{family_name}家族{subsidy}',
                         date=date,
-                        paid_by=earner,
-                        created_by=earner
-                    )
+                        user=earner                    )
                     income_records.append(expense)
             
             # 季節性工作 (不定期)
@@ -729,9 +714,7 @@ class Command(BaseCommand):
                     amount=Decimal(str(-amount)),
                     description=f'{family_name}家族{job}收入',
                     date=date,
-                    paid_by=earner,
-                    created_by=earner
-                )
+                    user=earner                )
                 income_records.append(expense)
         
         self.stdout.write(self.style.SUCCESS(f'✅ 創建了 {len(income_records)} 筆收入記錄'))
