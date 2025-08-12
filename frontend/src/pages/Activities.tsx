@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import Wrapper from '../components/Wrapper'
+import Layout from '../components/Layout'
 
 interface User {
   id: number
@@ -31,22 +31,6 @@ interface Activity {
   created_by: User
 }
 
-// PAPA 文化圖標
-const PAPAIcons = {
-  Activity: () => <span className="text-2xl">🎉</span>,
-  Sun: () => <span className="text-2xl">✦</span>,
-  Wave: () => <span className="text-2xl">🌊</span>,
-  Mountain: () => <span className="text-2xl">⛰️</span>,
-  Add: () => <span>➕</span>,
-  Edit: () => <span>✏️</span>,
-  Delete: () => <span>🗑️</span>,
-  Calendar: () => <span>📅</span>,
-  Location: () => <span>📍</span>,
-  Users: () => <span>👥</span>,
-  Manager: () => <span>👑</span>,
-  Status: () => <span>🎯</span>,
-  Manage: () => <span>⚙️</span>,
-}
 
 const Activities: React.FC = () => {
   const navigate = useNavigate()
@@ -98,11 +82,11 @@ const Activities: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch(status) {
-      case 'PLANNING': return 'bg-papa-dawn/10 text-papa-dawn'
-      case 'ACTIVE': return 'bg-papa-emerald/10 text-papa-emerald'
-      case 'COMPLETED': return 'bg-papa-ocean/10 text-papa-ocean'
-      case 'CANCELLED': return 'bg-papa-cave/10 text-papa-cave'
-      default: return 'bg-papa-mist text-papa-stone'
+      case 'PLANNING': return 'bg-orange-100 text-orange-600'
+      case 'ACTIVE': return 'bg-green-100 text-green-600'
+      case 'COMPLETED': return 'bg-blue-100 text-blue-600'
+      case 'CANCELLED': return 'bg-red-100 text-red-600'
+      default: return 'bg-gray-100 text-gray-600'
     }
   }
 
@@ -116,304 +100,393 @@ const Activities: React.FC = () => {
     }
   }
 
-  // 根據阿美族傳統祭典類型獲取圖標
   const getActivityIcon = (name: string) => {
-    if (name.includes('播種') || name.includes('Misapalaway')) return '🌱'
-    if (name.includes('豐年') || name.includes('Ilisin')) return '🎊'
-    if (name.includes('收穫') || name.includes('Misaopisaw')) return '🌾'
-    if (name.includes('團聚') || name.includes('Misakero')) return '🏘️'
+    if (name.includes('播種') || name.includes('種植')) return '🌱'
+    if (name.includes('豐年') || name.includes('慶典')) return '🎊'
+    if (name.includes('收穫') || name.includes('採收')) return '🌾'
+    if (name.includes('團聚') || name.includes('聚會')) return '🏘️'
+    if (name.includes('旅遊') || name.includes('旅行')) return '🚌'
+    if (name.includes('運動') || name.includes('健身')) return '🏃'
     return '🎉'
   }
 
   return (
-    <Wrapper>
-      <div className="space-y-8">
+    <Layout user={currentUser}>
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* 頁面標題 */}
-        <section className="papa-pattern-bg rounded-2xl p-8">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-papa-stone mb-2 font-display flex items-center gap-3">
-                <PAPAIcons.Activity />
-活動管理
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 flex items-center gap-3">
+                <span className="text-2xl">🎉</span>
+                活動管理
               </h1>
-              <p className="text-papa-cave text-lg">
-管理家庭活動和費用分攟
+              <p className="text-gray-600 text-sm md:text-base">
+                管理和追蹤所有活動項目
               </p>
             </div>
             <button
               onClick={() => navigate('/activities/new')}
-              className="papa-action-card px-6 py-3 flex items-center gap-2"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
             >
-              <PAPAIcons.Add />
-              <span>籌劃新活動</span>
+              <span>➕</span>
+              <span className="hidden sm:inline">新增活動</span>
+              <span className="sm:hidden">新增</span>
             </button>
           </div>
-        </section>
+        </div>
 
         {/* 活動統計 */}
-        <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="papa-stat-card income">
-            <div className="papa-stat-content">
-              <div className="papa-stat-icon">🌱</div>
-              <h3 className="papa-stat-title">規劃中</h3>
-              <p className="papa-stat-value">
-                {activities?.filter(a => a.status === 'PLANNING').length || 0}
-              </p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-orange-400">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">規劃中</h3>
+                <p className="text-2xl font-bold text-orange-600">
+                  {activities?.filter(a => a.status === 'PLANNING').length || 0}
+                </p>
+              </div>
+              <div className="text-3xl opacity-80">🌱</div>
             </div>
           </div>
           
-          <div className="papa-stat-card expense">
-            <div className="papa-stat-content">
-              <div className="papa-stat-icon">🎊</div>
-              <h3 className="papa-stat-title">進行中</h3>
-              <p className="papa-stat-value">
-                {activities?.filter(a => a.status === 'ACTIVE').length || 0}
-              </p>
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-green-400">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">進行中</h3>
+                <p className="text-2xl font-bold text-green-600">
+                  {activities?.filter(a => a.status === 'ACTIVE').length || 0}
+                </p>
+              </div>
+              <div className="text-3xl opacity-80">🎊</div>
             </div>
           </div>
           
-          <div className="papa-stat-card groups">
-            <div className="papa-stat-content">
-              <div className="papa-stat-icon">🌾</div>
-              <h3 className="papa-stat-title">已完成</h3>
-              <p className="papa-stat-value">
-                {activities?.filter(a => a.status === 'COMPLETED').length || 0}
-              </p>
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-blue-400">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">已完成</h3>
+                <p className="text-2xl font-bold text-blue-600">
+                  {activities?.filter(a => a.status === 'COMPLETED').length || 0}
+                </p>
+              </div>
+              <div className="text-3xl opacity-80">🌾</div>
             </div>
           </div>
           
-          <div className="papa-stat-card events">
-            <div className="papa-stat-content">
-              <div className="papa-stat-icon">🏘️</div>
-              <h3 className="papa-stat-title">總活動</h3>
-              <p className="papa-stat-value">{activities?.length || 0}</p>
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-purple-400">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">總活動</h3>
+                <p className="text-2xl font-bold text-purple-600">{activities?.length || 0}</p>
+              </div>
+              <div className="text-3xl opacity-80">📊</div>
             </div>
           </div>
-        </section>
+        </div>
 
         {/* 篩選器 */}
-        <section className="flex gap-4 items-center">
-          <span className="text-papa-stone font-medium">篩選狀態：</span>
-          <div className="flex gap-2">
-            {['all', 'PLANNING', 'ACTIVE', 'COMPLETED', 'CANCELLED'].map(status => (
-              <button
-                key={status}
-                onClick={() => setStatusFilter(status)}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  statusFilter === status 
-                    ? 'bg-papa-ocean text-white' 
-                    : 'bg-papa-mist text-papa-stone hover:bg-papa-ocean/10'
-                }`}
-              >
-                {status === 'all' ? '全部' : getStatusLabel(status)}
-              </button>
-            ))}
+        <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="flex flex-wrap gap-4 items-center">
+            <span className="text-gray-800 font-medium">篩選狀態：</span>
+            <div className="flex flex-wrap gap-2">
+              {['all', 'PLANNING', 'ACTIVE', 'COMPLETED', 'CANCELLED'].map(status => (
+                <button
+                  key={status}
+                  onClick={() => setStatusFilter(status)}
+                  className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium ${
+                    statusFilter === status 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {status === 'all' ? '全部' : getStatusLabel(status)}
+                </button>
+              ))}
+            </div>
           </div>
-        </section>
+        </div>
 
         {/* 活動列表 */}
-        <section>
-          <div className="papa-divider mb-6"></div>
-          <h2 className="text-2xl font-bold text-papa-stone mb-6 font-display">
-            活動列表
-          </h2>
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-800">
+              活動列表 ({activities?.length || 0})
+            </h2>
+          </div>
           
           {isLoading ? (
-            <div className="papa-loading">
-              <div className="papa-sun-loading"></div>
-              <p className="papa-loading-text">載入活動中...</p>
+            <div className="flex items-center justify-center min-h-96">
+              <div className="text-center">
+                <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-gray-600">載入活動中...</p>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {activities?.map(activity => (
-                <div
-                  key={activity.id}
-                  className="bg-white rounded-2xl p-6 shadow-papa-soft hover:shadow-papa-medium transition-shadow cursor-pointer"
-                  onClick={() => setSelectedActivity(activity)}
-                >
-                  {/* 活動頭部 */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-3xl">{getActivityIcon(activity.name)}</span>
-                      <div>
-                        <h3 className="text-xl font-bold text-papa-stone">
-                          {activity.name}
-                        </h3>
-                        <p className="text-sm text-papa-cave">
-                          {activity.group.name}
-                        </p>
-                      </div>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(activity.status)}`}>
-                      {getStatusLabel(activity.status)}
-                    </span>
-                  </div>
-
-                  {/* 活動描述 */}
-                  <p className="text-papa-cave mb-4 line-clamp-2">
-                    {activity.description}
-                  </p>
-
-                  {/* 活動資訊 */}
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-sm text-papa-cave">
-                      <PAPAIcons.Calendar />
-                      <span>
-                        {new Date(activity.start_date).toLocaleDateString('zh-TW')} - 
-                        {new Date(activity.end_date).toLocaleDateString('zh-TW')}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-papa-cave">
-                      <PAPAIcons.Location />
-                      <span>{activity.location || '未指定地點'}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-papa-cave">
-                      <PAPAIcons.Users />
-                      <span>{activity.participants?.length || 0} 位參與者</span>
-                    </div>
-                  </div>
-
-                  {/* 管理者 */}
-                  {activity.managers.length > 0 && (
-                    <div className="pt-4 border-t border-papa-tribal/10">
-                      <div className="flex items-center gap-2 text-sm">
-                        <PAPAIcons.Manager />
-                        <span className="text-papa-cave">管理者：</span>
-                        <div className="flex flex-wrap gap-1">
-                          {activity.managers.map(manager => (
-                            <span
-                              key={manager.id}
-                              className="bg-papa-ocean/10 text-papa-ocean px-2 py-0.5 rounded text-xs"
-                            >
-                              {manager.name || manager.username}
-                            </span>
-                          ))}
+              {activities && activities.length > 0 ? (
+                activities.map(activity => (
+                  <div
+                    key={activity.id}
+                    className="bg-white rounded-xl p-6 shadow-papa-soft hover:shadow-papa-medium transition-all duration-200 cursor-pointer"
+                    onClick={() => setSelectedActivity(activity)}
+                  >
+                    {/* 活動頭部 */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-xl flex-shrink-0">
+                          {getActivityIcon(activity.name)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-base font-semibold text-gray-800 truncate">
+                            {activity.name}
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            {activity.group.name}
+                          </p>
                         </div>
                       </div>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${getStatusColor(activity.status)}`}>
+                        {getStatusLabel(activity.status)}
+                      </span>
                     </div>
-                  )}
 
-                  {/* 操作按鈕 */}
-                  {canManageActivity(activity) && (
-                    <div className="flex gap-2 mt-4 pt-4 border-t border-papa-tribal/10">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          navigate(`/activities/${activity.id}/manage`)
-                        }}
-                        className="flex-1 bg-papa-ocean text-white py-2 rounded-lg hover:bg-papa-ocean/90 transition-colors text-sm"
-                      >
-                        <PAPAIcons.Manage /> 管理活動
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          navigate(`/activities/${activity.id}/edit`)
-                        }}
-                        className="flex-1 bg-papa-emerald text-white py-2 rounded-lg hover:bg-papa-emerald/90 transition-colors text-sm"
-                      >
-                        <PAPAIcons.Edit /> 編輯
-                      </button>
-                      {activity.status === 'PLANNING' && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            if (confirm('確定要刪除這個活動嗎？')) {
-                              deleteActivityMutation.mutate(activity.id)
-                            }
-                          }}
-                          className="flex-1 bg-papa-tide text-white py-2 rounded-lg hover:bg-papa-tide/90 transition-colors text-sm"
-                        >
-                          <PAPAIcons.Delete /> 刪除
-                        </button>
-                      )}
+                    {/* 活動描述 */}
+                    {activity.description && (
+                      <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                        {activity.description}
+                      </p>
+                    )}
+
+                    {/* 活動資訊 */}
+                    <div className="space-y-2 mb-4 text-sm">
+                      <div className="flex items-center justify-between text-gray-600">
+                        <span className="flex items-center gap-1">
+                          📅 時間
+                        </span>
+                        <span className="text-right">
+                          {new Date(activity.start_date).toLocaleDateString('zh-TW')} - {new Date(activity.end_date).toLocaleDateString('zh-TW')}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-gray-600">
+                        <span className="flex items-center gap-1">
+                          📍 地點
+                        </span>
+                        <span className="truncate text-right max-w-[60%]" title={activity.location || '未指定地點'}>
+                          {activity.location || '未指定地點'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-gray-600">
+                        <span className="flex items-center gap-1">
+                          👥 參與者
+                        </span>
+                        <span>{activity.participants?.length || 0} 人</span>
+                      </div>
                     </div>
-                  )}
+
+                    {/* 管理者 */}
+                    {activity.managers.length > 0 && (
+                      <div className="border-t border-gray-100 pt-3 mb-4">
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="text-gray-600 flex items-center gap-1">
+                            👑 管理者：
+                          </span>
+                          <div className="flex flex-wrap gap-1">
+                            {activity.managers.map(manager => (
+                              <span
+                                key={manager.id}
+                                className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs"
+                              >
+                                {manager.name || manager.username}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 操作按鈕 */}
+                    {canManageActivity(activity) && (
+                      <div className="flex gap-2 border-t border-gray-100 pt-3" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => navigate(`/activities/${activity.id}/manage`)}
+                          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-1"
+                        >
+                          <span>⚙️</span>
+                          <span>管理</span>
+                        </button>
+                        <button
+                          onClick={() => navigate(`/activities/${activity.id}/edit`)}
+                          className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-1"
+                        >
+                          <span>✏️</span>
+                          <span>編輯</span>
+                        </button>
+                        {activity.status === 'PLANNING' && (
+                          <button
+                            onClick={() => {
+                              if (confirm('確定要刪除這個活動嗎？')) {
+                                deleteActivityMutation.mutate(activity.id)
+                              }
+                            }}
+                            className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-1"
+                          >
+                            <span>🗑️</span>
+                            <span>刪除</span>
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full">
+                  <div className="bg-white rounded-xl p-12 shadow-papa-soft text-center">
+                    <div className="text-6xl mb-4 opacity-50">🎉</div>
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                      暫無活動資料
+                    </h3>
+                    <p className="text-gray-600 mb-6">
+                      尚無活動資料，點擊上方按鈕新增活動
+                    </p>
+                    <button
+                      onClick={() => navigate('/activities/new')}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+                    >
+                      ➕ 新增活動
+                    </button>
+                  </div>
                 </div>
-              ))}
+              )}
             </div>
           )}
-        </section>
+        </div>
 
         {/* 活動詳情 Modal */}
         {selectedActivity && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-2xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <span className="text-4xl">{getActivityIcon(selectedActivity.name)}</span>
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-2xl">
+                    {getActivityIcon(selectedActivity.name)}
+                  </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-papa-stone font-display">
+                    <h2 className="text-2xl font-bold text-gray-800">
                       {selectedActivity.name}
                     </h2>
-                    <p className="text-papa-cave">{selectedActivity.group.name}</p>
+                    <p className="text-gray-600">{selectedActivity.group.name}</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setSelectedActivity(null)}
-                  className="text-papa-cave hover:text-papa-stone text-2xl"
+                  className="text-gray-400 hover:text-gray-600 text-2xl transition-colors"
                 >
                   ✕
                 </button>
               </div>
               
               <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-papa-stone mb-2">活動描述</h3>
-                  <p className="text-papa-cave">{selectedActivity.description}</p>
+                {selectedActivity.description && (
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                      <span>📝</span>
+                      活動描述
+                    </h3>
+                    <p className="text-gray-600">{selectedActivity.description}</p>
+                  </div>
+                )}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                      <span>ℹ️</span>
+                      活動資訊
+                    </h3>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">狀態：</span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedActivity.status)}`}>
+                          {getStatusLabel(selectedActivity.status)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">地點：</span>
+                        <span className="text-gray-800">{selectedActivity.location || '未指定'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">開始時間：</span>
+                        <span className="text-gray-800">
+                          {new Date(selectedActivity.start_date).toLocaleString('zh-TW')}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">結束時間：</span>
+                        <span className="text-gray-800">
+                          {new Date(selectedActivity.end_date).toLocaleString('zh-TW')}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">創建者：</span>
+                        <span className="text-gray-800">{selectedActivity.created_by.name || selectedActivity.created_by.username}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-green-50 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                      <span>👑</span>
+                      管理者 ({selectedActivity.managers.length})
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedActivity.managers.length > 0 ? (
+                        selectedActivity.managers.map(manager => (
+                          <div
+                            key={manager.id}
+                            className="bg-green-100 text-green-700 px-3 py-2 rounded-lg flex items-center gap-2 text-sm"
+                          >
+                            <span>👑</span>
+                            <span className="font-medium">{manager.name || manager.username}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-gray-500 text-sm">暫無管理者</div>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="text-sm font-medium text-papa-cave mb-1">活動狀態</h4>
-                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedActivity.status)}`}>
-                      {getStatusLabel(selectedActivity.status)}
-                    </span>
-                  </div>
-                  
-                  <div>
-                    <h4 className="text-sm font-medium text-papa-cave mb-1">活動地點</h4>
-                    <p className="text-papa-stone">{selectedActivity.location || '未指定'}</p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="text-sm font-medium text-papa-cave mb-1">開始時間</h4>
-                    <p className="text-papa-stone">
-                      {new Date(selectedActivity.start_date).toLocaleString('zh-TW')}
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="text-sm font-medium text-papa-cave mb-1">結束時間</h4>
-                    <p className="text-papa-stone">
-                      {new Date(selectedActivity.end_date).toLocaleString('zh-TW')}
-                    </p>
-                  </div>
-                </div>
-                
                 <div>
-                  <h3 className="text-lg font-semibold text-papa-stone mb-3">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <span>👥</span>
                     參與者 ({selectedActivity.participants?.length || 0})
                   </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedActivity.participants?.map(participant => (
-                      <div
-                        key={participant.id}
-                        className="bg-papa-mist px-3 py-2 rounded-lg"
-                      >
-                        {participant.name || participant.username}
-                      </div>
-                    ))}
-                  </div>
+                  {selectedActivity.participants && selectedActivity.participants.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-60 overflow-y-auto">
+                      {selectedActivity.participants.map(participant => (
+                        <div
+                          key={participant.id}
+                          className="bg-gray-50 px-3 py-2 rounded-lg flex items-center gap-2"
+                        >
+                          <span className="text-sm">👤</span>
+                          <span className="text-sm flex-1 truncate">{participant.name || participant.username}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-gray-500 text-center py-8">
+                      此活動暫無參與者
+                    </div>
+                  )}
                 </div>
                 
-                <div className="flex gap-4 pt-4 border-t border-papa-tribal/10">
+                <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
                   <button
                     onClick={() => {
                       navigate(`/activities/${selectedActivity.id}`)
                       setSelectedActivity(null)
                     }}
-                    className="flex-1 bg-papa-ocean text-white py-3 rounded-lg hover:bg-papa-ocean/90 transition-colors"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition-colors font-medium"
                   >
                     查看詳情
                   </button>
@@ -423,14 +496,14 @@ const Activities: React.FC = () => {
                         navigate(`/activities/${selectedActivity.id}/manage`)
                         setSelectedActivity(null)
                       }}
-                      className="flex-1 bg-papa-emerald text-white py-3 rounded-lg hover:bg-papa-emerald/90 transition-colors"
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg transition-colors font-medium"
                     >
                       管理活動
                     </button>
                   )}
                   <button
                     onClick={() => setSelectedActivity(null)}
-                    className="flex-1 bg-papa-cave/10 text-papa-stone py-3 rounded-lg hover:bg-papa-cave/20 transition-colors"
+                    className="flex-1 sm:flex-none sm:px-6 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg transition-colors font-medium"
                   >
                     關閉
                   </button>
@@ -440,7 +513,7 @@ const Activities: React.FC = () => {
           </div>
         )}
       </div>
-    </Wrapper>
+    </Layout>
   )
 }
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import Wrapper from '../components/Wrapper'
+import Layout from '../components/Layout'
 
 interface User {
   id: number
@@ -34,27 +34,6 @@ interface ManagedGroup {
 interface UserDetail extends User {
   managed_groups: ManagedGroup[]
   groups: ManagedGroup[]
-}
-
-// PAPA 文化圖標
-const PAPAIcons = {
-  Users: () => <span className="text-2xl">👥</span>,
-  Admin: () => <span className="text-2xl">👑</span>,
-  User: () => <span className="text-2xl">👤</span>,
-  Total: () => <span className="text-2xl">📋</span>,
-  Add: () => <span>➕</span>,
-  Edit: () => <span>✏️</span>,
-  Delete: () => <span>🗑️</span>,
-  View: () => <span>👁️</span>,
-  Email: () => <span>📧</span>,
-  Status: () => <span>📊</span>,
-  Date: () => <span>📅</span>,
-  Time: () => <span>🕐</span>,
-  Manager: () => <span>👑</span>,
-  Group: () => <span>👥</span>,
-  Active: () => <span className="text-green-500">✓</span>,
-  Inactive: () => <span className="text-red-500">✗</span>,
-  Empty: () => <span className="text-6xl">👥</span>,
 }
 
 const Users: React.FC = () => {
@@ -107,6 +86,11 @@ const Users: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       setShowCreateForm(false)
       resetForm()
+      alert('用戶創建成功')
+    },
+    onError: (error: any) => {
+      console.error('創建用戶失敗:', error)
+      alert('創建用戶失敗，請檢查輸入內容')
     }
   })
 
@@ -121,6 +105,11 @@ const Users: React.FC = () => {
       setEditingUser(null)
       setShowCreateForm(false)
       resetForm()
+      alert('用戶資料更新成功')
+    },
+    onError: (error: any) => {
+      console.error('更新用戶失敗:', error)
+      alert('更新用戶失敗，請檢查輸入內容')
     }
   })
 
@@ -132,6 +121,11 @@ const Users: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       setSelectedUser(null)
+      alert('用戶已刪除')
+    },
+    onError: (error: any) => {
+      console.error('刪除用戶失敗:', error)
+      alert('刪除用戶失敗')
     }
   })
 
@@ -209,119 +203,116 @@ const Users: React.FC = () => {
     return isActive ? '啟用' : '停用'
   }
 
-  // 根據阿美族傳統階層獲取用戶圖標
-  const getUserIcon = (role: string) => {
-    return role === 'ADMIN' ? '👑' : '👤'
-  }
-
   const getUserAvatarFallback = (name: string) => {
     return name.charAt(0).toUpperCase()
   }
 
   return (
-    <Wrapper>
-      <div className="space-y-8">
+    <Layout user={currentUser}>
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* 頁面標題 */}
-        <section className="papa-pattern-bg rounded-2xl p-8">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-papa-stone mb-2 font-display flex items-center gap-3">
-                <PAPAIcons.Users />
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 flex items-center gap-3">
+                <span className="text-2xl">👥</span>
                 用戶管理
               </h1>
-              <p className="text-papa-cave text-lg">
-                管理系統用戶和權限
+              <p className="text-gray-600 text-sm md:text-base">
+                管理系統用戶和權限設定
               </p>
             </div>
             {canManageUsers() && (
               <button
                 onClick={() => setShowCreateForm(true)}
-                className="papa-action-card px-6 py-3 flex items-center gap-2"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
               >
-                <PAPAIcons.Add />
-                <span>新增族人</span>
+                <span>➕</span>
+                <span>新增用戶</span>
               </button>
             )}
           </div>
-        </section>
+        </div>
 
         {/* 統計摘要 */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="papa-stat-card groups">
-            <div className="papa-stat-content">
-              <div className="papa-stat-icon">
-                <PAPAIcons.Total />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-blue-400">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">總用戶數</h3>
+                <p className="text-2xl font-bold text-blue-600">{users?.length || 0}</p>
               </div>
-              <h3 className="papa-stat-title">總族人數</h3>
-              <p className="papa-stat-value">{users?.length || 0}</p>
+              <div className="text-3xl opacity-80">📋</div>
             </div>
           </div>
           
-          <div className="papa-stat-card expense">
-            <div className="papa-stat-content">
-              <div className="papa-stat-icon">
-                <PAPAIcons.Admin />
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-purple-400">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">管理員</h3>
+                <p className="text-2xl font-bold text-purple-600">
+                  {users?.filter(u => u.role === 'ADMIN').length || 0}
+                </p>
               </div>
-              <h3 className="papa-stat-title">管理員</h3>
-              <p className="papa-stat-value">
-                {users?.filter(u => u.role === 'ADMIN').length || 0}
-              </p>
+              <div className="text-3xl opacity-80">👑</div>
             </div>
           </div>
           
-          <div className="papa-stat-card income">
-            <div className="papa-stat-content">
-              <div className="papa-stat-icon">
-                <PAPAIcons.User />
+          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-green-400">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">一般用戶</h3>
+                <p className="text-2xl font-bold text-green-600">
+                  {users?.filter(u => u.role === 'USER').length || 0}
+                </p>
               </div>
-              <h3 className="papa-stat-title">一般族人</h3>
-              <p className="papa-stat-value">
-                {users?.filter(u => u.role === 'USER').length || 0}
-              </p>
+              <div className="text-3xl opacity-80">👤</div>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* 族人列表 */}
-        <section>
-          <div className="papa-divider mb-6"></div>
-          <h2 className="text-2xl font-bold text-papa-stone mb-6 font-display">
-            族人列表
-          </h2>
+        {/* 用戶列表 */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-800">
+              用戶列表 ({users?.length || 0})
+            </h2>
+          </div>
           
           {usersLoading ? (
-            <div className="papa-loading">
-              <div className="papa-sun-loading"></div>
-              <p className="papa-loading-text">載入族人資料中...</p>
+            <div className="flex items-center justify-center min-h-96">
+              <div className="text-center">
+                <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-gray-600">載入用戶資料中...</p>
+              </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {users && users.length > 0 ? (
                 users.map(user => (
                   <div
                     key={user.id}
-                    className="bg-white rounded-2xl p-6 shadow-papa-soft hover:shadow-papa-medium transition-shadow papa-cultural-float"
+                    className="bg-white rounded-xl p-6 shadow-papa-soft hover:shadow-papa-medium transition-all duration-200"
                   >
                     {/* 用戶頭部 */}
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-16 h-16 rounded-full bg-papa-ocean/10 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
                           {user.image ? (
-                            <img src={user.image} alt={user.name} className="w-16 h-16 rounded-full object-cover" />
+                            <img src={user.image} alt={user.name} className="w-12 h-12 rounded-full object-cover" />
                           ) : (
-                            <span className="text-2xl font-bold text-papa-ocean">
+                            <span className="text-lg font-bold text-blue-600">
                               {getUserAvatarFallback(user.name)}
                             </span>
                           )}
                         </div>
-                        <div>
-                          <h3 className="text-lg font-bold text-papa-stone flex items-center gap-2">
-                            {getUserIcon(user.role)}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-base font-semibold text-gray-800 truncate">
                             {user.name}
                           </h3>
-                          <p className="text-sm text-papa-cave">@{user.username}</p>
-                          <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium mt-1 ${
-                            user.role === 'ADMIN' ? 'bg-papa-dawn/10 text-papa-dawn' : 'bg-papa-emerald/10 text-papa-emerald'
+                          <p className="text-sm text-gray-500">@{user.username}</p>
+                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${
+                            user.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'
                           }`}>
                             {getRoleDisplayName(user.role)}
                           </span>
@@ -330,25 +321,28 @@ const Users: React.FC = () => {
                       
                       {/* 操作按鈕 */}
                       {canManageUsers() && (
-                        <div className="flex gap-2">
+                        <div className="flex gap-1">
                           <button
                             onClick={() => handleViewDetails(user)}
-                            className="text-papa-ocean hover:text-papa-ocean/80"
+                            className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors flex items-center justify-center text-sm"
+                            title="查看詳情"
                           >
-                            <PAPAIcons.View />
+                            👁️
                           </button>
                           <button
                             onClick={() => handleEdit(user)}
-                            className="text-papa-emerald hover:text-papa-emerald/80"
+                            className="w-8 h-8 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-colors flex items-center justify-center text-sm"
+                            title="編輯"
                           >
-                            <PAPAIcons.Edit />
+                            ✏️
                           </button>
                           {user.id !== currentUser?.id && (
                             <button
                               onClick={() => handleDelete(user)}
-                              className="text-papa-tide hover:text-papa-tide/80"
+                              className="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center text-sm"
+                              title="刪除"
                             >
-                              <PAPAIcons.Delete />
+                              🗑️
                             </button>
                           )}
                         </div>
@@ -356,29 +350,31 @@ const Users: React.FC = () => {
                     </div>
 
                     {/* 用戶資訊 */}
-                    <div className="space-y-2 text-sm text-papa-cave">
-                      <div className="flex items-center justify-between">
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center justify-between text-gray-600">
                         <span className="flex items-center gap-1">
-                          <PAPAIcons.Email /> 信箱
+                          📧 信箱
                         </span>
-                        <span className="truncate text-right" title={user.email}>
-                          {user.email.length > 20 ? user.email.substring(0, 20) + '...' : user.email}
+                        <span className="truncate text-right max-w-[60%]" title={user.email}>
+                          {user.email}
                         </span>
                       </div>
                       
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between text-gray-600">
                         <span className="flex items-center gap-1">
-                          <PAPAIcons.Status /> 狀態
+                          📊 狀態
                         </span>
                         <div className="flex items-center gap-1">
-                          {user.is_active ? <PAPAIcons.Active /> : <PAPAIcons.Inactive />}
+                          <span className={user.is_active ? 'text-green-500' : 'text-red-500'}>
+                            {user.is_active ? '✓' : '✗'}
+                          </span>
                           <span>{getStatusDisplayName(user.is_active)}</span>
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between text-gray-600">
                         <span className="flex items-center gap-1">
-                          <PAPAIcons.Date /> 加入時間
+                          📅 加入時間
                         </span>
                         <span>
                           {new Date(user.date_joined).toLocaleDateString('zh-TW')}
@@ -386,9 +382,9 @@ const Users: React.FC = () => {
                       </div>
                       
                       {user.last_login && (
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between text-gray-600">
                           <span className="flex items-center gap-1">
-                            <PAPAIcons.Time /> 最後登入
+                            🕐 最後登入
                           </span>
                           <span>
                             {new Date(user.last_login).toLocaleDateString('zh-TW')}
@@ -399,38 +395,36 @@ const Users: React.FC = () => {
                     
                     <button
                       onClick={() => handleViewDetails(user)}
-                      className="mt-4 w-full bg-papa-ocean text-white py-2 rounded-lg hover:bg-papa-ocean/90 transition-colors text-sm"
+                      className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors text-sm font-medium"
                     >
                       查看詳細資料
                     </button>
                   </div>
                 ))
               ) : (
-                <div className="col-span-full text-center py-16">
-                  <div className="papa-loading">
-                    <PAPAIcons.Empty />
-                    <div className="mt-4">
-                      <h3 className="text-xl font-bold text-papa-stone mb-2">
-                        暫無族人資料
-                      </h3>
-                      <p className="text-papa-cave mb-6">
-                        尚無用戶資料，點擊上方按鈕新增用戶
-                      </p>
-                      {canManageUsers() && (
-                        <button
-                          onClick={() => setShowCreateForm(true)}
-                          className="papa-action-card px-6 py-3"
-                        >
-                          <PAPAIcons.Add /> 開始建檔
-                        </button>
-                      )}
-                    </div>
+                <div className="col-span-full">
+                  <div className="bg-white rounded-xl p-12 shadow-papa-soft text-center">
+                    <div className="text-6xl mb-4 opacity-50">👥</div>
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                      暫無用戶資料
+                    </h3>
+                    <p className="text-gray-600 mb-6">
+                      尚無用戶資料，點擊上方按鈕新增用戶
+                    </p>
+                    {canManageUsers() && (
+                      <button
+                        onClick={() => setShowCreateForm(true)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+                      >
+                        ➕ 開始建檔
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
             </div>
           )}
-        </section>
+        </div>
 
         {/* 用戶詳情 Modal */}
         {selectedUser && (
@@ -438,23 +432,22 @@ const Users: React.FC = () => {
             <div className="bg-white rounded-2xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-20 h-20 rounded-full bg-papa-ocean/10 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
                     {selectedUser.image ? (
-                      <img src={selectedUser.image} alt={selectedUser.name} className="w-20 h-20 rounded-full object-cover" />
+                      <img src={selectedUser.image} alt={selectedUser.name} className="w-16 h-16 rounded-full object-cover" />
                     ) : (
-                      <span className="text-3xl font-bold text-papa-ocean">
+                      <span className="text-2xl font-bold text-blue-600">
                         {getUserAvatarFallback(selectedUser.name)}
                       </span>
                     )}
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-papa-stone font-display flex items-center gap-2">
-                      {getUserIcon(selectedUser.role)}
+                    <h2 className="text-2xl font-bold text-gray-800">
                       {selectedUser.name}
                     </h2>
-                    <p className="text-papa-cave">@{selectedUser.username}</p>
-                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium mt-1 ${
-                      selectedUser.role === 'ADMIN' ? 'bg-papa-dawn/10 text-papa-dawn' : 'bg-papa-emerald/10 text-papa-emerald'
+                    <p className="text-gray-600">@{selectedUser.username}</p>
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${
+                      selectedUser.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'
                     }`}>
                       {getRoleDisplayName(selectedUser.role)}
                     </span>
@@ -462,7 +455,7 @@ const Users: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setSelectedUser(null)}
-                  className="text-papa-cave hover:text-papa-stone text-2xl"
+                  className="text-gray-400 hover:text-gray-600 text-2xl transition-colors"
                 >
                   ✕
                 </button>
@@ -470,32 +463,35 @@ const Users: React.FC = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* 基本資訊 */}
-                <div>
-                  <h3 className="text-lg font-semibold text-papa-stone mb-4">
-                    📋 基本資訊
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <span>📋</span>
+                    基本資訊
                   </h3>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-papa-cave">信箱：</span>
-                      <span className="text-papa-stone">{selectedUser.email}</span>
+                      <span className="text-gray-600">信箱：</span>
+                      <span className="text-gray-800">{selectedUser.email}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-papa-cave">狀態：</span>
+                      <span className="text-gray-600">狀態：</span>
                       <div className="flex items-center gap-1">
-                        {selectedUser.is_active ? <PAPAIcons.Active /> : <PAPAIcons.Inactive />}
-                        <span className="text-papa-stone">{getStatusDisplayName(selectedUser.is_active)}</span>
+                        <span className={selectedUser.is_active ? 'text-green-500' : 'text-red-500'}>
+                          {selectedUser.is_active ? '✓' : '✗'}
+                        </span>
+                        <span className="text-gray-800">{getStatusDisplayName(selectedUser.is_active)}</span>
                       </div>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-papa-cave">加入時間：</span>
-                      <span className="text-papa-stone">
+                      <span className="text-gray-600">加入時間：</span>
+                      <span className="text-gray-800">
                         {new Date(selectedUser.date_joined).toLocaleString('zh-TW')}
                       </span>
                     </div>
                     {selectedUser.last_login && (
                       <div className="flex justify-between">
-                        <span className="text-papa-cave">最後登入：</span>
-                        <span className="text-papa-stone">
+                        <span className="text-gray-600">最後登入：</span>
+                        <span className="text-gray-800">
                           {new Date(selectedUser.last_login).toLocaleString('zh-TW')}
                         </span>
                       </div>
@@ -504,54 +500,56 @@ const Users: React.FC = () => {
                 </div>
 
                 {/* 管理的群組 */}
-                <div>
-                  <h3 className="text-lg font-semibold text-papa-stone mb-4">
-                    👑 管理的群組 ({selectedUser.managed_groups?.length || 0})
+                <div className="bg-purple-50 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <span>👑</span>
+                    管理的群組 ({selectedUser.managed_groups?.length || 0})
                   </h3>
                   {selectedUser.managed_groups?.length > 0 ? (
                     <div className="space-y-2">
                       {selectedUser.managed_groups.map(group => (
                         <div
                           key={group.id}
-                          className="bg-papa-dawn/10 p-3 rounded-lg"
+                          className="bg-white p-3 rounded-lg"
                         >
-                          <div className="font-medium text-papa-stone">{group.name}</div>
-                          <div className="text-xs text-papa-cave">{group.description}</div>
+                          <div className="font-medium text-gray-800">{group.name}</div>
+                          <div className="text-xs text-gray-600">{group.description}</div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-papa-cave text-sm">此族人未管理任何群組</p>
+                    <p className="text-gray-600 text-sm">此用戶未管理任何群組</p>
                   )}
                 </div>
 
                 {/* 參與的群組 */}
                 <div className="md:col-span-2">
-                  <h3 className="text-lg font-semibold text-papa-stone mb-4">
-                    👥 參與的群組 ({selectedUser.groups?.length || 0})
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <span>👥</span>
+                    參與的群組 ({selectedUser.groups?.length || 0})
                   </h3>
                   {selectedUser.groups?.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {selectedUser.groups.map(group => (
                         <div
                           key={group.id}
-                          className="bg-papa-mist p-3 rounded-lg"
+                          className="bg-gray-50 p-3 rounded-lg"
                         >
-                          <div className="font-medium text-papa-stone">{group.name}</div>
-                          <div className="text-xs text-papa-cave">{group.description}</div>
+                          <div className="font-medium text-gray-800">{group.name}</div>
+                          <div className="text-xs text-gray-600">{group.description}</div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-papa-cave text-sm">此族人未參與任何群組</p>
+                    <p className="text-gray-600 text-sm">此用戶未參與任何群組</p>
                   )}
                 </div>
               </div>
 
-              <div className="flex gap-4 mt-8">
+              <div className="flex justify-end mt-8">
                 <button
                   onClick={() => setSelectedUser(null)}
-                  className="flex-1 bg-papa-cave/10 text-papa-stone py-3 rounded-lg hover:bg-papa-cave/20 transition-colors"
+                  className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors font-medium"
                 >
                   關閉
                 </button>
@@ -565,8 +563,8 @@ const Users: React.FC = () => {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-papa-stone font-display">
-                  {editingUser ? '編輯族人資料' : '新增族人'}
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {editingUser ? '編輯用戶資料' : '新增用戶'}
                 </h2>
                 <button
                   onClick={() => {
@@ -574,7 +572,7 @@ const Users: React.FC = () => {
                     setEditingUser(null)
                     resetForm()
                   }}
-                  className="text-papa-cave hover:text-papa-stone text-2xl"
+                  className="text-gray-400 hover:text-gray-600 text-2xl transition-colors"
                 >
                   ✕
                 </button>
@@ -582,82 +580,82 @@ const Users: React.FC = () => {
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-papa-stone mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     用戶名 *
                   </label>
                   <input
                     type="text"
                     value={userForm.username}
                     onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
-                    className="w-full px-4 py-2 border border-papa-tribal/20 rounded-lg focus:outline-none focus:border-papa-ocean disabled:bg-gray-100"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:bg-gray-100"
                     placeholder="輸入用戶名"
                     disabled={!!editingUser}
                     required
                   />
                   {editingUser && (
-                    <p className="text-xs text-papa-cave mt-1">用戶名創建後無法修改</p>
+                    <p className="text-xs text-gray-500 mt-1">用戶名創建後無法修改</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-papa-stone mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     姓名 *
                   </label>
                   <input
                     type="text"
                     value={userForm.name}
                     onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
-                    className="w-full px-4 py-2 border border-papa-tribal/20 rounded-lg focus:outline-none focus:border-papa-ocean"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="輸入真實姓名"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-papa-stone mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     信箱 *
                   </label>
                   <input
                     type="email"
                     value={userForm.email}
                     onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
-                    className="w-full px-4 py-2 border border-papa-tribal/20 rounded-lg focus:outline-none focus:border-papa-ocean"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     placeholder="輸入信箱地址"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-papa-stone mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     角色
                   </label>
                   <select
                     value={userForm.role}
                     onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
-                    className="w-full px-4 py-2 border border-papa-tribal/20 rounded-lg focus:outline-none focus:border-papa-ocean"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
                   >
-                    <option value="USER">一般族人</option>
-                    <option value="ADMIN">管理員</option>
+                    <option value="USER">👤 一般用戶</option>
+                    <option value="ADMIN">👑 系統管理員</option>
                   </select>
                 </div>
 
                 {editingUser ? (
                   <div>
-                    <label className="flex items-center gap-3 mb-3">
+                    <label className="flex items-center gap-3 mb-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={showPasswordField}
                         onChange={(e) => setShowPasswordField(e.target.checked)}
-                        className="text-papa-ocean focus:ring-papa-ocean"
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                       />
-                      <span className="text-sm text-papa-stone">修改密碼</span>
+                      <span className="text-sm text-gray-700">修改密碼</span>
                     </label>
                     {showPasswordField && (
                       <input
                         type="password"
                         value={userForm.password}
                         onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
-                        className="w-full px-4 py-2 border border-papa-tribal/20 rounded-lg focus:outline-none focus:border-papa-ocean"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         placeholder="輸入新密碼"
                         required={showPasswordField}
                       />
@@ -665,14 +663,14 @@ const Users: React.FC = () => {
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-sm font-medium text-papa-stone mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       密碼 *
                     </label>
                     <input
                       type="password"
                       value={userForm.password}
                       onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
-                      className="w-full px-4 py-2 border border-papa-tribal/20 rounded-lg focus:outline-none focus:border-papa-ocean"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       placeholder="輸入密碼"
                       required
                     />
@@ -680,27 +678,18 @@ const Users: React.FC = () => {
                 )}
 
                 <div>
-                  <label className="flex items-center gap-3">
+                  <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={userForm.is_active}
                       onChange={(e) => setUserForm({ ...userForm, is_active: e.target.checked })}
-                      className="text-papa-ocean focus:ring-papa-ocean"
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                     />
-                    <span className="text-sm text-papa-stone">啟用帳戶</span>
+                    <span className="text-sm text-gray-700">啟用帳戶</span>
                   </label>
                 </div>
                 
-                <div className="flex gap-4">
-                  <button
-                    type="submit"
-                    className="flex-1 bg-papa-ocean text-white py-3 rounded-lg hover:bg-papa-ocean/90 transition-colors disabled:opacity-50"
-                    disabled={createUserMutation.isPending || updateUserMutation.isPending}
-                  >
-                    {(createUserMutation.isPending || updateUserMutation.isPending) 
-                      ? '處理中...' 
-                      : editingUser ? '更新資料' : '創建族人'}
-                  </button>
+                <div className="flex flex-col sm:flex-row gap-4">
                   <button
                     type="button"
                     onClick={() => {
@@ -708,9 +697,26 @@ const Users: React.FC = () => {
                       setEditingUser(null)
                       resetForm()
                     }}
-                    className="flex-1 bg-papa-cave/10 text-papa-stone py-3 rounded-lg hover:bg-papa-cave/20 transition-colors"
+                    className="flex-1 sm:flex-none sm:px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                   >
                     取消
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={createUserMutation.isPending || updateUserMutation.isPending}
+                    className="flex-1 px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                  >
+                    {(createUserMutation.isPending || updateUserMutation.isPending) ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>處理中...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>✓</span>
+                        <span>{editingUser ? '更新資料' : '創建用戶'}</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </form>
@@ -718,7 +724,7 @@ const Users: React.FC = () => {
           </div>
         )}
       </div>
-    </Wrapper>
+    </Layout>
   )
 }
 

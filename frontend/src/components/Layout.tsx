@@ -29,15 +29,14 @@ const PAPAIcons = {
   Users: () => <span>👥</span>,
   Activity: () => <span>🎉</span>
 }
-
 // 導航項目配置
 const navigationItems = [
-  { path: '/dashboard', label: '儀表板', icon: 'Sun', description: '如晨曦照耀部落' },
-  { path: '/groups', label: '群組管理', icon: 'House', description: '達魯岸的力量' },
-  { path: '/transactions', label: '支出記錄', icon: 'Mountain', description: '山川智慧理財' },
-  { path: '/activities', label: '活動管理', icon: 'Activity', description: '部落祭典規劃' },
-  { path: '/categories', label: '分類管理', icon: 'Chart', description: '分門別類如潮汐' },
-  { path: '/settings', label: '系統設定', icon: 'Betel', description: '檳榔樹下的設定' }
+  { path: '/dashboard', label: '儀表板', icon: 'Sun', description: '查看系統總覽與統計' },
+  { path: '/groups', label: '群組管理', icon: 'House', description: '管理群組與成員' },
+  { path: '/transactions', label: '支出記錄', icon: 'Mountain', description: '記錄收入與支出' },
+  { path: '/activities', label: '活動管理', icon: 'Activity', description: '管理活動與分帳' },
+  { path: '/categories', label: '分類管理', icon: 'Chart', description: '設定支出分類' },
+  { path: '/settings', label: '系統設定', icon: 'Betel', description: '系統偏好設定' }
 ]
 
 const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
@@ -45,6 +44,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
   const location = useLocation()
   const [isMobile, setIsMobile] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
   useEffect(() => {
     const checkDevice = () => {
@@ -87,7 +87,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               alt="PAPA - Pangcah Accounting" 
               className="w-8 h-8 rounded-full"
             />
-            <div className="text-sm font-bold text-papa-stone">PAPA-Accounting</div>
+            <div className="text-sm font-bold text-papa-stone">Pangcah Accounting</div>
           </div>
           
           {/* 用戶資訊 */}
@@ -180,35 +180,85 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
     )
   }
 
-  // 桌面版渲染
+  // 桌面版渲染 - 側邊欄 + 頂部欄佈局
   return (
-    <div className="min-h-screen bg-papa-mist">
-      {/* 導航欄 */}
-      <nav className="papa-navbar">
-        <div className="papa-navbar-content">
-          <div className="papa-brand">
-            <div className="papa-brand-logo">
-              <PAPAIcons.Sun />
-            </div>
-            <div className="papa-brand-text">
-              <div className="papa-brand-main">PAPA-Accounting</div>
-              <div className="papa-brand-sub">Pangcah Accounting</div>
-            </div>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* 側邊欄 */}
+      <aside className={`bg-white shadow-lg border-r border-gray-200 flex flex-col transition-all duration-300 ${
+        isSidebarCollapsed ? 'w-16' : 'w-64'
+      }`}>
+        {/* Logo 區域 - 參考行動版設計 */}
+        <div className={`p-6 border-b border-gray-200 ${
+          isSidebarCollapsed ? 'flex justify-center' : ''
+        }`}>
+          <div className={`flex items-center gap-2 ${
+            isSidebarCollapsed ? 'justify-center' : ''
+          }`}>
+            <img 
+              src="/logo.png" 
+              alt="PAPA - Pangcah Accounting" 
+              className="w-8 h-8 rounded-full flex-shrink-0"
+            />
+            {!isSidebarCollapsed && (
+              <div className="transition-opacity duration-300">
+                <div className="text-sm font-bold text-gray-800">Pangcah Accounting</div>
+              </div>
+            )}
           </div>
-          
-          {/* 導航選項 */}
-          <div className="papa-nav-links">
+        </div>
+        
+        {/* 伸縬按鈕 */}
+        <div className="px-4 py-2">
+          <button
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            className="w-full flex items-center justify-center p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            title={isSidebarCollapsed ? '展開側邊欄' : '收起側邊欄'}
+          >
+            <svg 
+              className="w-5 h-5 transform transition-transform duration-300"
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              {isSidebarCollapsed ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+              )}
+            </svg>
+          </button>
+        </div>
+        
+        {/* 導航選項 */}
+        <nav className="flex-1 p-4">
+          <div className="space-y-2">
             {navigationItems.map((item) => {
               const IconComponent = PAPAIcons[item.icon as keyof typeof PAPAIcons]
               return (
                 <button
                   key={item.path}
-                  className={`papa-nav-link ${isActive(item.path) ? 'active' : ''}`}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left relative group ${
+                    isActive(item.path) 
+                      ? 'bg-blue-50 text-blue-600' 
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
                   onClick={() => navigate(item.path)}
-                  title={item.description}
+                  title={isSidebarCollapsed ? item.label : item.description}
                 >
-                  <IconComponent />
-                  <span>{item.label}</span>
+                  <span className="text-lg flex-shrink-0"><IconComponent /></span>
+                  {!isSidebarCollapsed && (
+                    <span className="font-medium text-sm transition-opacity duration-300">{item.label}</span>
+                  )}
+                  {/* 收起時的提示 */}
+                  {isSidebarCollapsed && (
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
+                      {item.label}
+                    </div>
+                  )}
+                  {/* 活躍狀態的左側線條 */}
+                  {isActive(item.path) && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 rounded-r-full"></div>
+                  )}
                 </button>
               )
             })}
@@ -216,42 +266,111 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
             {/* 管理員專用 */}
             {user.role === 'ADMIN' && (
               <button
-                className={`papa-nav-link ${isActive('/users') ? 'active' : ''}`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left relative group ${
+                  isActive('/users') 
+                    ? 'bg-blue-50 text-blue-600' 
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
                 onClick={() => navigate('/users')}
-                title="管理部落族人"
+                title={isSidebarCollapsed ? '用戶管理' : '管理部落族人'}
               >
-                <PAPAIcons.Users />
-                <span>用戶管理</span>
+                <span className="text-lg flex-shrink-0"><PAPAIcons.Users /></span>
+                {!isSidebarCollapsed && (
+                  <span className="font-medium text-sm transition-opacity duration-300">用戶管理</span>
+                )}
+                {/* 收起時的提示 */}
+                {isSidebarCollapsed && (
+                  <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
+                    用戶管理
+                  </div>
+                )}
+                {/* 活躍狀態的左側線條 */}
+                {isActive('/users') && (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 rounded-r-full"></div>
+                )}
               </button>
             )}
           </div>
-
-          {/* 用戶信息 */}
-          <div className="papa-user-info">
-            <div className="papa-user-avatar">
-              {(user.name || user.username).charAt(0)}
+        </nav>
+        
+        {/* 用戶信息區域 */}
+        <div className="p-4 border-t border-gray-200">
+          <div className={`flex items-center p-3 rounded-lg bg-gray-50 transition-all duration-300 ${
+            isSidebarCollapsed ? 'justify-center' : 'gap-3'
+          }`}>
+            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium flex-shrink-0">
+              {(user.name || user.username).charAt(0).toUpperCase()}
             </div>
-            <div>
-              <div className="font-medium">{user.name || user.username}</div>
-              <div className="text-sm opacity-80">
-                {user.role === 'ADMIN' ? '系統管理員' : '一般用戶'}
+            {!isSidebarCollapsed && (
+              <>
+                <div className="flex-1 min-w-0 transition-opacity duration-300">
+                  <div className="font-medium text-gray-800 text-sm truncate">{user.name || user.username}</div>
+                  <div className="text-xs text-gray-500">
+                    {user.role === 'ADMIN' ? '系統管理員' : '一般用戶'}
+                  </div>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  title="登出系統"
+                >
+                  <span className="text-sm">🚪</span>
+                </button>
+              </>
+            )}
+            {/* 收起時的登出按鈕 */}
+            {isSidebarCollapsed && (
+              <div className="absolute left-full ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <button
+                  onClick={handleLogout}
+                  className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                  title="登出系統"
+                >
+                  <span className="text-sm">🚪</span>
+                </button>
               </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="papa-logout-btn"
-              title="登出系統"
-            >
-              🚪
-            </button>
+            )}
           </div>
         </div>
-      </nav>
+      </aside>
 
-      {/* 主內容區 */}
-      <main className="papa-main-content">
-        {children}
-      </main>
+      {/* 主內容區域 */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* 頂部欄 */}
+        <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {/* 預留位置給未來的操作按鈕 */}
+              <div>
+                <h1 className="text-xl font-semibold text-gray-800">
+                  {navigationItems.find(item => isActive(item.path))?.label || 
+                   (isActive('/users') ? '用戶管理' : '儀表板')}
+                </h1>
+                <p className="text-sm text-gray-500 mt-0.5">
+                  {navigationItems.find(item => isActive(item.path))?.description || 
+                   (isActive('/users') ? '管理部落族人' : '如晨曦照耀部落')}
+                </p>
+              </div>
+            </div>
+            
+            {/* 快速操作按鈕 */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate('/transactions/new')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
+              >
+                <span>+</span>
+                <span>新增記錄</span>
+              </button>
+            </div>
+          </div>
+        </header>
+        
+        {/* 主內容 */}
+        <main className="flex-1 p-6 overflow-auto">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }

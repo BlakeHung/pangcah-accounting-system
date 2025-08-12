@@ -50,63 +50,98 @@
     );
   }
   
-  /* 桌面版導航 */
-  .papa-navbar {
-    @apply sticky top-0 z-50 border-b;
-    background: linear-gradient(135deg, #543622 0%, #6d4c41 100%);
-    border-color: rgba(255, 255, 255, 0.1);
+  /* 桌面版側邊欄樣式 */
+  .papa-sidebar {
+    @apply bg-white shadow-lg border-r border-gray-200 flex flex-col transition-all duration-300;
   }
   
-  .papa-navbar-content {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between;
+  .papa-sidebar.collapsed {
+    @apply w-16;
   }
   
-  .papa-brand {
+  .papa-sidebar:not(.collapsed) {
+    @apply w-64;
+  }
+  
+  .papa-sidebar-header {
+    @apply p-6 border-b border-gray-200;
+  }
+  
+  .papa-sidebar-logo {
     @apply flex items-center gap-3;
   }
   
-  .papa-brand-logo {
-    @apply w-8 h-8 text-yellow-300 text-2xl flex items-center justify-center;
+  .papa-sidebar-nav {
+    @apply flex-1 p-4;
   }
   
-  .papa-brand-text {
-    @apply text-white;
+  .papa-sidebar-nav-item {
+    @apply w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-300 text-left relative group;
   }
   
-  .papa-brand-main {
-    @apply text-lg font-bold;
+  .papa-sidebar-nav-item.active {
+    @apply bg-blue-50 text-blue-600;
   }
   
-  .papa-brand-sub {
-    @apply text-xs opacity-80;
+  .papa-sidebar-nav-item:not(.active) {
+    @apply text-gray-700 hover:bg-gray-50;
   }
   
-  .papa-nav-links {
-    @apply flex items-center gap-1;
+  .papa-sidebar-footer {
+    @apply p-4 border-t border-gray-200;
   }
   
-  .papa-nav-link {
-    @apply px-4 py-2 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200 flex items-center gap-2 text-sm font-medium;
+  .papa-user-card {
+    @apply flex items-center p-3 rounded-lg bg-gray-50 transition-all duration-300;
   }
   
-  .papa-nav-link.active {
-    @apply text-white bg-white/20;
+  /* 側邊欄收起時的工具提示 */
+  .papa-sidebar-tooltip {
+    @apply absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 pointer-events-none;
   }
   
-  .papa-user-info {
-    @apply flex items-center gap-3 text-white;
+  /* 活躍狀態指示器 */
+  .papa-sidebar-active-indicator {
+    @apply absolute left-0 top-0 bottom-0 w-1 bg-blue-600 rounded-r-full;
   }
   
-  .papa-user-avatar {
-    @apply w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-medium;
+  /* 收縮按鈕動畫 */
+  .papa-sidebar-toggle {
+    @apply w-full flex items-center justify-center p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-300;
   }
   
-  .papa-logout-btn {
-    @apply p-2 hover:bg-white/10 rounded-lg transition-colors;
+  .papa-sidebar-toggle-icon {
+    @apply text-lg transform transition-transform duration-300;
+  }
+  
+  /* 桌面版頂部欄樣式 */
+  .papa-header {
+    @apply bg-white shadow-sm border-b border-gray-200 px-6 py-4;
+  }
+  
+  .papa-header-content {
+    @apply flex items-center justify-between;
+  }
+  
+  .papa-header-title {
+    @apply text-xl font-semibold text-gray-800;
+  }
+  
+  .papa-header-subtitle {
+    @apply text-sm text-gray-500 mt-0.5;
+  }
+  
+  .papa-header-actions {
+    @apply flex items-center gap-3;
+  }
+  
+  /* 主內容區域 */
+  .papa-main-container {
+    @apply flex-1 flex flex-col min-w-0;
   }
   
   .papa-main-content {
-    @apply flex-1 p-6;
+    @apply flex-1 p-6 overflow-auto;
   }
   
   .papa-action-card {
@@ -208,6 +243,30 @@
       );
   }
   
+  /* 桌面版響應式優化 */
+  @media (min-width: 768px) {
+    .papa-desktop-layout {
+      @apply min-h-screen bg-gray-50 flex;
+    }
+    
+    .papa-mobile-nav {
+      @apply hidden;
+    }
+  }
+  
+  /* 側邊欄動畫優化 */
+  .papa-sidebar-content {
+    @apply transition-opacity duration-300;
+  }
+  
+  .papa-sidebar.collapsed .papa-sidebar-content {
+    @apply opacity-0;
+  }
+  
+  .papa-sidebar:not(.collapsed) .papa-sidebar-content {
+    @apply opacity-100;
+  }
+  
   /* 移動版自定義顏色 */
   .bg-coral-400 {
     background-color: #ff7875;
@@ -235,6 +294,13 @@
     border-top: 1px solid #e5e7eb;
     z-index: 50;
     padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+  
+  /* 桌面版隱藏移動版導航 */
+  @media (min-width: 768px) {
+    .bottom-nav-fixed {
+      @apply hidden;
+    }
   }
   
   /* iPhone 安全區域支持 */
