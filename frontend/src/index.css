@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 基本 CSS 變數定義 */
+:root {
+  --papa-ocean-pink: #e91e63;
+}
+
 /* Layout 覆蓋樣式 - 確保優先級高於 Layout.css */
 .papa-mobile-container {
   /* 覆蓋 Layout.css 的樣式 */
@@ -53,4 +58,76 @@ code {
 /* 底部導航固定樣式 */
 .safe-area-inset-bottom {
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 確保按鈕有基本的樣式 */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 替換不存在的 PAPA 樣式類別 */
+.shadow-papa-soft {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-papa-medium {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.text-papa-stone {
+  color: #374151;
+}
+
+.text-papa-cave {
+  color: #6b7280;
+}
+
+.text-papa-ocean {
+  color: #3b82f6;
+}
+
+.bg-papa-mist {
+  background-color: #f9fafb;
+}
+
+.papa-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.papa-sun-loading {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.papa-loading-text {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

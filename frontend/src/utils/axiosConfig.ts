@@ -32,7 +32,7 @@ axios.interceptors.response.use(
       // 顯示提醒訊息
       const event = new CustomEvent('showSnackbar', { 
         detail: { 
-          message: '登入已過期，請重新登入', 
+          message: '⏰ 登入已過期，請重新登入', 
           type: 'warning' 
         }
       })

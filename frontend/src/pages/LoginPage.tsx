@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { useSnackbar } from '../contexts/SnackbarContext'
 
 interface LoginFormData {
   username: string
@@ -38,6 +39,7 @@ const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const { showSnackbar } = useSnackbar()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -87,6 +89,9 @@ const LoginPage: React.FC = () => {
         userInfo.last_login = new Date().toISOString()
         localStorage.setItem('user', JSON.stringify(userInfo))
         
+        // 顯示歡迎通知
+        showSnackbar(`🎉 歡迎回來，${userInfo.name}！`, 'success')
+        
         navigate('/dashboard')
       } catch (userErr) {
         console.error('獲取用戶資料失敗:', userErr)
@@ -97,17 +102,22 @@ const LoginPage: React.FC = () => {
           role: 'USER' // 預設為一般用戶
         }
         localStorage.setItem('user', JSON.stringify(basicUserInfo))
+        showSnackbar(`🎉 歡迎，${basicUserInfo.name}！`, 'success')
         navigate('/dashboard')
       }
     } catch (err: any) {
       console.error('登入失敗:', err)
+      let errorMessage = '登入失敗，請檢查帳號密碼'
       if (err.response?.data?.detail) {
+        errorMessage = err.response.data.detail
         setError(err.response.data.detail)
       } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message
         setError(err.response.data.message)
       } else {
         setError('登入失敗，請檢查帳號密碼')
       }
+      showSnackbar(`❌ ${errorMessage}`, 'error')
     } finally {
       setLoading(false)
     }

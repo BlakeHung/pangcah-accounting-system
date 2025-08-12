@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
+import { useSnackbar } from '../contexts/SnackbarContext'
 
 interface User {
   username: string
@@ -14,13 +15,13 @@ interface LayoutProps {
   dashboardData?: any
 }
 
-// PAPA 文化圖標組件
-const PAPAIcons = {
-  Sun: () => <span className="papa-sun-icon" />,
-  Mountain: () => <span className="papa-mountain-icon" />,
-  Wave: () => <span className="papa-wave-icon" />,
-  House: () => <span className="papa-house-icon" />,
-  Betel: () => <span className="papa-betel-icon" />,
+// 導航圖標組件
+const NavigationIcons = {
+  Sun: () => <span>🏠</span>,
+  Mountain: () => <span>⛰️</span>,
+  Wave: () => <span>🌊</span>,
+  House: () => <span>🏠</span>,
+  Betel: () => <span>🌿</span>,
   Menu: () => <span>☰</span>,
   User: () => <span>👤</span>,
   Chart: () => <span>📊</span>,
@@ -31,17 +32,18 @@ const PAPAIcons = {
 }
 // 導航項目配置
 const navigationItems = [
-  { path: '/dashboard', label: '儀表板', icon: 'Sun', description: '查看系統總覽與統計' },
-  { path: '/groups', label: '群組管理', icon: 'House', description: '管理群組與成員' },
+  { path: '/dashboard', label: '儀表板', icon: 'Chart', description: '查看系統總覽與統計' },
+  { path: '/groups', label: '群組管理', icon: 'Users', description: '管理群組與成員' },
   { path: '/transactions', label: '支出記錄', icon: 'Mountain', description: '記錄收入與支出' },
   { path: '/activities', label: '活動管理', icon: 'Activity', description: '管理活動與分帳' },
-  { path: '/categories', label: '分類管理', icon: 'Chart', description: '設定支出分類' },
-  { path: '/settings', label: '系統設定', icon: 'Betel', description: '系統偏好設定' }
+  { path: '/categories', label: '分類管理', icon: 'History', description: '設定支出分類' },
+  { path: '/settings', label: '系統設定', icon: 'Settings', description: '系統偏好設定' }
 ]
 
 const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
   const navigate = useNavigate()
   const location = useLocation()
+  const { showSnackbar } = useSnackbar()
   const [isMobile, setIsMobile] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
@@ -58,14 +60,17 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
   }, [])
 
   const handleLogout = () => {
+    const currentUser = user?.name || user?.username
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
     localStorage.removeItem('user')
     delete axios.defaults.headers.common['Authorization']
+    showSnackbar(`👋 再見，${currentUser}！`, 'info')
     navigate('/login')
   }
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/')
+
 
   if (!user) {
     return <>{children}</>
@@ -192,7 +197,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* 側邊欄 */}
-      <aside className={`bg-white shadow-lg border-r border-gray-200 flex flex-col transition-all duration-300 ${
+      <aside className={`bg-white shadow-lg border-r border-gray-200 flex flex-col transition-all duration-300 overflow-hidden ${
         isSidebarCollapsed ? 'w-16' : 'w-64'
       }`}>
         {/* Logo 區域 - 參考行動版設計 */}
@@ -249,11 +254,11 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
         <nav className="flex-1 p-4">
           <div className="space-y-2">
             {navigationItems.map((item) => {
-              const IconComponent = PAPAIcons[item.icon as keyof typeof PAPAIcons]
+              const IconComponent = NavigationIcons[item.icon as keyof typeof NavigationIcons]
               return (
                 <button
                   key={item.path}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left relative group ${
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left relative group overflow-hidden ${
                     isActive(item.path) 
                       ? 'text-white bg-blue-600' 
                       : 'text-gray-700 hover:bg-gray-50'
@@ -271,10 +276,6 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                       {item.label}
                     </div>
                   )}
-                  {/* 活躍狀態的左側線條 */}
-                  {isActive(item.path) && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full"></div>
-                  )}
                 </button>
               )
             })}
@@ -282,7 +283,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
             {/* 管理員專用 */}
             {user.role === 'ADMIN' && (
               <button
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left relative group ${
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left relative group overflow-hidden ${
                   isActive('/users') 
                     ? 'text-white bg-blue-600' 
                     : 'text-gray-700 hover:bg-gray-50'
@@ -290,7 +291,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                 onClick={() => navigate('/users')}
                 title={isSidebarCollapsed ? '用戶管理' : '管理部落族人'}
               >
-                <span className="text-lg flex-shrink-0"><PAPAIcons.Users /></span>
+                <span className="text-lg flex-shrink-0"><NavigationIcons.Users /></span>
                 {!isSidebarCollapsed && (
                   <span className="font-medium text-sm transition-opacity duration-300">用戶管理</span>
                 )}
@@ -299,10 +300,6 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                   <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
                     用戶管理
                   </div>
-                )}
-                {/* 活躍狀態的左側線條 */}
-                {isActive('/users') && (
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full"></div>
                 )}
               </button>
             )}

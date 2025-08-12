@@ -142,12 +142,12 @@ const ActivityEdit: React.FC = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['activity', id] })
       queryClient.invalidateQueries({ queryKey: ['activities'] })
-      showSnackbar('活動已成功更新', 'success')
+      showSnackbar(`✅ 活動「${data.name}」已成功更新！`, 'success')
       navigate(`/activities/${data.id}`)
     },
     onError: (error: any) => {
       console.error('更新活動失敗:', error)
-      showSnackbar('更新活動失敗，請檢查輸入內容', 'error')
+      showSnackbar('❌ 更新活動失敗，請檢查輸入內容', 'error')
     }
   })
 
@@ -162,12 +162,12 @@ const ActivityEdit: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activity', id] })
-      showSnackbar('成功邀請參與者', 'success')
+      showSnackbar('📩 成功邀請參與者加入活動！', 'success')
     },
     onError: (error: any) => {
       console.error('邀請參與者失敗:', error)
       const errorMessage = error.response?.data?.error || '邀請參與者失敗，請稍後再試'
-      showSnackbar(errorMessage, 'error')
+      showSnackbar(`❌ ${errorMessage}`, 'error')
     }
   })
 

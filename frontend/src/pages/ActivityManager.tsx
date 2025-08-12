@@ -146,11 +146,11 @@ const ActivityManager: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activity', id] })
       setShowJoinModal(false)
-      showSnackbar('成功加入活動', 'success')
+      showSnackbar('🎉 成功加入活動！', 'success')
     },
     onError: (error) => {
       console.error('加入活動失敗:', error)
-      showSnackbar('加入活動失敗，請稍後再試', 'error')
+      showSnackbar('❌ 加入活動失敗，請稍後再試', 'error')
     }
   })
 
@@ -162,11 +162,11 @@ const ActivityManager: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activity', id] })
-      showSnackbar('已離開活動', 'success')
+      showSnackbar('👋 已成功離開活動', 'success')
     },
     onError: (error) => {
       console.error('離開活動失敗:', error)
-      showSnackbar('離開活動失敗，請稍後再試', 'error')
+      showSnackbar('❌ 離開活動失敗，請稍後再試', 'error')
     }
   })
 
@@ -178,11 +178,11 @@ const ActivityManager: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activity', id] })
-      showSnackbar('活動結算已完成', 'success')
+      showSnackbar('💰 活動結算已完成！', 'success')
     },
     onError: (error) => {
       console.error('結算失敗:', error)
-      showSnackbar('活動結算失敗，請稍後再試', 'error')
+      showSnackbar('❌ 活動結算失敗，請稍後再試', 'error')
     }
   })
 
@@ -194,12 +194,12 @@ const ActivityManager: React.FC = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['activity', id] })
-      showSnackbar(data.message, 'success')
+      showSnackbar(`👑 ${data.message}`, 'success')
     },
     onError: (error: any) => {
       console.error('添加管理者失敗:', error)
       const errorMessage = error.response?.data?.error || '添加管理者失敗，請稍後再試'
-      showSnackbar(errorMessage, 'error')
+      showSnackbar(`❌ ${errorMessage}`, 'error')
     }
   })
 
@@ -211,12 +211,12 @@ const ActivityManager: React.FC = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['activity', id] })
-      showSnackbar(data.message, 'success')
+      showSnackbar(`🚫 ${data.message}`, 'success')
     },
     onError: (error: any) => {
       console.error('移除管理者失敗:', error)
       const errorMessage = error.response?.data?.error || '移除管理者失敗，請稍後再試'
-      showSnackbar(errorMessage, 'error')
+      showSnackbar(`❌ ${errorMessage}`, 'error')
     }
   })
 

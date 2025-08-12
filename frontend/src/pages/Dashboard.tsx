@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
+import { useSnackbar } from '../contexts/SnackbarContext'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -89,17 +90,18 @@ interface Expense {
   }>
 }
 
-// PAPA 文化圖標組件
-const PAPAIcons = {
-  Sun: () => <span className="papa-sun-icon" />,
-  Mountain: () => <span className="papa-mountain-icon" />,
-  Wave: () => <span className="papa-wave-icon" />,
-  House: () => <span className="papa-house-icon" />,
-  Betel: () => <span className="papa-betel-icon" />,
+// Dashboard 圖標組件
+const DashboardIcons = {
+  Sun: () => <span>☀️</span>,
+  Mountain: () => <span>⛰️</span>,
+  Wave: () => <span>🌊</span>,
+  House: () => <span>🏠</span>,
+  Betel: () => <span>🌿</span>,
 }
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate()
+  const { showSnackbar } = useSnackbar()
   const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
