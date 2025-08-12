@@ -47,6 +47,19 @@ export const SnackbarProvider: React.FC<SnackbarProviderProps> = ({ children }) 
     }))
   }
 
+  // 監聽全局 snackbar 事件
+  React.useEffect(() => {
+    const handleShowSnackbar = (event: CustomEvent) => {
+      const { message, type } = event.detail
+      showSnackbar(message, type)
+    }
+
+    window.addEventListener('showSnackbar' as any, handleShowSnackbar as any)
+    return () => {
+      window.removeEventListener('showSnackbar' as any, handleShowSnackbar as any)
+    }
+  }, [])
+
   return (
     <SnackbarContext.Provider value={{ showSnackbar }}>
       {children}

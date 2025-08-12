@@ -432,7 +432,7 @@ const TransactionNew: React.FC = () => {
     <Layout user={currentUser}>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* 頁面標題 */}
-        <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+        <div className="bg-white rounded-xl p-6 shadow-lg">
           <div className="flex items-center gap-4 mb-4">
             <button 
               onClick={() => navigate('/transactions')}
@@ -459,7 +459,7 @@ const TransactionNew: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* 基本資訊 */}
-          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="bg-white rounded-xl p-6 shadow-lg">
             <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
               <span className="text-xl">📝</span>
               基本資訊
@@ -516,7 +516,7 @@ const TransactionNew: React.FC = () => {
                     step="1"
                     min="0"
                     required
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg font-semibold"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all text-lg font-semibold"
                   />
                 </div>
               </div>
@@ -531,7 +531,7 @@ const TransactionNew: React.FC = () => {
                   value={formData.date}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all"
                 />
               </div>
             </div>
@@ -547,7 +547,7 @@ const TransactionNew: React.FC = () => {
                   value={formData.category}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all appearance-none bg-white"
                 >
                   <option value="">📝 請選擇分類</option>
                   {categories.map(category => (
@@ -568,14 +568,14 @@ const TransactionNew: React.FC = () => {
                   onChange={handleInputChange}
                   placeholder="詳細描述這筆記錄..."
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all resize-none"
                 />
               </div>
             </div>
           </div>
 
           {/* 關聯資訊 */}
-          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="bg-white rounded-xl p-6 shadow-lg">
             <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
               <span className="text-xl">🔗</span>
               關聯資訊
@@ -592,7 +592,7 @@ const TransactionNew: React.FC = () => {
                   name="group"
                   value={formData.group}
                   onChange={handleGroupChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all appearance-none bg-white"
                 >
                   <option value="">🚫 不指定群組</option>
                   {groups.map(group => (
@@ -614,7 +614,7 @@ const TransactionNew: React.FC = () => {
                   name="event"
                   value={formData.event}
                   onChange={handleEventChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all appearance-none bg-white"
                 >
                   <option value="">🚫 不指定活動</option>
                   {events.map(event => {
@@ -638,8 +638,8 @@ const TransactionNew: React.FC = () => {
                   })}
                 </select>
                 {(formData.event && events.find(e => e.id.toString() === formData.event.toString())?.allow_split) && (
-                  <div className="mt-2 p-2 bg-blue-50 rounded-lg">
-                    <p className="text-xs text-blue-700 flex items-center gap-1">
+                  <div className="mt-2 p-2 rounded-lg bg-blue-50">
+                    <p className="text-xs flex items-center gap-1 text-blue-600">
                       🔄 此活動支持分帳功能
                     </p>
                   </div>
@@ -788,7 +788,7 @@ const TransactionNew: React.FC = () => {
           )}
 
           {/* 附件圖片 */}
-          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="bg-white rounded-xl p-6 shadow-lg">
             <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
               <span className="text-xl">🖼️</span>
               附件圖片
@@ -819,7 +819,7 @@ const TransactionNew: React.FC = () => {
               <button
                 type="button"
                 onClick={handleImageAdd}
-                className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"
+className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"
               >
                 <span className="text-xl">+</span>
                 <span>新增圖片</span>
@@ -829,19 +829,19 @@ const TransactionNew: React.FC = () => {
           </div>
 
           {/* 表單操作 */}
-          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="bg-white rounded-xl p-6 shadow-lg">
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 type="button"
                 onClick={() => navigate('/transactions')}
-                className="flex-1 sm:flex-none sm:px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                className="secondary flex-1 sm:flex-none sm:px-6 py-3"
               >
                 取消
               </button>
               <button
                 type="submit"
                 disabled={createTransactionMutation.isPending}
-                className="flex-1 px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                className="flex-1 px-8 py-3 flex items-center justify-center gap-2"
               >
                 {createTransactionMutation.isPending ? (
                   <>

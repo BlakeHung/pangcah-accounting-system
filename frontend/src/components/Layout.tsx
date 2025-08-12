@@ -83,9 +83,17 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
           {/* Logo */}
           <div className="flex items-center gap-2">
             <img 
-              src="/logo.png" 
+              src="/logo.png"
               alt="PAPA - Pangcah Accounting" 
-              className="w-8 h-8 rounded-full"
+              className="w-8 h-8 rounded-full object-cover"
+              onError={(e) => {
+                // 備用圖標
+                (e.target as HTMLImageElement).style.display = 'none';
+                (e.target as HTMLImageElement).parentElement?.insertAdjacentHTML(
+                  'beforeend',
+                  '<div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">P</div>'
+                )
+              }}
             />
             <div className="text-sm font-bold text-papa-stone">Pangcah Accounting</div>
           </div>
@@ -120,7 +128,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               onClick={() => navigate('/dashboard')} 
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-16 ${
                 isActive('/dashboard') 
-                  ? 'text-blue-600 bg-blue-50' 
+                  ? 'text-papa-ocean bg-papa-ocean/10' 
                   : 'text-gray-500 active:bg-gray-100'
               }`}
             >
@@ -132,7 +140,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               onClick={() => navigate('/transactions')} 
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-16 ${
                 isActive('/transactions') 
-                  ? 'text-blue-600 bg-blue-50' 
+                  ? 'text-papa-ocean bg-papa-ocean/10' 
                   : 'text-gray-500 active:bg-gray-100'
               }`}
             >
@@ -145,17 +153,17 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               onClick={() => navigate('/transactions/new')} 
               className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 active:scale-95 min-w-16"
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg active:shadow-md">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg active:shadow-md" style={{ background: 'var(--papa-ocean-pink)' }}>
                 <span className="text-white text-2xl font-light">+</span>
               </div>
-              <span className="text-xs font-medium text-blue-600">新增</span>
+              <span className="text-xs font-medium" style={{ color: 'var(--papa-ocean-pink)' }}>新增</span>
             </button>
             
             <button 
               onClick={() => navigate('/groups')} 
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-16 ${
                 isActive('/groups') 
-                  ? 'text-blue-600 bg-blue-50' 
+                  ? 'text-papa-ocean bg-papa-ocean/10' 
                   : 'text-gray-500 active:bg-gray-100'
               }`}
             >
@@ -167,7 +175,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               onClick={() => navigate('/settings')} 
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-16 ${
                 isActive('/settings') 
-                  ? 'text-blue-600 bg-blue-50' 
+                  ? 'text-papa-ocean bg-papa-ocean/10' 
                   : 'text-gray-500 active:bg-gray-100'
               }`}
             >
@@ -195,9 +203,17 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
             isSidebarCollapsed ? 'justify-center' : ''
           }`}>
             <img 
-              src="/logo.png" 
+              src="/logo.png"
               alt="PAPA - Pangcah Accounting" 
-              className="w-8 h-8 rounded-full flex-shrink-0"
+              className="w-8 h-8 rounded-full flex-shrink-0 object-cover"
+              onError={(e) => {
+                // 備用圖標
+                (e.target as HTMLImageElement).style.display = 'none';
+                (e.target as HTMLImageElement).parentElement?.insertAdjacentHTML(
+                  'beforeend',
+                  '<div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">P</div>'
+                )
+              }}
             />
             {!isSidebarCollapsed && (
               <div className="transition-opacity duration-300">
@@ -239,9 +255,10 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                   key={item.path}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left relative group ${
                     isActive(item.path) 
-                      ? 'bg-blue-50 text-blue-600' 
+                      ? 'text-white' 
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
+                  style={isActive(item.path) ? { backgroundColor: 'var(--papa-ocean-pink)' } : {}}
                   onClick={() => navigate(item.path)}
                   title={isSidebarCollapsed ? item.label : item.description}
                 >
@@ -257,7 +274,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                   )}
                   {/* 活躍狀態的左側線條 */}
                   {isActive(item.path) && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 rounded-r-full"></div>
+                    <div className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full" style={{ backgroundColor: 'var(--papa-ocean-pink)' }}></div>
                   )}
                 </button>
               )
@@ -268,9 +285,10 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               <button
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left relative group ${
                   isActive('/users') 
-                    ? 'bg-blue-50 text-blue-600' 
+                    ? 'text-white' 
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
+                style={isActive('/users') ? { backgroundColor: 'var(--papa-ocean-pink)' } : {}}
                 onClick={() => navigate('/users')}
                 title={isSidebarCollapsed ? '用戶管理' : '管理部落族人'}
               >
@@ -286,7 +304,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                 )}
                 {/* 活躍狀態的左側線條 */}
                 {isActive('/users') && (
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 rounded-r-full"></div>
+                  <div className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full" style={{ backgroundColor: 'var(--papa-ocean-pink)' }}></div>
                 )}
               </button>
             )}
@@ -357,7 +375,8 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate('/transactions/new')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
+                className="bg-papa-ocean text-white hover:bg-papa-ocean/90 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium shadow-papa-soft"
+                style={{ backgroundColor: 'var(--papa-ocean-pink)' }}
               >
                 <span>+</span>
                 <span>新增記錄</span>

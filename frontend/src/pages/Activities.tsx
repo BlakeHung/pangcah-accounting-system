@@ -114,7 +114,7 @@ const Activities: React.FC = () => {
     <Layout user={currentUser}>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* 頁面標題 */}
-        <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+        <div className="bg-white rounded-xl p-6 shadow-lg">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 flex items-center gap-3">
@@ -127,7 +127,7 @@ const Activities: React.FC = () => {
             </div>
             <button
               onClick={() => navigate('/activities/new')}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2 text-sm"
             >
               <span>➕</span>
               <span className="hidden sm:inline">新增活動</span>
@@ -138,7 +138,7 @@ const Activities: React.FC = () => {
 
         {/* 活動統計 */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-orange-400">
+          <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-orange-400">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-medium text-gray-600 mb-1">規劃中</h3>
@@ -150,7 +150,7 @@ const Activities: React.FC = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-green-400">
+          <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-green-400">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-medium text-gray-600 mb-1">進行中</h3>
@@ -162,7 +162,7 @@ const Activities: React.FC = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-blue-400">
+          <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-blue-400">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-medium text-gray-600 mb-1">已完成</h3>
@@ -174,7 +174,7 @@ const Activities: React.FC = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-purple-400">
+          <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-purple-400">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-medium text-gray-600 mb-1">總活動</h3>
@@ -186,7 +186,7 @@ const Activities: React.FC = () => {
         </div>
 
         {/* 篩選器 */}
-        <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+        <div className="bg-white rounded-xl p-6 shadow-lg">
           <div className="flex flex-wrap gap-4 items-center">
             <span className="text-gray-800 font-medium">篩選狀態：</span>
             <div className="flex flex-wrap gap-2">
@@ -228,7 +228,7 @@ const Activities: React.FC = () => {
                 activities.map(activity => (
                   <div
                     key={activity.id}
-                    className="bg-white rounded-xl p-6 shadow-papa-soft hover:shadow-papa-medium transition-all duration-200 cursor-pointer"
+                    className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer"
                     onClick={() => setSelectedActivity(activity)}
                   >
                     {/* 活動頭部 */}
@@ -341,7 +341,7 @@ const Activities: React.FC = () => {
                 ))
               ) : (
                 <div className="col-span-full">
-                  <div className="bg-white rounded-xl p-12 shadow-papa-soft text-center">
+                  <div className="bg-white rounded-xl p-12 shadow-lg text-center">
                     <div className="text-6xl mb-4 opacity-50">🎉</div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2">
                       暫無活動資料

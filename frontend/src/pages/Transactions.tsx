@@ -142,14 +142,14 @@ const Transactions: React.FC = () => {
     <Layout user={currentUser}>
       <div className="space-y-6">
         {/* 頁面標題 */}
-        <div className="bg-white rounded-2xl p-6 shadow-papa-soft">
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-papa-stone mb-2 flex items-center gap-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 flex items-center gap-2">
                 <span className="text-2xl">📊</span>
                 交易記錄
               </h1>
-              <p className="text-papa-cave text-sm md:text-base">
+              <p className="text-gray-600 text-sm md:text-base">
                 管理所有收入和支出記錄
               </p>
             </div>
@@ -166,7 +166,7 @@ const Transactions: React.FC = () => {
 
         {/* 統計摘要 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-red-400">
+          <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-red-400">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-medium text-gray-600 mb-1">總支出</h3>
@@ -181,7 +181,7 @@ const Transactions: React.FC = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-green-400">
+          <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-green-400">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-medium text-gray-600 mb-1">總收入</h3>
@@ -196,7 +196,7 @@ const Transactions: React.FC = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-xl p-6 shadow-papa-soft border-l-4 border-blue-400">
+          <div className="bg-white rounded-xl p-6 shadow-lg border-l-4 border-blue-400">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-medium text-gray-600 mb-1">淨額</h3>
@@ -217,7 +217,7 @@ const Transactions: React.FC = () => {
         </div>
 
         {/* 篩選器 */}
-        <div className="bg-white rounded-xl p-4 shadow-papa-soft">
+        <div className="bg-white rounded-xl p-4 shadow-lg">
           <div className="flex flex-wrap gap-4 items-center">
             <span className="text-gray-700 font-medium text-sm">篩選類型：</span>
             <div className="flex gap-2 flex-wrap">
@@ -266,7 +266,7 @@ const Transactions: React.FC = () => {
                 .map(transaction => (
                 <div
                   key={transaction.id}
-                  className="bg-white rounded-xl p-4 shadow-papa-soft hover:shadow-papa-medium transition-all duration-200 cursor-pointer"
+                  className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer"
                   onClick={() => navigate(`/transactions/${transaction.id}`)}
                 >
                   <div className="flex items-start gap-4">
@@ -349,7 +349,7 @@ const Transactions: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div className="bg-white rounded-xl p-12 shadow-papa-soft text-center">
+              <div className="bg-white rounded-xl p-12 shadow-lg text-center">
                 <div className="text-6xl mb-4 opacity-50">📊</div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
                   {typeFilter === 'ALL' ? '暫無交易記錄' : 

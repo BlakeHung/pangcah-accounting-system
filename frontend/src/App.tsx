@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import axios from 'axios'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SnackbarProvider } from './contexts/SnackbarContext'
+import './utils/axiosConfig' // 引入 axios 設定
 
 // PAPA 主題頁面
 import LoginPage from './pages/LoginPage'
@@ -23,12 +23,10 @@ import Settings from './pages/Settings'
 
 // 樣式
 import './App.css'
+import './styles/papa-theme.css'
 import './styles/papa-tailwind.css'
 
 const queryClient = new QueryClient()
-
-// 設置 axios 基礎 URL
-axios.defaults.baseURL = 'https://pangcah-accounting-system-production.up.railway.app'
 
 // 私有路由組件
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {

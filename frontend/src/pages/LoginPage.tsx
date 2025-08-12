@@ -32,8 +32,8 @@ interface UserProfile {
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState<LoginFormData>({
-    username: 'admin',
-    password: 'admin123'
+    username: '',
+    password: ''
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -114,42 +114,39 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-papa-stone to-papa-cave flex items-center justify-center relative overflow-hidden">
-      {/* 部落幾何紋樣背景 */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="w-full h-full" style={{
-          backgroundImage: `repeating-linear-gradient(
-            45deg,
-            rgba(255,255,255,0.1) 0px,
-            rgba(255,255,255,0.1) 20px,
-            transparent 20px,
-            transparent 40px
-          ),
-          repeating-linear-gradient(
-            -45deg,
-            rgba(255,255,255,0.05) 0px,
-            rgba(255,255,255,0.05) 30px,
-            transparent 30px,
-            transparent 60px
-          )`
-        }} />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center relative overflow-hidden">
+      {/* 裝飾背景 */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div className="absolute top-40 right-20 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-40 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
       </div>
       
       {/* 登入卡片 */}
       <div className="relative z-10 w-full max-w-md mx-4">
-        <div className="bg-white rounded-3xl shadow-papa-deep p-8 backdrop-blur-sm border border-white/20">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 backdrop-blur-sm">
           {/* 頭部 - PAPA品牌設計 */}
           <div className="text-center mb-8">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: '#543622' }}>
-              <div className="text-3xl text-white">✦</div>
-            </div>
-            <h1 className="text-2xl font-bold text-papa-stone mb-2 font-display">
+            <img 
+              src="/logo.png"
+              alt="PAPA - Pangcah Accounting" 
+              className="w-20 h-20 mx-auto mb-4 rounded-full object-cover shadow-lg"
+              onError={(e) => {
+                // 備用圖標
+                (e.target as HTMLImageElement).style.display = 'none';
+                (e.target as HTMLImageElement).parentElement?.insertAdjacentHTML(
+                  'beforeend',
+                  '<div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg"><span class="text-white text-3xl font-bold">P</span></div>'
+                )
+              }}
+            />
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
               PAPA
             </h1>
-            <p className="text-papa-stone opacity-80 text-sm font-medium">
+            <p className="text-gray-600 text-sm font-medium">
               Pangcah Accounting Platform
             </p>
-            <p className="text-papa-cave opacity-60 text-xs mt-1">
+            <p className="text-gray-500 text-xs mt-1">
               長光部落記帳系統
             </p>
           </div>
@@ -157,13 +154,14 @@ const LoginPage: React.FC = () => {
           {/* 登入表單 */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
-                ⚠️ {error}
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                <span>⚠️</span>
+                <span>{error}</span>
               </div>
             )}
             
             <div className="space-y-2">
-              <label htmlFor="username" className="block text-sm font-medium text-papa-stone">
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
                 使用者名稱
               </label>
               <div className="relative">
@@ -176,16 +174,20 @@ const LoginPage: React.FC = () => {
                   required
                   disabled={loading}
                   placeholder="請輸入使用者名稱"
-                  className="w-full px-4 py-3 pl-12 border border-papa-cave/20 rounded-xl focus:ring-2 focus:ring-papa-ocean focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                  className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all duration-200"
+                  style={{
+                    '--tw-ring-color': 'var(--papa-ocean-pink)'
+                  } as any}
+                  autoComplete="username"
                 />
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-papa-cave opacity-40">
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
                   👤
                 </div>
               </div>
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-medium text-papa-stone">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 密碼
               </label>
               <div className="relative">
@@ -198,9 +200,13 @@ const LoginPage: React.FC = () => {
                   required
                   disabled={loading}
                   placeholder="請輸入密碼"
-                  className="w-full px-4 py-3 pl-12 border border-papa-cave/20 rounded-xl focus:ring-2 focus:ring-papa-ocean focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                  className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all duration-200"
+                  style={{
+                    '--tw-ring-color': 'var(--papa-ocean-pink)'
+                  } as any}
+                  autoComplete="current-password"
                 />
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-papa-cave opacity-40">
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
                   🔒
                 </div>
               </div>
@@ -209,11 +215,10 @@ const LoginPage: React.FC = () => {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full py-4 rounded-xl font-semibold text-white transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:transform-none shadow-papa-medium hover:shadow-papa-deep"
+              className="w-full py-3 text-white rounded-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none shadow-md hover:shadow-lg"
               style={{
-                background: loading 
-                  ? 'linear-gradient(135deg, #94a3b8 0%, #64748b 100%)' 
-                  : 'linear-gradient(135deg, #E91E63 0%, #AD1457 100%)'
+                backgroundColor: loading ? '#9CA3AF' : 'var(--papa-ocean-pink)',
+                cursor: loading ? 'not-allowed' : 'pointer'
               }}
             >
               {loading ? (
@@ -222,32 +227,40 @@ const LoginPage: React.FC = () => {
                   <span>登入中...</span>
                 </div>
               ) : (
-                <div className="flex items-center justify-center gap-2">
-                  <span>🚀</span>
-                  <span>進入系統</span>
-                </div>
+                <span>登入系統</span>
               )}
             </button>
           </form>
           
-          {/* 測試帳號資訊 */}
-          <div className="mt-8 pt-6 border-t border-papa-cave/10">
-            <div className="text-center text-sm text-papa-cave opacity-70">
-              <div className="bg-papa-mist rounded-xl p-4">
-                <p className="font-medium text-papa-stone mb-2">測試帳號</p>
-                <div className="space-y-1 text-xs">
-                  <p><span className="font-mono bg-white px-2 py-1 rounded">admin</span> / <span className="font-mono bg-white px-2 py-1 rounded">admin</span> (系統管理員)</p>
-                  <p><span className="font-mono bg-white px-2 py-1 rounded">alice</span> / <span className="font-mono bg-white px-2 py-1 rounded">password123</span> (一般用戶)</p>
-                </div>
-              </div>
+          {/* 底部資訊 */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <div className="text-center text-xs text-gray-500">
+              <p className="mb-2">
+                © 2025 長光部落記帳系統
+              </p>
+              <p>
+                Powered by{' '}
+                <a 
+                  href="https://wchung.tw" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="font-medium hover:opacity-80 transition-opacity"
+                  style={{ color: 'var(--papa-ocean-pink)' }}
+                >
+                  布雷克實驗室 Blake Lab
+                </a>
+              </p>
+              <p className="mt-1">
+                <a 
+                  href="https://wchung.tw" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  wchung.tw
+                </a>
+              </p>
             </div>
-          </div>
-          
-          {/* 版權資訊 */}
-          <div className="text-center mt-6">
-            <p className="text-xs text-papa-cave opacity-50">
-              © 2024 長光部落 · 文化與科技的融合
-            </p>
           </div>
         </div>
       </div>

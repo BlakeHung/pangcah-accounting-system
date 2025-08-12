@@ -482,11 +482,12 @@ const Dashboard: React.FC = () => {
             </button>
 
             <button
-              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors"
+              className="flex flex-col items-center gap-2 p-4 rounded-xl hover:opacity-90 transition-all"
+              style={{ backgroundColor: 'rgba(233, 30, 99, 0.1)' }}
               onClick={() => navigate('/transactions')}
             >
               <div className="text-2xl">📊</div>
-              <span className="text-sm font-medium text-blue-700">查看記錄</span>
+              <span className="text-sm font-medium" style={{ color: 'var(--papa-ocean-pink)' }}>查看記錄</span>
             </button>
 
             <button
@@ -616,10 +617,10 @@ const Dashboard: React.FC = () => {
             </div>
             
             {/* 活動数量 */}
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'rgba(233, 30, 99, 0.1)' }}>
               <div className="text-2xl mb-2">🎉</div>
               <p className="text-xs text-gray-600 mb-1">活動数量</p>
-              <p className="font-bold text-blue-600 text-sm">{stats?.eventCount || 0}</p>
+              <p className="font-bold text-sm" style={{ color: 'var(--papa-ocean-pink)' }}>{stats?.eventCount || 0}</p>
             </div>
           </div>
         </div>
@@ -630,7 +631,8 @@ const Dashboard: React.FC = () => {
             <h3 className="text-lg font-bold text-gray-800">最近交易</h3>
             <button 
               onClick={() => navigate('/transactions')}
-              className="text-blue-600 text-sm font-medium"
+              className="text-sm font-medium"
+              style={{ color: 'var(--papa-ocean-pink)' }}
             >
               查看全部
             </button>
@@ -662,7 +664,8 @@ const Dashboard: React.FC = () => {
                 <p className="text-sm">還沒有交易記錄</p>
                 <button
                   onClick={() => navigate('/transactions/new')}
-                  className="mt-2 text-blue-600 text-sm font-medium"
+                  className="mt-2 text-sm font-medium"
+                  style={{ color: 'var(--papa-ocean-pink)' }}
                 >
                   立即新增一筆
                 </button>
