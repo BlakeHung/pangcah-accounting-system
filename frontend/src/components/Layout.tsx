@@ -95,14 +95,14 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                 )
               }}
             />
-            <div className="text-sm font-bold text-papa-stone">Pangcah Accounting</div>
+            <div className="text-sm font-bold text-gray-800">Pangcah Accounting</div>
           </div>
           
           {/* 用戶資訊 */}
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <div className="text-xs text-papa-stone font-medium">{user.name || user.username}</div>
-              <div className="text-xs text-papa-cave opacity-70">
+              <div className="text-xs text-gray-800 font-medium">{user.name || user.username}</div>
+              <div className="text-xs text-gray-600 opacity-70">
                 {user.role === 'ADMIN' ? '系統管理員' : '一般用戶'}
               </div>
             </div>
@@ -122,13 +122,13 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
         </main>
 
         {/* 底部導航欄 - iPhone 風格優化 */}
-        <nav className="bottom-nav-fixed">
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-inset-bottom">
           <div className="flex justify-around items-center px-2 pt-3">
             <button 
               onClick={() => navigate('/dashboard')} 
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-16 ${
                 isActive('/dashboard') 
-                  ? 'text-papa-ocean bg-papa-ocean/10' 
+                  ? 'text-blue-600 bg-blue-50' 
                   : 'text-gray-500 active:bg-gray-100'
               }`}
             >
@@ -140,7 +140,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               onClick={() => navigate('/transactions')} 
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-16 ${
                 isActive('/transactions') 
-                  ? 'text-papa-ocean bg-papa-ocean/10' 
+                  ? 'text-blue-600 bg-blue-50' 
                   : 'text-gray-500 active:bg-gray-100'
               }`}
             >
@@ -153,17 +153,17 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               onClick={() => navigate('/transactions/new')} 
               className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 active:scale-95 min-w-16"
             >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg active:shadow-md" style={{ background: 'var(--papa-ocean-pink)' }}>
+              <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center shadow-lg active:shadow-md">
                 <span className="text-white text-2xl font-light">+</span>
               </div>
-              <span className="text-xs font-medium" style={{ color: 'var(--papa-ocean-pink)' }}>新增</span>
+              <span className="text-xs font-medium text-blue-600">新增</span>
             </button>
             
             <button 
               onClick={() => navigate('/groups')} 
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-16 ${
                 isActive('/groups') 
-                  ? 'text-papa-ocean bg-papa-ocean/10' 
+                  ? 'text-blue-600 bg-blue-50' 
                   : 'text-gray-500 active:bg-gray-100'
               }`}
             >
@@ -175,7 +175,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               onClick={() => navigate('/settings')} 
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-16 ${
                 isActive('/settings') 
-                  ? 'text-papa-ocean bg-papa-ocean/10' 
+                  ? 'text-blue-600 bg-blue-50' 
                   : 'text-gray-500 active:bg-gray-100'
               }`}
             >
@@ -255,10 +255,9 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                   key={item.path}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left relative group ${
                     isActive(item.path) 
-                      ? 'text-white' 
+                      ? 'text-white bg-blue-600' 
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
-                  style={isActive(item.path) ? { backgroundColor: 'var(--papa-ocean-pink)' } : {}}
                   onClick={() => navigate(item.path)}
                   title={isSidebarCollapsed ? item.label : item.description}
                 >
@@ -274,7 +273,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                   )}
                   {/* 活躍狀態的左側線條 */}
                   {isActive(item.path) && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full" style={{ backgroundColor: 'var(--papa-ocean-pink)' }}></div>
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full"></div>
                   )}
                 </button>
               )
@@ -285,10 +284,9 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               <button
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left relative group ${
                   isActive('/users') 
-                    ? 'text-white' 
+                    ? 'text-white bg-blue-600' 
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
-                style={isActive('/users') ? { backgroundColor: 'var(--papa-ocean-pink)' } : {}}
                 onClick={() => navigate('/users')}
                 title={isSidebarCollapsed ? '用戶管理' : '管理部落族人'}
               >
@@ -304,7 +302,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                 )}
                 {/* 活躍狀態的左側線條 */}
                 {isActive('/users') && (
-                  <div className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full" style={{ backgroundColor: 'var(--papa-ocean-pink)' }}></div>
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full"></div>
                 )}
               </button>
             )}
@@ -375,8 +373,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate('/transactions/new')}
-                className="bg-papa-ocean text-white hover:bg-papa-ocean/90 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium shadow-papa-soft"
-                style={{ backgroundColor: 'var(--papa-ocean-pink)' }}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium shadow-lg"
               >
                 <span>+</span>
                 <span>新增記錄</span>

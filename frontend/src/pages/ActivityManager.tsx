@@ -220,39 +220,21 @@ const ActivityManager: React.FC = () => {
     }
   })
 
-  if (!user) {
-    return <div className="loading-container"><div className="loading-spinner">載入中...</div></div>
-  }
-
-  if (activityLoading) {
-    return (
-      <Layout user={user}>
-        <div className="loading-container">
-          <div className="loading-spinner">載入活動資料中...</div>
-        </div>
-      </Layout>
-    )
-  }
-
-  if (!activity) {
-    return (
-      <Layout user={user}>
-        <div className="error-container">
-          <h2>找不到活動</h2>
-          <button onClick={() => navigate('/activities')} className="btn-primary">
-            返回活動列表
-          </button>
-        </div>
-      </Layout>
-    )
-  }
-
   const getStatusDisplay = (status: string) => {
     switch (status) {
       case 'ACTIVE': return '進行中'
       case 'COMPLETED': return '已完成'
       case 'CANCELLED': return '已取消'
       default: return status
+    }
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'ACTIVE': return 'bg-green-100 text-green-600'
+      case 'COMPLETED': return 'bg-blue-100 text-blue-600'
+      case 'CANCELLED': return 'bg-red-100 text-red-600'
+      default: return 'bg-gray-100 text-gray-600'
     }
   }
 
@@ -265,6 +247,59 @@ const ActivityManager: React.FC = () => {
     }
   }
 
+  const getSplitOptionColor = (option: string) => {
+    switch (option) {
+      case 'NO_SPLIT': return 'bg-gray-100 text-gray-600'
+      case 'PARTIAL_SPLIT': return 'bg-yellow-100 text-yellow-600'
+      case 'FULL_SPLIT': return 'bg-green-100 text-green-600'
+      default: return 'bg-gray-100 text-gray-600'
+    }
+  }
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">載入中...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (activityLoading) {
+    return (
+      <Layout user={user}>
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">載入活動資料中...</p>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
+
+  if (!activity) {
+    return (
+      <Layout user={user}>
+        <div className="max-w-2xl mx-auto mt-8">
+          <div className="bg-white rounded-xl p-8 shadow-lg text-center">
+            <div className="text-6xl mb-4">❌</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">找不到活動</h2>
+            <p className="text-gray-600 mb-6">您要查看的活動不存在或已被刪除。</p>
+            <button 
+              onClick={() => navigate('/activities')} 
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+            >
+              返回活動列表
+            </button>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
+
   const isBeforeStart = new Date(activity.start_date) > new Date()
   const isInProgress = new Date(activity.start_date) <= new Date() && activity.status === 'ACTIVE'
   const canJoin = !activity.is_user_participant && (isBeforeStart || activity.is_user_manager)
@@ -273,368 +308,465 @@ const ActivityManager: React.FC = () => {
 
   return (
     <Layout user={user}>
-      <div className="activity-manager">
-        {/* 活動標題和狀態 */}
-        <div className="activity-header">
-          <div className="activity-title">
-            <h1>{activity.name}</h1>
-            <div className="activity-badges">
-              <span className={`badge status-${activity.status.toLowerCase()}`}>
-                {getStatusDisplay(activity.status)}
-              </span>
-              {activity.is_locked && <span className="badge locked">已結算鎖定</span>}
-              {canManage && <span className="badge manager">管理者</span>}
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* 活動標題和操作 */}
+        <div className="bg-white rounded-xl p-6 shadow-lg">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-4 mb-4">
+                <button 
+                  className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+                  onClick={() => navigate('/activities')}
+                >
+                  <span className="text-xl">←</span>
+                  <span className="text-sm font-medium">返回列表</span>
+                </button>
+              </div>
+              
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-2xl">
+                  🎉
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-800">{activity.name}</h1>
+                  <p className="text-gray-600 text-sm">{activity.group_name}</p>
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap gap-2">
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(activity.status)}`}>
+                  {getStatusDisplay(activity.status)}
+                </span>
+                {activity.is_locked && (
+                  <span className="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm font-medium">
+                    🔒 已結算鎖定
+                  </span>
+                )}
+                {canManage && (
+                  <span className="px-3 py-1 bg-orange-100 text-orange-600 rounded-full text-sm font-medium">
+                    👑 管理者
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-          
-          <div className="activity-actions">
-            {canJoin && (
-              <button 
-                className="btn-primary"
-                onClick={() => setShowJoinModal(true)}
-              >
-                加入活動
-              </button>
-            )}
             
-            {canLeave && !activity.is_locked && (
-              <button 
-                className="btn-outline"
-                onClick={() => leaveActivityMutation.mutate()}
-                disabled={leaveActivityMutation.isPending}
-              >
-                {activity.is_user_manager && !activity.is_user_participant ? '移除管理權限' : '離開活動'}
-              </button>
-            )}
-            
-            {canManage && activity.status === 'ACTIVE' && (
-              <button 
-                className="btn-success"
-                onClick={() => settlementMutation.mutate()}
-                disabled={settlementMutation.isPending}
-              >
-                執行結算
-              </button>
-            )}
-            
-            {canManage && (
-              <button 
-                className="btn-outline"
-                onClick={() => navigate(`/activities/${id}/edit`)}
-              >
-                編輯活動
-              </button>
-            )}
+            <div className="flex flex-wrap gap-3">
+              {canJoin && (
+                <button 
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2"
+                  onClick={() => setShowJoinModal(true)}
+                >
+                  <span>➕</span>
+                  <span>加入活動</span>
+                </button>
+              )}
+              
+              {canLeave && !activity.is_locked && (
+                <button 
+                  className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2 disabled:opacity-50"
+                  onClick={() => leaveActivityMutation.mutate()}
+                  disabled={leaveActivityMutation.isPending}
+                >
+                  <span>🚪</span>
+                  <span>{activity.is_user_manager && !activity.is_user_participant ? '移除管理權限' : '離開活動'}</span>
+                </button>
+              )}
+              
+              {canManage && activity.status === 'ACTIVE' && (
+                <button 
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2 disabled:opacity-50"
+                  onClick={() => settlementMutation.mutate()}
+                  disabled={settlementMutation.isPending}
+                >
+                  <span>💰</span>
+                  <span>執行結算</span>
+                </button>
+              )}
+              
+              {canManage && (
+                <button 
+                  className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2"
+                  onClick={() => navigate(`/activities/${id}/edit`)}
+                >
+                  <span>✏️</span>
+                  <span>編輯活動</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
         {/* 活動基本資訊 */}
-        <div className="activity-info">
-          <div className="info-grid">
-            <div className="info-item">
-              <label>群組</label>
-              <span>{activity.group_name}</span>
+        <div className="bg-white rounded-xl p-6 shadow-lg">
+          <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <span className="text-xl">ℹ️</span>
+            活動資訊
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-500 mb-1">群組</label>
+              <span className="text-gray-800">{activity.group_name}</span>
             </div>
-            <div className="info-item">
-              <label>開始時間</label>
-              <span>{new Date(activity.start_date).toLocaleString()}</span>
+            <div>
+              <label className="block text-sm font-medium text-gray-500 mb-1">開始時間</label>
+              <span className="text-gray-800">{new Date(activity.start_date).toLocaleString('zh-TW')}</span>
             </div>
-            <div className="info-item">
-              <label>結束時間</label>
-              <span>{new Date(activity.end_date).toLocaleString()}</span>
+            <div>
+              <label className="block text-sm font-medium text-gray-500 mb-1">結束時間</label>
+              <span className="text-gray-800">{new Date(activity.end_date).toLocaleString('zh-TW')}</span>
             </div>
-            <div className="info-item">
-              <label>參與人數</label>
-              <span>{activity.participant_count} 人</span>
+            <div>
+              <label className="block text-sm font-medium text-gray-500 mb-1">參與人數</label>
+              <span className="text-gray-800">{activity.participant_count} 人</span>
             </div>
-            <div className="info-item">
-              <label>總支出</label>
-              <span>NT$ {activity.total_expenses?.toLocaleString() || 0}</span>
+            <div>
+              <label className="block text-sm font-medium text-gray-500 mb-1">總支出</label>
+              <span className="text-gray-800 font-semibold">NT$ {activity.total_expenses?.toLocaleString() || 0}</span>
             </div>
             {activity.budget && (
-              <div className="info-item">
-                <label>預算</label>
-                <span>NT$ {activity.budget.toLocaleString()}</span>
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">預算</label>
+                <span className="text-gray-800">NT$ {activity.budget.toLocaleString()}</span>
               </div>
             )}
           </div>
           
           {activity.description && (
-            <div className="activity-description">
-              <label>活動描述</label>
-              <p>{activity.description}</p>
+            <div>
+              <label className="block text-sm font-medium text-gray-500 mb-2">活動描述</label>
+              <p className="text-gray-800 bg-gray-50 rounded-lg p-4">{activity.description}</p>
             </div>
           )}
         </div>
 
         {/* 分頁導航 */}
-        <div className="tab-navigation">
-          <button 
-            className={activeTab === 'overview' ? 'active' : ''}
-            onClick={() => setActiveTab('overview')}
-          >
-            總覽
-          </button>
-          <button 
-            className={activeTab === 'expenses' ? 'active' : ''}
-            onClick={() => setActiveTab('expenses')}
-          >
-            支出記錄 ({expenses.length})
-          </button>
-          <button 
-            className={activeTab === 'participants' ? 'active' : ''}
-            onClick={() => setActiveTab('participants')}
-          >
-            參與者 ({activity.participant_count})
-          </button>
-          <button 
-            className={activeTab === 'logs' ? 'active' : ''}
-            onClick={() => setActiveTab('logs')}
-          >
-            活動記錄 ({logs.length})
-          </button>
-        </div>
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="border-b border-gray-200">
+            <nav className="flex space-x-8 px-6">
+              {[
+                { key: 'overview', label: '總覽', icon: '📊' },
+                { key: 'expenses', label: `支出記錄 (${expenses.length})`, icon: '💸' },
+                { key: 'participants', label: `參與者 (${activity.participant_count})`, icon: '👥' },
+                { key: 'logs', label: `活動記錄 (${logs.length})`, icon: '📝' }
+              ].map(tab => (
+                <button
+                  key={tab.key}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                    activeTab === tab.key
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                  onClick={() => setActiveTab(tab.key as any)}
+                >
+                  <span className="mr-2">{tab.icon}</span>
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+          </div>
 
-        {/* 分頁內容 */}
-        <div className="tab-content">
-          {activeTab === 'overview' && (
-            <div className="overview-tab">
-              <div className="overview-grid">
-                <div className="overview-card">
-                  <h3>管理者</h3>
-                  <div className="managers-list">
-                    {activity.managers.map(manager => (
-                      <div key={manager.id} className="manager-item">
-                        <span className="manager-name">{manager.name || manager.username}</span>
-                        <span className="manager-role">
-                          {manager.role === 'ADMIN' ? '系統管理員' : '活動管理者'}
-                        </span>
-                      </div>
-                    ))}
+          {/* 分頁內容 */}
+          <div className="p-6">
+            {activeTab === 'overview' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* 管理者卡片 */}
+                  <div className="bg-gray-50 rounded-xl p-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                      <span>👑</span>
+                      管理者
+                    </h3>
+                    <div className="space-y-3">
+                      {activity.managers.map(manager => (
+                        <div key={manager.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
+                          <div>
+                            <div className="font-medium text-gray-800">
+                              {manager.name || manager.username}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {manager.role === 'ADMIN' ? '系統管理員' : '活動管理者'}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                
-                <div className="overview-card">
-                  <h3>支出統計</h3>
-                  <div className="expense-stats">
-                    <div className="stat-item">
-                      <span className="stat-value">NT$ {activity.total_expenses?.toLocaleString() || 0}</span>
-                      <span className="stat-label">總支出</span>
-                    </div>
-                    <div className="stat-item">
-                      <span className="stat-value">{expenses.length}</span>
-                      <span className="stat-label">支出筆數</span>
-                    </div>
-                    {activity.budget && (
-                      <div className="stat-item">
-                        <span className="stat-value">
-                          {((activity.total_expenses || 0) / activity.budget * 100).toFixed(1)}%
+                  
+                  {/* 支出統計卡片 */}
+                  <div className="bg-gray-50 rounded-xl p-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                      <span>📈</span>
+                      支出統計
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">總支出</span>
+                        <span className="text-xl font-bold text-gray-800">
+                          NT$ {activity.total_expenses?.toLocaleString() || 0}
                         </span>
-                        <span className="stat-label">預算執行率</span>
                       </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'expenses' && (
-            <div className="expenses-tab">
-              <div className="expenses-header">
-                <h3>支出記錄</h3>
-                {((activity.status === 'ACTIVE' && activity.is_user_participant) || 
-                  activity.is_user_manager || 
-                  user?.role === 'ADMIN') && 
-                  !activity.is_locked && (
-                  <button 
-                    className="btn-primary"
-                    onClick={() => navigate('/transactions/new', { 
-                      state: { defaultActivity: activity.id } 
-                    })}
-                  >
-                    新增支出
-                  </button>
-                )}
-              </div>
-              
-              <div className="expenses-list">
-                {expenses.map(expense => (
-                  <div key={expense.id} className="expense-item">
-                    <div className="expense-info">
-                      <div className="expense-main">
-                        <span className="expense-desc">{expense.description}</span>
-                        <span className="expense-amount">NT$ {expense.amount.toLocaleString()}</span>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">支出筆數</span>
+                        <span className="text-lg font-semibold text-gray-800">{expenses.length}</span>
                       </div>
-                      <div className="expense-meta">
-                        <span className="expense-category">{expense.category_name}</span>
-                        <span className="expense-date">
-                          {new Date(expense.date).toLocaleDateString()}
-                        </span>
-                        <span className="expense-user">by {expense.user.name || expense.user.username}</span>
-                      </div>
-                      <div className="expense-splits">
-                        分攤：{expense.splits.length} 人，總計 NT$ {expense.split_total.toLocaleString()}
-                      </div>
-                    </div>
-                    <div className="expense-actions">
-                      {expense.can_user_edit && (
-                        <button 
-                          className="btn-sm btn-outline"
-                          onClick={() => navigate(`/transactions/${expense.id}`)}
-                        >
-                          查看/編輯
-                        </button>
+                      {activity.budget && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">預算執行率</span>
+                          <span className="text-lg font-semibold text-gray-800">
+                            {((activity.total_expenses || 0) / activity.budget * 100).toFixed(1)}%
+                          </span>
+                        </div>
                       )}
                     </div>
                   </div>
-                ))}
-                
-                {expenses.length === 0 && (
-                  <div className="empty-state">
-                    <p>目前還沒有支出記錄</p>
-                  </div>
-                )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {activeTab === 'participants' && (
-            <div className="participants-tab">
-              <div className="participants-list">
-                {activity.participants.map(participant => (
-                  <div key={participant.id} className="participant-item">
-                    <div className="participant-info">
-                      <span className="participant-name">
-                        {participant.user.name || participant.user.username}
-                        {activity.managers.some(m => m.id === participant.user.id) && (
-                          <span className="badge manager">管理者</span>
-                        )}
-                      </span>
-                      <span className="participant-email">{participant.user.email}</span>
-                    </div>
-                    <div className="participant-details">
-                      <span className="split-option">
-                        {getSplitOptionDisplay(participant.split_option)}
-                      </span>
-                      <span className="join-date">
-                        {new Date(participant.joined_at).toLocaleDateString()}
-                      </span>
-                      {participant.can_adjust_splits && (
-                        <span className="badge can-adjust">可調整分攤</span>
-                      )}
-                    </div>
-                    {canManage && participant.user.id !== user?.id && (
-                      <div className="participant-actions">
-                        {activity.managers.some(m => m.id === participant.user.id) ? (
-                          <button
-                            className="btn-secondary small"
-                            onClick={() => removeManagerMutation.mutate(participant.user.id)}
-                            disabled={removeManagerMutation.isPending}
+            {activeTab === 'expenses' && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-800">支出記錄</h3>
+                  {((activity.status === 'ACTIVE' && activity.is_user_participant) || 
+                    activity.is_user_manager || 
+                    user?.role === 'ADMIN') && 
+                    !activity.is_locked && (
+                    <button 
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2"
+                      onClick={() => navigate('/transactions/new', { 
+                        state: { defaultActivity: activity.id } 
+                      })}
+                    >
+                      <span>➕</span>
+                      <span>新增支出</span>
+                    </button>
+                  )}
+                </div>
+                
+                <div className="space-y-4">
+                  {expenses.map(expense => (
+                    <div key={expense.id} className="bg-gray-50 rounded-xl p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="text-lg font-semibold text-gray-800">{expense.description}</h4>
+                            <span className="text-xl font-bold text-gray-800">
+                              NT$ {expense.amount.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
+                            <span className="flex items-center gap-1">
+                              📂 {expense.category_name}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              📅 {new Date(expense.date).toLocaleDateString('zh-TW')}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              👤 {expense.user.name || expense.user.username}
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            分攤：{expense.splits.length} 人，總計 NT$ {expense.split_total.toLocaleString()}
+                          </div>
+                        </div>
+                        {expense.can_user_edit && (
+                          <button 
+                            className="ml-4 border border-gray-300 text-gray-700 hover:bg-gray-100 px-3 py-1 rounded-lg transition-colors text-sm font-medium"
+                            onClick={() => navigate(`/transactions/${expense.id}`)}
                           >
-                            移除管理者
-                          </button>
-                        ) : (
-                          <button
-                            className="btn-primary small"
-                            onClick={() => addManagerMutation.mutate(participant.user.id)}
-                            disabled={addManagerMutation.isPending}
-                          >
-                            設為管理者
+                            查看/編輯
                           </button>
                         )}
                       </div>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                  
+                  {expenses.length === 0 && (
+                    <div className="text-center py-12">
+                      <div className="text-6xl mb-4">💸</div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">暫無支出記錄</h3>
+                      <p className="text-gray-600">目前還沒有支出記錄</p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {activeTab === 'logs' && (
-            <div className="logs-tab">
-              <div className="logs-list">
-                {logs.map(log => (
-                  <div key={log.id} className="log-item">
-                    <div className="log-time">
-                      {new Date(log.timestamp).toLocaleString()}
-                    </div>
-                    <div className="log-content">
-                      <span className="log-action">{log.description}</span>
-                      {log.operator && (
-                        <span className="log-operator">
-                          - {log.operator.name || log.operator.username}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
+            {activeTab === 'participants' && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-gray-800">參與者列表</h3>
                 
-                {logs.length === 0 && (
-                  <div className="empty-state">
-                    <p>目前還沒有操作記錄</p>
-                  </div>
-                )}
+                <div className="space-y-4">
+                  {activity.participants.map(participant => (
+                    <div key={participant.id} className="bg-gray-50 rounded-xl p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-lg font-semibold text-gray-800">
+                              {participant.user.name || participant.user.username}
+                            </span>
+                            {activity.managers.some(m => m.id === participant.user.id) && (
+                              <span className="px-2 py-1 bg-orange-100 text-orange-600 rounded-full text-xs font-medium">
+                                👑 管理者
+                              </span>
+                            )}
+                            {participant.can_adjust_splits && (
+                              <span className="px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs font-medium">
+                                🔧 可調整分攤
+                              </span>
+                            )}
+                          </div>
+                          
+                          <div className="text-sm text-gray-600 space-y-1">
+                            <div>📧 {participant.user.email}</div>
+                            <div className="flex items-center gap-4">
+                              <span>📅 加入時間: {new Date(participant.joined_at).toLocaleDateString('zh-TW')}</span>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSplitOptionColor(participant.split_option)}`}>
+                                {getSplitOptionDisplay(participant.split_option)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {canManage && participant.user.id !== user?.id && (
+                          <div className="flex gap-2">
+                            {activity.managers.some(m => m.id === participant.user.id) ? (
+                              <button
+                                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium disabled:opacity-50"
+                                onClick={() => removeManagerMutation.mutate(participant.user.id)}
+                                disabled={removeManagerMutation.isPending}
+                              >
+                                移除管理者
+                              </button>
+                            ) : (
+                              <button
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium disabled:opacity-50"
+                                onClick={() => addManagerMutation.mutate(participant.user.id)}
+                                disabled={addManagerMutation.isPending}
+                              >
+                                設為管理者
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+
+            {activeTab === 'logs' && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-gray-800">活動記錄</h3>
+                
+                <div className="space-y-3">
+                  {logs.map(log => (
+                    <div key={log.id} className="bg-gray-50 rounded-xl p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="text-gray-800 font-medium">{log.description}</div>
+                          {log.operator && (
+                            <div className="text-sm text-gray-600">
+                              操作者: {log.operator.name || log.operator.username}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-sm text-gray-500 ml-4">
+                          {new Date(log.timestamp).toLocaleString('zh-TW')}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {logs.length === 0 && (
+                    <div className="text-center py-12">
+                      <div className="text-6xl mb-4">📝</div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">暫無操作記錄</h3>
+                      <p className="text-gray-600">目前還沒有操作記錄</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* 加入活動模態框 */}
         {showJoinModal && (
-          <div className="modal-overlay" onClick={() => setShowJoinModal(false)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h3>加入活動</h3>
-              <p>選擇您的費用分攤方式：</p>
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-8 max-w-md w-full">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">加入活動</h3>
+              <p className="text-gray-600 mb-6">選擇您的費用分攤方式：</p>
               
-              <div className="split-options">
-                <label className="radio-option">
+              <div className="space-y-3 mb-6">
+                <label className="flex items-start gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                   <input
                     type="radio"
                     value="FULL_SPLIT"
                     checked={joinOption === 'FULL_SPLIT'}
                     onChange={(e) => setJoinOption(e.target.value as any)}
+                    className="mt-1 w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                   />
-                  <span>分攤所有費用</span>
-                  <small>承擔活動從開始到當前的所有費用</small>
+                  <div>
+                    <div className="font-medium text-gray-800">分攤所有費用</div>
+                    <div className="text-sm text-gray-600">承擔活動從開始到當前的所有費用</div>
+                  </div>
                 </label>
                 
-                <label className="radio-option">
+                <label className="flex items-start gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                   <input
                     type="radio"
                     value="NO_SPLIT"
                     checked={joinOption === 'NO_SPLIT'}
                     onChange={(e) => setJoinOption(e.target.value as any)}
+                    className="mt-1 w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                   />
-                  <span>不分攤先前費用</span>
-                  <small>只承擔加入時點之後的費用</small>
+                  <div>
+                    <div className="font-medium text-gray-800">不分攤先前費用</div>
+                    <div className="text-sm text-gray-600">只承擔加入時點之後的費用</div>
+                  </div>
                 </label>
                 
-                <label className="radio-option">
+                <label className="flex items-start gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                   <input
                     type="radio"
                     value="PARTIAL_SPLIT"
                     checked={joinOption === 'PARTIAL_SPLIT'}
                     onChange={(e) => setJoinOption(e.target.value as any)}
+                    className="mt-1 w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                   />
-                  <span>部分分攤費用</span>
-                  <small>選擇特定支出項目進行分攤</small>
+                  <div>
+                    <div className="font-medium text-gray-800">部分分攤費用</div>
+                    <div className="text-sm text-gray-600">選擇特定支出項目進行分攤</div>
+                  </div>
                 </label>
               </div>
               
-              <div className="modal-actions">
+              <div className="flex gap-3">
                 <button 
-                  className="btn-outline"
+                  className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 py-3 rounded-lg transition-colors font-medium"
                   onClick={() => setShowJoinModal(false)}
                 >
                   取消
                 </button>
                 <button 
-                  className="btn-primary"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
                   onClick={() => joinActivityMutation.mutate({ split_option: joinOption })}
                   disabled={joinActivityMutation.isPending}
                 >
-                  確認加入
+                  {joinActivityMutation.isPending ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>處理中...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>✓</span>
+                      <span>確認加入</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>

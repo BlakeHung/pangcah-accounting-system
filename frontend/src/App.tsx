@@ -23,8 +23,6 @@ import Settings from './pages/Settings'
 
 // 樣式
 import './App.css'
-import './styles/papa-theme.css'
-import './styles/papa-tailwind.css'
 
 const queryClient = new QueryClient()
 
