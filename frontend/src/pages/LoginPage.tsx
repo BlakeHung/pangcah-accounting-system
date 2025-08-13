@@ -124,12 +124,12 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center relative overflow-hidden">
-      {/* 裝飾背景 */}
+    <div className="min-h-screen bg-gradient-to-br from-[#F9F7F4] via-green-50 to-blue-50 flex items-center justify-center relative overflow-hidden">
+      {/* 裝飾背景 - 使用 PAPA 色系 */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute top-40 right-20 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-40 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-20 left-20 w-72 h-72 bg-[#2E8B57]/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div className="absolute top-40 right-20 w-72 h-72 bg-[#5F9EA0]/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-40 w-72 h-72 bg-[#F08080]/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
       </div>
       
       {/* 登入卡片 */}
@@ -146,11 +146,11 @@ const LoginPage: React.FC = () => {
                 (e.target as HTMLImageElement).style.display = 'none';
                 (e.target as HTMLImageElement).parentElement?.insertAdjacentHTML(
                   'beforeend',
-                  '<div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg"><span class="text-white text-3xl font-bold">P</span></div>'
+                  '<div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-[#2E8B57] to-[#5F9EA0] rounded-full flex items-center justify-center shadow-lg"><span class="text-white text-3xl font-bold">P</span></div>'
                 )
               }}
             />
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--papa-earth-brown)' }}>
               PAPA
             </h1>
             <p className="text-gray-600 text-sm font-medium">
@@ -184,10 +184,7 @@ const LoginPage: React.FC = () => {
                   required
                   disabled={loading}
                   placeholder="請輸入使用者名稱"
-                  className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all duration-200"
-                  style={{
-                    '--tw-ring-color': 'var(--papa-ocean-pink)'
-                  } as any}
+                  className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5F9EA0] focus:border-transparent transition-all duration-200"
                   autoComplete="username"
                 />
                 <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
@@ -210,10 +207,7 @@ const LoginPage: React.FC = () => {
                   required
                   disabled={loading}
                   placeholder="請輸入密碼"
-                  className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all duration-200"
-                  style={{
-                    '--tw-ring-color': 'var(--papa-ocean-pink)'
-                  } as any}
+                  className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5F9EA0] focus:border-transparent transition-all duration-200"
                   autoComplete="current-password"
                 />
                 <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
@@ -225,11 +219,7 @@ const LoginPage: React.FC = () => {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full py-3 text-white rounded-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none shadow-md hover:shadow-lg"
-              style={{
-                backgroundColor: loading ? '#9CA3AF' : 'var(--papa-ocean-pink)',
-                cursor: loading ? 'not-allowed' : 'pointer'
-              }}
+              className="w-full py-3 text-white rounded-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none shadow-md hover:shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed bg-[#2E8B57] hover:bg-[#1F5F3F]"
             >
               {loading ? (
                 <div className="flex items-center justify-center gap-3">
@@ -254,8 +244,7 @@ const LoginPage: React.FC = () => {
                   href="https://wchung.tw" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="font-medium hover:opacity-80 transition-opacity"
-                  style={{ color: 'var(--papa-ocean-pink)' }}
+                  className="font-medium hover:opacity-80 transition-opacity text-[#5F9EA0]"
                 >
                   布雷克實驗室 Blake Lab
                 </a>

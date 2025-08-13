@@ -195,7 +195,7 @@ const TransactionDetail: React.FC = () => {
       <Layout user={currentUser}>
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
-            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="w-8 h-8 border-2 border-[#2E8B57] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">載入交易詳情中...</p>
           </div>
         </div>
@@ -213,7 +213,7 @@ const TransactionDetail: React.FC = () => {
             <p className="text-gray-600 mb-6">您要查看的交易記錄不存在或已被刪除。</p>
             <button 
               onClick={() => navigate('/transactions')}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+              className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-6 py-3 rounded-lg transition-colors font-medium"
             >
               ← 返回交易列表
             </button>
@@ -256,7 +256,7 @@ const TransactionDetail: React.FC = () => {
               <div className="flex items-center gap-3">
                 <button 
                   onClick={() => navigate(`/transactions/${id}/edit`)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2"
+                  className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2"
                 >
                   <span>✏️</span>
                   <span>編輯</span>
@@ -395,7 +395,7 @@ const TransactionDetail: React.FC = () => {
                   </button>
                   <button 
                     onClick={openSplitModal}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center gap-2"
+                    className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center gap-2"
                   >
                     <span>✏️</span>
                     <span>調整分攤</span>

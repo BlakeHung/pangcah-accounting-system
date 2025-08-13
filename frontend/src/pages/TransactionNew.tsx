@@ -433,7 +433,7 @@ const TransactionNew: React.FC = () => {
       <Layout user={currentUser}>
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
-            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="w-8 h-8 border-2 border-[#2E8B57] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">載入中...</p>
           </div>
         </div>
@@ -834,7 +834,7 @@ const TransactionNew: React.FC = () => {
               <button
                 type="button"
                 onClick={handleImageAdd}
-className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"
+className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-[#2E8B57] hover:text-[#2E8B57] transition-colors flex items-center justify-center gap-2"
               >
                 <span className="text-xl">+</span>
                 <span>新增圖片</span>

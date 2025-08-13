@@ -96,7 +96,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                 (e.target as HTMLImageElement).style.display = 'none';
                 (e.target as HTMLImageElement).parentElement?.insertAdjacentHTML(
                   'beforeend',
-                  '<div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">P</div>'
+                  '<div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#2E8B57] to-[#5F9EA0] flex items-center justify-center text-white font-bold text-sm">P</div>'
                 )
               }}
             />
@@ -133,7 +133,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               onClick={() => navigate('/dashboard')} 
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-16 ${
                 isActive('/dashboard') 
-                  ? 'text-blue-600 bg-blue-50' 
+                  ? 'text-[#2E8B57] bg-green-50' 
                   : 'text-gray-500 active:bg-gray-100'
               }`}
             >
@@ -145,7 +145,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               onClick={() => navigate('/transactions')} 
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-16 ${
                 isActive('/transactions') 
-                  ? 'text-blue-600 bg-blue-50' 
+                  ? 'text-[#2E8B57] bg-green-50' 
                   : 'text-gray-500 active:bg-gray-100'
               }`}
             >
@@ -158,17 +158,17 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               onClick={() => navigate('/transactions/new')} 
               className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 active:scale-95 min-w-16"
             >
-              <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center shadow-lg active:shadow-md">
+              <div className="w-12 h-12 rounded-full bg-[#2E8B57] flex items-center justify-center shadow-lg active:shadow-md">
                 <span className="text-white text-2xl font-light">+</span>
               </div>
-              <span className="text-xs font-medium text-blue-600">新增</span>
+              <span className="text-xs font-medium text-[#2E8B57]">新增</span>
             </button>
             
             <button 
               onClick={() => navigate('/groups')} 
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-16 ${
                 isActive('/groups') 
-                  ? 'text-blue-600 bg-blue-50' 
+                  ? 'text-[#2E8B57] bg-green-50' 
                   : 'text-gray-500 active:bg-gray-100'
               }`}
             >
@@ -180,7 +180,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               onClick={() => navigate('/settings')} 
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-16 ${
                 isActive('/settings') 
-                  ? 'text-blue-600 bg-blue-50' 
+                  ? 'text-[#2E8B57] bg-green-50' 
                   : 'text-gray-500 active:bg-gray-100'
               }`}
             >
@@ -216,7 +216,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                 (e.target as HTMLImageElement).style.display = 'none';
                 (e.target as HTMLImageElement).parentElement?.insertAdjacentHTML(
                   'beforeend',
-                  '<div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">P</div>'
+                  '<div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#2E8B57] to-[#5F9EA0] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">P</div>'
                 )
               }}
             />
@@ -260,7 +260,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                   key={item.path}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left relative group overflow-hidden ${
                     isActive(item.path) 
-                      ? 'text-white bg-blue-600' 
+                      ? 'text-white bg-[#2E8B57]' 
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
                   onClick={() => navigate(item.path)}
@@ -285,7 +285,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
               <button
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left relative group overflow-hidden ${
                   isActive('/users') 
-                    ? 'text-white bg-blue-600' 
+                    ? 'text-white bg-[#2E8B57]' 
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
                 onClick={() => navigate('/users')}
@@ -311,7 +311,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
           <div className={`flex items-center p-3 rounded-lg bg-gray-50 transition-all duration-300 ${
             isSidebarCollapsed ? 'justify-center' : 'gap-3'
           }`}>
-            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium flex-shrink-0">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#2E8B57] to-[#5F9EA0] rounded-full flex items-center justify-center text-white font-medium flex-shrink-0">
               {(user.name || user.username).charAt(0).toUpperCase()}
             </div>
             {!isSidebarCollapsed && (
@@ -370,7 +370,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate('/transactions/new')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium shadow-lg"
+                className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium shadow-lg"
               >
                 <span>+</span>
                 <span>新增記錄</span>

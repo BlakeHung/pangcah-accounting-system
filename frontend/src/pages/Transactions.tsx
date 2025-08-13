@@ -130,7 +130,7 @@ const Transactions: React.FC = () => {
       <Layout user={currentUser}>
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
-            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="w-8 h-8 border-2 border-[#2E8B57] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">載入交易記錄中...</p>
           </div>
         </div>
@@ -155,7 +155,7 @@ const Transactions: React.FC = () => {
             </div>
             <button
               onClick={() => navigate('/transactions/new')}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
+              className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium shadow-sm"
             >
               <span>➕</span>
               <span className="hidden sm:inline">新增記錄</span>
@@ -328,7 +328,7 @@ const Transactions: React.FC = () => {
                           <>
                             <button
                               onClick={() => navigate(`/transactions/${transaction.id}/edit`)}
-                              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition-colors text-xs font-medium"
+                              className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-3 py-1 rounded-md transition-colors text-xs font-medium"
                             >
                               ✏️ 編輯
                             </button>

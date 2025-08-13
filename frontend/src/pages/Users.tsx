@@ -225,7 +225,7 @@ const Users: React.FC = () => {
             {canManageUsers() && (
               <button
                 onClick={() => setShowCreateForm(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
+                className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
               >
                 <span>➕</span>
                 <span>新增用戶</span>
@@ -282,7 +282,7 @@ const Users: React.FC = () => {
           {usersLoading ? (
             <div className="flex items-center justify-center min-h-96">
               <div className="text-center">
-                <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <div className="w-8 h-8 border-2 border-[#2E8B57] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                 <p className="text-gray-600">載入用戶資料中...</p>
               </div>
             </div>
@@ -395,7 +395,7 @@ const Users: React.FC = () => {
                     
                     <button
                       onClick={() => handleViewDetails(user)}
-                      className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors text-sm font-medium"
+                      className="mt-4 w-full bg-[#2E8B57] hover:bg-[#1F5F3F] text-white py-2 rounded-lg transition-colors text-sm font-medium"
                     >
                       查看詳細資料
                     </button>
@@ -414,7 +414,7 @@ const Users: React.FC = () => {
                     {canManageUsers() && (
                       <button
                         onClick={() => setShowCreateForm(true)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+                        className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-6 py-3 rounded-lg transition-colors font-medium"
                       >
                         ➕ 開始建檔
                       </button>
@@ -704,7 +704,7 @@ const Users: React.FC = () => {
                   <button
                     type="submit"
                     disabled={createUserMutation.isPending || updateUserMutation.isPending}
-                    className="flex-1 px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                    className="flex-1 px-8 py-3 bg-[#2E8B57] hover:bg-[#1F5F3F] disabled:bg-blue-400 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
                   >
                     {(createUserMutation.isPending || updateUserMutation.isPending) ? (
                       <>

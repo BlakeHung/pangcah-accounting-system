@@ -2,9 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 基本 CSS 變數定義 */
+/* PAPA Pangcah 文化色系 - 基於 Logo 設計（注重易用性與閱讀性） */
 :root {
-  --papa-ocean-pink: #e91e63;
+  /* 主要色彩 - 來自 Logo */
+  --papa-earth-brown: #8B4513;    /* Logo 文字色 - 大地棕 */
+  --papa-coral-pink: #F08080;     /* 紋樣色 - 珊瑚粉 */
+  --papa-mountain-green: #2E8B57; /* 山脈色 - 青綠 */
+  --papa-ocean-blue: #5F9EA0;     /* 海洋色 - 青藍 */
+  --papa-cream-white: #F9F7F4;    /* 背景色 - 米白 */
+  
+  /* 擴展色系 - 調整對比度以提升閱讀性 */
+  --papa-earth-light: #A0522D;    /* 淺土色 - 調整為更易讀 */
+  --papa-earth-lighter: #D2691E;  /* 更淺土色 */
+  --papa-coral-light: #FFA07A;    /* 淺珊瑚 - 保持高對比 */
+  --papa-coral-lighter: #FFE4E1;  /* 極淺珊瑚 - 背景用 */
+  --papa-mountain-dark: #1F5F3F;  /* 深山綠 - 加深以提升對比 */
+  --papa-mountain-light: #3CB371; /* 淺山綠 */
+  --papa-ocean-dark: #2F4F4F;     /* 深海藍 - 加深對比 */
+  --papa-ocean-light: #87CEEB;    /* 淺海藍 */
+  
+  /* 中性色系 - 確保良好的文字對比度 */
+  --papa-text-primary: #1F2937;   /* 主要文字 - 深灰 */
+  --papa-text-secondary: #4B5563; /* 次要文字 - 中灰 */
+  --papa-text-muted: #6B7280;     /* 輔助文字 - 淺灰 */
+  --papa-border: #E5E7EB;         /* 邊框色 */
+  --papa-background: #FFFFFF;     /* 主背景 - 純白確保最佳對比 */
+  --papa-background-soft: #FAFAFA;/* 次要背景 */
+  
+  /* 功能色系 - 調整為更易識別 */
+  --papa-success: #10B981;        /* 成功 - 更明亮的綠 */
+  --papa-warning: #F59E0B;        /* 警告 - 橙黃色更易識別 */
+  --papa-error: #EF4444;          /* 錯誤 - 標準紅 */
+  --papa-info: var(--papa-ocean-blue);     /* 資訊 - 海藍 */
+  --papa-primary: var(--papa-mountain-green); /* 主要 - 改用山綠作為主色 */
+  
+  /* 互動狀態色 */
+  --papa-hover: rgba(46, 139, 87, 0.1);   /* 懸停背景 */
+  --papa-active: rgba(46, 139, 87, 0.2);  /* 激活背景 */
+  --papa-focus: var(--papa-ocean-blue);   /* 焦點色 */
 }
 
 /* Layout 覆蓋樣式 - 確保優先級高於 Layout.css */
@@ -99,6 +134,31 @@ button {
 .text-papa-ocean {
   color: #3b82f6;
 }
+
+/* Pangcah 文化樣式類別 - 基於 Logo 色系 */
+.bg-papa-earth { background-color: var(--papa-earth-brown); }
+.bg-papa-coral { background-color: var(--papa-coral-pink); }
+.bg-papa-mountain { background-color: var(--papa-mountain-green); }
+.bg-papa-ocean { background-color: var(--papa-ocean-blue); }
+.bg-papa-cream { background-color: var(--papa-cream-white); }
+.bg-papa-earth-light { background-color: var(--papa-earth-light); }
+.bg-papa-coral-light { background-color: var(--papa-coral-light); }
+.bg-papa-mountain-dark { background-color: var(--papa-mountain-dark); }
+.bg-papa-ocean-dark { background-color: var(--papa-ocean-dark); }
+
+.text-papa-earth { color: var(--papa-earth-brown); }
+.text-papa-coral { color: var(--papa-coral-pink); }
+.text-papa-mountain { color: var(--papa-mountain-green); }
+.text-papa-ocean { color: var(--papa-ocean-blue); }
+.text-papa-primary { color: var(--papa-primary); }
+.text-papa-success { color: var(--papa-success); }
+.text-papa-warning { color: var(--papa-warning); }
+.text-papa-info { color: var(--papa-info); }
+
+.border-papa-earth { border-color: var(--papa-earth-brown); }
+.border-papa-coral { border-color: var(--papa-coral-pink); }
+.border-papa-mountain { border-color: var(--papa-mountain-green); }
+.border-papa-ocean { border-color: var(--papa-ocean-blue); }
 
 .bg-papa-mist {
   background-color: #f9fafb;

@@ -197,7 +197,7 @@ const Settings: React.FC = () => {
       <Layout user={currentUser}>
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
-            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="w-8 h-8 border-2 border-[#2E8B57] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">載入中...</p>
           </div>
         </div>
@@ -352,7 +352,7 @@ const Settings: React.FC = () => {
                 <button
                   type="submit"
                   disabled={updateProfileMutation.isPending}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors font-medium flex items-center gap-2"
+                  className="px-6 py-3 bg-[#2E8B57] hover:bg-[#1F5F3F] disabled:bg-blue-400 text-white rounded-lg transition-colors font-medium flex items-center gap-2"
                 >
                   {updateProfileMutation.isPending ? (
                     <>
@@ -439,7 +439,7 @@ const Settings: React.FC = () => {
                 <button
                   type="submit"
                   disabled={updateUserSettingsMutation.isPending}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors font-medium flex items-center gap-2"
+                  className="px-6 py-3 bg-[#2E8B57] hover:bg-[#1F5F3F] disabled:bg-blue-400 text-white rounded-lg transition-colors font-medium flex items-center gap-2"
                 >
                   {updateUserSettingsMutation.isPending ? (
                     <>

@@ -260,7 +260,7 @@ const ActivityManager: React.FC = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-8 h-8 border-2 border-[#2E8B57] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">載入中...</p>
         </div>
       </div>
@@ -272,7 +272,7 @@ const ActivityManager: React.FC = () => {
       <Layout user={user}>
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
-            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="w-8 h-8 border-2 border-[#2E8B57] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">載入活動資料中...</p>
           </div>
         </div>
@@ -290,7 +290,7 @@ const ActivityManager: React.FC = () => {
             <p className="text-gray-600 mb-6">您要查看的活動不存在或已被刪除。</p>
             <button 
               onClick={() => navigate('/activities')} 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+              className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-6 py-3 rounded-lg transition-colors font-medium"
             >
               返回活動列表
             </button>
@@ -454,7 +454,7 @@ const ActivityManager: React.FC = () => {
                   key={tab.key}
                   className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                     activeTab === tab.key
-                      ? 'border-blue-500 text-blue-600'
+                      ? 'border-[#2E8B57] text-[#2E8B57]'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                   onClick={() => setActiveTab(tab.key as any)}
@@ -533,7 +533,7 @@ const ActivityManager: React.FC = () => {
                     user?.role === 'ADMIN') && 
                     !activity.is_locked && (
                     <button 
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2"
+                      className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2"
                       onClick={() => navigate('/transactions/new', { 
                         state: { defaultActivity: activity.id } 
                       })}
@@ -641,7 +641,7 @@ const ActivityManager: React.FC = () => {
                               </button>
                             ) : (
                               <button
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium disabled:opacity-50"
+                                className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-3 py-1 rounded-lg transition-colors text-sm font-medium disabled:opacity-50"
                                 onClick={() => addManagerMutation.mutate(participant.user.id)}
                                 disabled={addManagerMutation.isPending}
                               >
@@ -752,7 +752,7 @@ const ActivityManager: React.FC = () => {
                   取消
                 </button>
                 <button 
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="flex-1 bg-[#2E8B57] hover:bg-[#1F5F3F] text-white py-3 rounded-lg transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50"
                   onClick={() => joinActivityMutation.mutate({ split_option: joinOption })}
                   disabled={joinActivityMutation.isPending}
                 >

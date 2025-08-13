@@ -288,27 +288,27 @@ const Dashboard: React.FC = () => {
       <div className="space-y-8 md:block hidden">
         {/* 桌面版內容 */}
         {/* 歡迎區域與快速操作 */}
-        <section className="rounded-2xl p-6" style={{ backgroundColor: '#543622' }}>
+        <section className="bg-gradient-to-r from-[#2E8B57] to-[#5F9EA0] rounded-2xl p-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-white mb-1">
                 歡迎回來，{user?.name || user?.username}
               </h1>
-              <p className="text-white/80 text-sm">
+              <p className="text-white/90 text-sm">
                 今日記帳管理
               </p>
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => navigate('/transactions/new')}
-                className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                className="bg-white text-[#2E8B57] hover:bg-gray-50 px-5 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium shadow-sm hover:shadow-md"
               >
                 <span>➕</span>
                 <span>新增記錄</span>
               </button>
               <button
                 onClick={() => navigate('/transactions')}
-                className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                className="bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-lg transition-all flex items-center gap-2 backdrop-blur-sm border border-white/20"
               >
                 <span>📊</span>
                 <span>查看記錄</span>
@@ -320,12 +320,12 @@ const Dashboard: React.FC = () => {
         {/* 統計卡片網格 - 文化化升級 */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* 總支出 - 上山總額 */}
-          <div className="bg-white rounded-lg p-6 shadow-papa-soft hover:shadow-papa-medium transition-all duration-300 border-l-4" style={{ borderLeftColor: '#FF7043', backgroundColor: 'rgba(255, 112, 67, 0.05)' }}>
+          <div className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 border-l-4 border-l-red-500">
             <div className="flex items-center gap-4">
               <div className="text-4xl opacity-80">⛰️</div>
               <div>
-                <h3 className="text-sm font-medium text-papa-cave mb-1">總支出</h3>
-                <p className="text-2xl font-bold" style={{ color: '#FF7043' }}>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">總支出</h3>
+                <p className="text-2xl font-bold text-red-600">
                   NT$ {(stats?.totalExpenses || 0).toLocaleString()}
                 </p>
               </div>
@@ -333,12 +333,12 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* 本月支出 - 本月上山 */}
-          <div className="bg-white rounded-lg p-6 shadow-papa-soft hover:shadow-papa-medium transition-all duration-300 border-l-4" style={{ borderLeftColor: '#546E7A', backgroundColor: 'rgba(84, 106, 122, 0.05)' }}>
+          <div className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 border-l-4 border-l-[#5F9EA0]">
             <div className="flex items-center gap-4">
               <div className="text-4xl opacity-80">🌙</div>
               <div>
-                <h3 className="text-sm font-medium text-papa-cave mb-1">本月支出</h3>
-                <p className="text-2xl font-bold" style={{ color: '#546E7A' }}>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">本月支出</h3>
+                <p className="text-2xl font-bold text-[#5F9EA0]">
                   NT$ {(stats?.totalExpenses || 0).toLocaleString()}
                 </p>
               </div>
@@ -346,12 +346,12 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* 總收入 - 下海總額 */}
-          <div className="bg-white rounded-lg p-6 shadow-papa-soft hover:shadow-papa-medium transition-all duration-300 border-l-4" style={{ borderLeftColor: '#4CAF50', backgroundColor: 'rgba(76, 175, 80, 0.05)' }}>
+          <div className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 border-l-4 border-l-green-500">
             <div className="flex items-center gap-4">
               <div className="text-4xl opacity-80">🌊</div>
               <div>
-                <h3 className="text-sm font-medium text-papa-cave mb-1">總收入</h3>
-                <p className="text-2xl font-bold" style={{ color: '#4CAF50' }}>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">總收入</h3>
+                <p className="text-2xl font-bold text-green-600">
                   NT$ {(stats?.totalIncome || 0).toLocaleString()}
                 </p>
               </div>
@@ -359,15 +359,15 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* 群組管理 - 部落共享 */}
-          <div className="bg-white rounded-lg p-6 shadow-papa-soft hover:shadow-papa-medium transition-all duration-300 border-l-4" style={{ borderLeftColor: '#689F38', backgroundColor: 'rgba(104, 159, 56, 0.05)' }}>
+          <div className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 border-l-4 border-l-[#2E8B57]">
             <div className="flex items-center gap-4">
               <div className="text-4xl opacity-80">🏛️</div>
               <div>
-                <h3 className="text-sm font-medium text-papa-cave mb-1">管理群組</h3>
-                <p className="text-2xl font-bold" style={{ color: '#689F38' }}>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">管理群組</h3>
+                <p className="text-2xl font-bold text-[#2E8B57]">
                   {stats?.groupCount || 0}
                 </p>
-                <span className="text-xs text-papa-cave opacity-60">個群組</span>
+                <span className="text-xs text-gray-500">個群組</span>
               </div>
             </div>
           </div>
@@ -375,13 +375,13 @@ const Dashboard: React.FC = () => {
 
         {/* 圖表區域 - 文化化升級 */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="bg-white rounded-2xl p-6 shadow-papa-soft">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-xl font-bold text-papa-stone font-display">
+                <h3 className="text-xl font-bold text-gray-800">
                   收支趨勢
                 </h3>
-                <p className="text-sm text-papa-cave opacity-70">近6個月收支變化</p>
+                <p className="text-sm text-gray-500">近6個月收支變化</p>
               </div>
               <div className="text-2xl opacity-60">🌊</div>
             </div>
@@ -423,7 +423,7 @@ const Dashboard: React.FC = () => {
                   }}
                 />
               ) : (
-                <div className="flex items-center justify-center h-full text-papa-cave">
+                <div className="flex items-center justify-center h-full text-gray-500">
                   <div className="text-center">
                     <div className="text-4xl opacity-60 mb-4">🌊</div>
                     <p>暫無數據</p>
@@ -433,10 +433,10 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-2xl p-6 shadow-papa-soft">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-xl font-bold text-papa-stone font-display">支出分類</h3>
+                <h3 className="text-xl font-bold text-gray-800">支出分類</h3>
               </div>
               <div className="text-2xl opacity-60">⛰️</div>
             </div>
@@ -459,7 +459,7 @@ const Dashboard: React.FC = () => {
                   }}
                 />
               ) : (
-                <div className="flex items-center justify-center h-full text-papa-cave">
+                <div className="flex items-center justify-center h-full text-gray-500">
                   <div className="text-center">
                     <div className="text-4xl opacity-60 mb-4">⛰️</div>
                     <p>暫無分類數據</p>
@@ -471,33 +471,32 @@ const Dashboard: React.FC = () => {
         </section>
 
         {/* 快速操作區 */}
-        <section className="mb-8 bg-white rounded-2xl p-6 shadow-papa-soft">
-          <h3 className="text-lg font-bold text-papa-stone mb-4">常用功能</h3>
+        <section className="mb-8 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h3 className="text-lg font-bold text-gray-800 mb-4">常用功能</h3>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <button
-              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 transition-colors"
+              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-green-50 hover:bg-green-100 transition-colors border border-green-200"
               onClick={() => navigate('/transactions/new')}
             >
               <div className="text-2xl">➕</div>
-              <span className="text-sm font-medium text-emerald-700">新增記錄</span>
+              <span className="text-sm font-medium text-green-700">新增記錄</span>
             </button>
 
             <button
-              className="flex flex-col items-center gap-2 p-4 rounded-xl hover:opacity-90 transition-all"
-              style={{ backgroundColor: 'rgba(233, 30, 99, 0.1)' }}
+              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-teal-50 hover:bg-teal-100 transition-colors border border-teal-200"
               onClick={() => navigate('/transactions')}
             >
               <div className="text-2xl">📊</div>
-              <span className="text-sm font-medium" style={{ color: 'var(--papa-ocean-pink)' }}>查看記錄</span>
+              <span className="text-sm font-medium text-teal-700">查看記錄</span>
             </button>
 
             <button
-              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-purple-50 hover:bg-purple-100 transition-colors"
+              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 transition-colors border border-emerald-200"
               onClick={() => navigate('/activities')}
             >
               <div className="text-2xl">🎉</div>
-              <span className="text-sm font-medium text-purple-700">活動管理</span>
+              <span className="text-sm font-medium text-emerald-700">活動管理</span>
             </button>
 
             <button
@@ -568,14 +567,14 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-2 gap-4 mb-6">
           <button
             onClick={() => navigate('/transactions/new')}
-            className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-4 text-white text-center shadow-lg active:scale-95 transition-transform"
+            className="bg-gradient-to-br from-[#5F9EA0] to-[#2E8B57] rounded-2xl p-4 text-white text-center shadow-lg active:scale-95 transition-transform"
           >
             <div className="text-2xl mb-2">➕</div>
             <div className="text-sm font-medium">新增記錄</div>
           </button>
           <button
             onClick={() => navigate('/transactions')}
-            className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-4 text-white text-center shadow-lg active:scale-95 transition-transform"
+            className="bg-gradient-to-br from-[#F08080] to-[#CD853F] rounded-2xl p-4 text-white text-center shadow-lg active:scale-95 transition-transform"
           >
             <div className="text-2xl mb-2">📊</div>
             <div className="text-sm font-medium">查看記錄</div>
@@ -612,10 +611,10 @@ const Dashboard: React.FC = () => {
             </div>
             
             {/* 群組数量 */}
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
+            <div className="text-center p-4 bg-emerald-50 rounded-lg">
               <div className="text-2xl mb-2">👥</div>
               <p className="text-xs text-gray-600 mb-1">群組数量</p>
-              <p className="font-bold text-purple-600 text-sm">{stats?.groupCount || 0}</p>
+              <p className="font-bold text-emerald-600 text-sm">{stats?.groupCount || 0}</p>
             </div>
             
             {/* 活動数量 */}
