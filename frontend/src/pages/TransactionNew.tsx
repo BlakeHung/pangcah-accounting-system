@@ -55,10 +55,23 @@ interface TransactionForm {
 const TransactionNew: React.FC = () => {
   const navigate = useNavigate()
   const [currentUser, setCurrentUser] = useState<User | null>(null)
+  
+  // 獲取當前時間（本地時間）
+  const getCurrentLocalTime = () => {
+    const now = new Date()
+    // 取得本地時間的年月日時分
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    const hours = String(now.getHours()).padStart(2, '0')
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    return `${year}-${month}-${day}T${hours}:${minutes}`
+  }
+  
   const [formData, setFormData] = useState<TransactionForm>({
     amount: '',
     type: 'EXPENSE',
-    date: new Date().toISOString().slice(0, 16), // yyyy-MM-ddTHH:mm格式
+    date: getCurrentLocalTime(), // 使用本地時間
     description: '',
     images: [],
     category: '',
@@ -523,7 +536,9 @@ const TransactionNew: React.FC = () => {
 
               {/* 日期時間 */}
               <div>
-                <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">日期時間 *</label>
+                <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
+                  日期時間 * <span className="text-xs text-gray-500 font-normal">(GMT+8 台北時間)</span>
+                </label>
                 <input
                   type="datetime-local"
                   id="date"
