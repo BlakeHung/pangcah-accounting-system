@@ -207,7 +207,7 @@ const TransactionDetail: React.FC = () => {
     return (
       <Layout user={currentUser}>
         <div className="max-w-2xl mx-auto mt-16">
-          <div className="bg-white rounded-xl p-8 shadow-papa-soft text-center">
+          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center">
             <div className="text-6xl mb-4 opacity-50">📊</div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">找不到交易記錄</h2>
             <p className="text-gray-600 mb-6">您要查看的交易記錄不存在或已被刪除。</p>
@@ -227,7 +227,7 @@ const TransactionDetail: React.FC = () => {
     <Layout user={currentUser}>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* 頁面標題 */}
-        <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
               <button 
@@ -284,7 +284,7 @@ const TransactionDetail: React.FC = () => {
         </div>
 
         {/* 主資訊卡片 */}
-        <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* 金額顯示 */}
             <div className="lg:col-span-1">
@@ -359,7 +359,7 @@ const TransactionDetail: React.FC = () => {
 
         {/* 描述 */}
         {transaction.description && (
-          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
               <span className="text-xl">📝</span>
               描述
@@ -373,7 +373,7 @@ const TransactionDetail: React.FC = () => {
 
         {/* 費用分攤 */}
         {transaction.type === 'EXPENSE' && transaction.event && (
-          <div className="bg-white rounded-xl p-6 shadow-papa-soft">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                 <span className="text-xl">💰</span>
@@ -405,37 +405,46 @@ const TransactionDetail: React.FC = () => {
             </div>
 
             {transaction.splits && transaction.splits.length > 0 ? (
-              <div className="splits-list">
-                <div className="split-summary">
-                  <div className="summary-item">
-                    <span className="summary-label">總金額:</span>
-                    <span className="summary-value">NT$ {parseFloat(transaction.amount).toLocaleString()}</span>
-                  </div>
-                  <div className="summary-item">
-                    <span className="summary-label">分攤總計:</span>
-                    <span className="summary-value">NT$ {transaction.split_total.toLocaleString()}</span>
-                  </div>
-                  <div className="summary-item">
-                    <span className="summary-label">參與人數:</span>
-                    <span className="summary-value">{transaction.splits.length} 人</span>
+              <div className="space-y-6">
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">總金額:</span>
+                      <span className="font-semibold text-gray-800">NT$ {parseFloat(transaction.amount).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">分攤總計:</span>
+                      <span className="font-semibold text-gray-800">NT$ {transaction.split_total.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600">參與人數:</span>
+                      <span className="font-semibold text-gray-800">{transaction.splits.length} 人</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="splits-details">
+                <div className="space-y-3">
                   {transaction.splits.map((split, index) => (
-                    <div key={split.id} className="split-item">
-                      <div className="split-participant">
-                        <span className="participant-name">
-                          {split.participant.name || split.participant.username}
-                        </span>
-                        <span className="split-type">
-                          {getSplitTypeDisplay(split.split_type)}
-                        </span>
-                        {split.is_adjusted && (
-                          <span className="adjusted-badge">已調整</span>
-                        )}
+                    <div key={split.id} className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-gradient-to-br from-[#2E8B57] to-[#5F9EA0] rounded-full flex items-center justify-center text-white font-medium text-sm">
+                          {(split.participant.name || split.participant.username).charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-800">
+                            {split.participant.name || split.participant.username}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                              {getSplitTypeDisplay(split.split_type)}
+                            </span>
+                            {split.is_adjusted && (
+                              <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">已調整</span>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div className="split-amount">
+                      <div className="font-bold text-lg text-[#2E8B57]">
                         NT$ {split.calculated_amount.toLocaleString()}
                       </div>
                     </div>
@@ -443,15 +452,21 @@ const TransactionDetail: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="no-splits">
-                <p>此支出尚未設置分攤</p>
+              <div className="text-center py-8">
+                <div className="text-4xl opacity-60 mb-4">💰</div>
+                <p className="text-gray-600 mb-4">此支出尚未設置分攤</p>
                 {transaction.can_user_edit && (
                   <button 
-                    className="setup-split-btn"
+                    className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-6 py-3 rounded-lg transition-colors font-medium flex items-center gap-2 mx-auto"
                     onClick={() => autoSplitMutation.mutate()}
                     disabled={autoSplitMutation.isPending}
                   >
-                    設置平均分攤
+                    {autoSplitMutation.isPending ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                      <span>⚖️</span>
+                    )}
+                    <span>設置平均分攤</span>
                   </button>
                 )}
               </div>
@@ -461,16 +476,23 @@ const TransactionDetail: React.FC = () => {
 
         {/* 附件圖片 */}
         {transaction.images && transaction.images.length > 0 && (
-          <div className="info-card">
-            <h3>📷 附件圖片</h3>
-            <div className="images-grid">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span className="text-xl">📷</span>
+              附件圖片
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {transaction.images.map((image, index) => (
                 <div 
                   key={index} 
-                  className="image-item"
+                  className="aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity border border-gray-200 hover:border-[#2E8B57]"
                   onClick={() => setShowImageModal(image)}
                 >
-                  <img src={image} alt={`附件 ${index + 1}`} />
+                  <img 
+                    src={image} 
+                    alt={`附件 ${index + 1}`} 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               ))}
             </div>
@@ -478,27 +500,40 @@ const TransactionDetail: React.FC = () => {
         )}
 
         {/* 時間記錄 */}
-        <div className="info-card">
-          <h3>🕐 時間記錄</h3>
-          <div className="time-info">
-            <div className="info-row">
-              <span className="label">創建時間:</span>
-              <span className="value">{new Date(transaction.created_at).toLocaleString()}</span>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <span className="text-xl">🕐</span>
+            時間記錄
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="text-lg">➕</div>
+              <div>
+                <div className="text-sm text-gray-600">創建時間</div>
+                <div className="font-medium">{new Date(transaction.created_at).toLocaleString('zh-TW')}</div>
+              </div>
             </div>
-            <div className="info-row">
-              <span className="label">最後更新:</span>
-              <span className="value">{new Date(transaction.updated_at).toLocaleString()}</span>
+            <div className="flex items-center gap-3">
+              <div className="text-lg">✏️</div>
+              <div>
+                <div className="text-sm text-gray-600">最後更新</div>
+                <div className="font-medium">{new Date(transaction.updated_at).toLocaleString('zh-TW')}</div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* 圖片模態框 */}
         {showImageModal && (
-          <div className="image-modal" onClick={() => setShowImageModal(null)}>
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
-              <img src={showImageModal} alt="放大圖片" />
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-4" onClick={() => setShowImageModal(null)}>
+            <div className="relative max-w-4xl max-h-full" onClick={e => e.stopPropagation()}>
+              <img 
+                src={showImageModal} 
+                alt="放大圖片" 
+                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+              />
               <button 
-                className="close-modal"
+                className="absolute top-4 right-4 w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
                 onClick={() => setShowImageModal(null)}
               >
                 ✕
@@ -509,19 +544,19 @@ const TransactionDetail: React.FC = () => {
 
         {/* 分攤編輯模態框 */}
         {showSplitModal && (
-          <div className="modal-overlay" onClick={() => setShowSplitModal(false)}>
-            <div className="modal-content split-modal" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4" onClick={() => setShowSplitModal(false)}>
+            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between p-6 border-b border-gray-200">
                 <h3>調整費用分攤</h3>
                 <button 
-                  className="close-modal"
+                  className="w-8 h-8 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition-colors"
                   onClick={() => setShowSplitModal(false)}
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="modal-body">
+              <div className="p-6">
                 <div className="split-type-selector">
                   <label>分攤方式:</label>
                   <select 
@@ -579,15 +614,15 @@ const TransactionDetail: React.FC = () => {
                 </div>
               </div>
 
-              <div className="modal-footer">
+              <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
                 <button 
-                  className="btn-outline"
+                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                   onClick={() => setShowSplitModal(false)}
                 >
                   取消
                 </button>
                 <button 
-                  className="btn-primary"
+                  className="px-6 py-2 bg-[#2E8B57] hover:bg-[#1F5F3F] text-white rounded-lg transition-colors font-medium flex items-center gap-2"
                   onClick={handleSplitSave}
                   disabled={adjustSplitMutation.isPending}
                 >

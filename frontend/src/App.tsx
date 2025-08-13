@@ -14,6 +14,7 @@ import Users from './pages/Users'
 import Transactions from './pages/Transactions'
 import TransactionNew from './pages/TransactionNew'
 import TransactionDetail from './pages/TransactionDetail'
+import TransactionEdit from './pages/TransactionEdit'
 import ActivityNew from './pages/ActivityNew'
 import ActivityDetail from './pages/ActivityDetail'
 import ActivityEdit from './pages/ActivityEdit'
@@ -88,6 +89,12 @@ function App() {
             <Route path="/transactions/:id" element={
               <PrivateRoute>
                 <TransactionDetail />
+              </PrivateRoute>
+            } />
+            
+            <Route path="/transactions/:id/edit" element={
+              <PrivateRoute>
+                <TransactionEdit />
               </PrivateRoute>
             } />
             
