@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import Layout from '../components/Layout'
+import { uploadImage, uploadMultipleImages, getOptimizedUrl } from '../utils/cloudinary'
 
 interface User {
   id: number
@@ -67,6 +68,9 @@ const TransactionNew: React.FC = () => {
     const minutes = String(now.getMinutes()).padStart(2, '0')
     return `${year}-${month}-${day}T${hours}:${minutes}`
   }
+  
+  const [uploadingImages, setUploadingImages] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
   
   const [formData, setFormData] = useState<TransactionForm>({
     amount: '',
@@ -411,14 +415,59 @@ const TransactionNew: React.FC = () => {
     createTransactionMutation.mutate(submitData)
   }
 
+  // 使用 Cloudinary 上傳圖片
   const handleImageAdd = () => {
-    const url = prompt('請輸入圖片URL:')
-    if (url) {
-      setFormData(prev => ({
-        ...prev,
-        images: [...prev.images, url]
-      }))
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = 'image/*'
+    input.multiple = true
+    
+    input.onchange = async (e) => {
+      const files = (e.target as HTMLInputElement).files
+      if (!files || files.length === 0) return
+      
+      setUploadingImages(true)
+      setUploadProgress(0)
+      
+      try {
+        const uploadedUrls: string[] = []
+        
+        // 上傳每個檔案
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i]
+          
+          // 檢查檔案大小（限制 10MB）
+          if (file.size > 10 * 1024 * 1024) {
+            alert(`檔案 ${file.name} 超過 10MB 限制`)
+            continue
+          }
+          
+          const result = await uploadImage(file, (progress) => {
+            // 計算整體進度
+            const overallProgress = Math.round(((i + progress / 100) / files.length) * 100)
+            setUploadProgress(overallProgress)
+          })
+          
+          uploadedUrls.push(result.secure_url)
+        }
+        
+        // 更新表單資料
+        setFormData(prev => ({
+          ...prev,
+          images: [...prev.images, ...uploadedUrls]
+        }))
+        
+        alert(`成功上傳 ${uploadedUrls.length} 張圖片`)
+      } catch (error) {
+        console.error('圖片上傳失敗:', error)
+        alert('圖片上傳失敗，請稍後再試')
+      } finally {
+        setUploadingImages(false)
+        setUploadProgress(0)
+      }
     }
+    
+    input.click()
   }
 
   const handleImageRemove = (index: number) => {
@@ -815,9 +864,10 @@ const TransactionNew: React.FC = () => {
                   {formData.images.map((image, index) => (
                     <div key={index} className="relative group">
                       <img 
-                        src={image} 
+                        src={getOptimizedUrl(image, { width: 200, height: 200, quality: 'auto' })} 
                         alt={`附件 ${index + 1}`} 
                         className="w-full h-24 object-cover rounded-lg border border-gray-200"
+                        loading="lazy"
                       />
                       <button
                         type="button"
@@ -834,12 +884,26 @@ const TransactionNew: React.FC = () => {
               <button
                 type="button"
                 onClick={handleImageAdd}
-className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-[#2E8B57] hover:text-[#2E8B57] transition-colors flex items-center justify-center gap-2"
+                disabled={uploadingImages}
+                className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-[#2E8B57] hover:text-[#2E8B57] transition-colors flex flex-col items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span className="text-xl">+</span>
-                <span>新增圖片</span>
+                {uploadingImages ? (
+                  <>
+                    <div className="w-8 h-8 border-2 border-[#2E8B57] border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-sm">上傳中... {uploadProgress}%</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-3xl">📤</span>
+                    <span>點擊上傳圖片</span>
+                    <span className="text-xs text-gray-500">支援 JPG, PNG, PDF (最大 10MB)</span>
+                  </>
+                )}
               </button>
-              <p className="text-xs text-gray-500">可以上傳收據、發票等相關圖片</p>
+              <p className="text-xs text-gray-500 text-center mt-2">
+                圖片將安全儲存在 Cloudinary 雲端空間<br/>
+                支援批次上傳多張圖片
+              </p>
             </div>
           </div>
 
