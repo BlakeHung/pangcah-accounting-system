@@ -40,7 +40,16 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """創建支出時設置用戶並創建分攤記錄"""
         # 檢查創建權限
-        event = serializer.validated_data.get('event')
+        event_id = serializer.validated_data.get('event_id')
+        event = None
+        if event_id:
+            from apps.events.models import Event
+            try:
+                event = Event.objects.get(id=event_id)
+            except Event.DoesNotExist:
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError({'event_id': '指定的活動不存在'})
+        
         if event:
             # 如果活動已完成或取消，只有活動管理者可以新增
             if event.status in ['COMPLETED', 'CANCELLED']:

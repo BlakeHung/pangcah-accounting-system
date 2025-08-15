@@ -34,12 +34,18 @@ class ExpenseSplitSerializer(serializers.ModelSerializer):
 
 class ExpenseSerializer(serializers.ModelSerializer):
     """支出序列化器"""
+    # 讀取時使用的欄位（返回完整物件）
     user = UserSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
     event_name = serializers.CharField(source='event.name', read_only=True)
     group_name = serializers.CharField(source='group.name', read_only=True)
     splits = ExpenseSplitSerializer(many=True, read_only=True)
+    
+    # 寫入時使用的欄位（接收 ID）
+    category_id = serializers.IntegerField(write_only=True)
+    event_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    group_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     
     # 分帐相关字段 (write-only，用于创建时)
     split_type = serializers.CharField(write_only=True, required=False)
@@ -58,8 +64,9 @@ class ExpenseSerializer(serializers.ModelSerializer):
         model = Expense
         fields = [
             'id', 'amount', 'type', 'date', 'description', 'images',
-            'category', 'category_name', 'user', 'event', 'event_name',
-            'group', 'group_name',
+            'category', 'category_id', 'category_name', 'user', 
+            'event', 'event_id', 'event_name',
+            'group', 'group_id', 'group_name',
             'splits', 'split_participants_list', 'can_user_edit', 'split_total',
             'split_type', 'split_participants',
             'created_at', 'updated_at'
@@ -83,3 +90,28 @@ class ExpenseSerializer(serializers.ModelSerializer):
         return obj.splits.aggregate(
             total=serializers.models.Sum('calculated_amount')
         )['total'] or 0
+    
+    def validate_category_id(self, value):
+        """驗證分類 ID 是否存在"""
+        from apps.categories.models import Category
+        if not Category.objects.filter(id=value).exists():
+            raise serializers.ValidationError("指定的分類不存在")
+        return value
+    
+    def validate_event_id(self, value):
+        """驗證活動 ID 是否存在"""
+        if value is None:
+            return value
+        from apps.events.models import Event
+        if not Event.objects.filter(id=value).exists():
+            raise serializers.ValidationError("指定的活動不存在")
+        return value
+    
+    def validate_group_id(self, value):
+        """驗證群組 ID 是否存在"""
+        if value is None:
+            return value
+        from apps.groups.models import Group
+        if not Group.objects.filter(id=value).exists():
+            raise serializers.ValidationError("指定的群組不存在")
+        return value
