@@ -45,9 +45,9 @@ interface TransactionForm {
   date: string
   description: string
   images: string[]
-  category: number | ''
-  event: number | ''
-  group: number | ''
+  category_id: number | ''
+  event_id: number | ''
+  group_id: number | ''
   split_type: 'NONE' | 'AVERAGE' | 'RATIO' | 'FIXED'
   split_participants: number[]
   split_data: SplitData[]
@@ -78,9 +78,9 @@ const TransactionNew: React.FC = () => {
     date: getCurrentLocalTime(), // 使用本地時間
     description: '',
     images: [],
-    category: '',
-    event: '',
-    group: '',
+    category_id: '',
+    event_id: '',
+    group_id: '',
     split_type: 'NONE',
     split_participants: [],
     split_data: []
@@ -372,14 +372,14 @@ const TransactionNew: React.FC = () => {
     if (!currentUser) return
     
     // 驗證必填欄位
-    if (!formData.amount || !formData.category) {
-      alert('請填寫所有必填欄位')
+    if (!formData.amount || !formData.category_id || formData.category_id === '') {
+      alert('請填寫所有必填欄位（金額和分類為必填）')
       return
     }
 
     // 檢查已結束活動的權限
-    if (formData.event) {
-      const selectedEvent = events.find(e => e.id.toString() === formData.event.toString())
+    if (formData.event_id) {
+      const selectedEvent = events.find(e => e.id.toString() === formData.event_id.toString())
       if (selectedEvent && selectedEvent.status !== 'ACTIVE') {
         // 只有活動管理者和超級管理者可以在已結束的活動中新增支出
         if (!(selectedEvent as any).is_user_manager && currentUser.role !== 'ADMIN') {
@@ -389,17 +389,17 @@ const TransactionNew: React.FC = () => {
       }
     }
 
-    // 準備提交數據
+    // 準備提交數據（使用正確的欄位名稱）
     const submitData: any = {
-      amount: parseFloat(formData.amount),
+      amount: formData.type === 'EXPENSE' ? -Math.abs(parseFloat(formData.amount)) : Math.abs(parseFloat(formData.amount)),
       type: formData.type,
       date: formData.date,
       description: formData.description,
       images: formData.images,
-      category: formData.category,
+      category_id: parseInt(formData.category_id.toString()),  // 必填欄位，直接轉換為數字
       user: currentUser.id,
-      event: formData.event || null,
-      group: formData.group || null
+      event_id: formData.event_id ? parseInt(formData.event_id.toString()) : null,  // 改用 event_id
+      group_id: formData.group_id ? parseInt(formData.group_id.toString()) : null   // 改用 group_id
     }
 
     // 如果是支出且有分帳設定，添加分帳資訊
@@ -607,8 +607,8 @@ const TransactionNew: React.FC = () => {
                 <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">分類 *</label>
                 <select
                   id="category"
-                  name="category"
-                  value={formData.category}
+                  name="category_id"
+                  value={formData.category_id}
                   onChange={handleInputChange}
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all appearance-none bg-white"
@@ -935,7 +935,7 @@ const TransactionNew: React.FC = () => {
                 )}
               </button>
             </div>
-            {(formData.amount && formData.category) && (
+            {(formData.amount && formData.category_id) && (
               <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                 <div className="text-sm text-gray-600">
                   <span className="font-medium">預覽：</span>
@@ -943,7 +943,7 @@ const TransactionNew: React.FC = () => {
                     {formData.type === 'EXPENSE' ? '-' : '+'}NT$ {parseFloat(formData.amount || '0').toLocaleString()}
                   </span>
                   <span className="mx-2">·</span>
-                  <span>{categories.find(c => c.id.toString() === formData.category.toString())?.name}</span>
+                  <span>{categories.find(c => c.id.toString() === formData.category_id.toString())?.name}</span>
                   {formData.description && (
                     <>
                       <span className="mx-2">·</span>

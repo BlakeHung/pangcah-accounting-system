@@ -52,9 +52,9 @@ interface TransactionForm {
   date: string
   description: string
   images: string[]
-  category: number | ''
-  event: number | ''
-  group: number | ''
+  category_id: number | ''
+  event_id: number | ''
+  group_id: number | ''
 }
 
 const TransactionEdit: React.FC = () => {
@@ -70,9 +70,9 @@ const TransactionEdit: React.FC = () => {
     date: '',
     description: '',
     images: [],
-    category: '',
-    event: '',
-    group: ''
+    category_id: '',
+    event_id: '',
+    group_id: ''
   })
 
   // 檢查當前用戶
@@ -108,9 +108,9 @@ const TransactionEdit: React.FC = () => {
         date: new Date(transaction.date).toISOString().slice(0, 16),
         description: transaction.description,
         images: transaction.images,
-        category: transaction.category.id,
-        event: transaction.event?.id || '',
-        group: transaction.group?.id || ''
+        category_id: transaction.category.id,
+        event_id: transaction.event?.id || '',
+        group_id: transaction.group?.id || ''
       })
     }
   }, [transaction])
@@ -196,21 +196,21 @@ const TransactionEdit: React.FC = () => {
     if (!currentUser || !transaction) return
     
     // 驗證必填欄位
-    if (!formData.amount || !formData.category) {
-      alert('請填寫所有必填欄位')
+    if (!formData.amount || !formData.category_id || formData.category_id === '') {
+      alert('請填寫所有必填欄位（金額和分類為必填）')
       return
     }
 
-    // 準備提交資料
+    // 準備提交資料（使用正確的欄位名稱）
     const submitData = {
       amount: formData.type === 'EXPENSE' ? -Math.abs(parseFloat(formData.amount)) : Math.abs(parseFloat(formData.amount)),
       type: formData.type,
       date: formData.date,
       description: formData.description,
       images: formData.images,
-      category: formData.category,
-      event: formData.event || null,
-      group: formData.group || null
+      category_id: parseInt(formData.category_id.toString()),  // 必填欄位，直接轉換為數字
+      event_id: formData.event_id ? parseInt(formData.event_id.toString()) : null,  // 改用 event_id
+      group_id: formData.group_id ? parseInt(formData.group_id.toString()) : null   // 改用 group_id
     }
 
     updateTransactionMutation.mutate(submitData)
@@ -447,8 +447,8 @@ const TransactionEdit: React.FC = () => {
                 <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">分類 *</label>
                 <select
                   id="category"
-                  name="category"
-                  value={formData.category}
+                  name="category_id"
+                  value={formData.category_id}
                   onChange={handleInputChange}
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5F9EA0] focus:border-transparent transition-all appearance-none bg-white"
@@ -493,8 +493,8 @@ const TransactionEdit: React.FC = () => {
                 </label>
                 <select
                   id="group"
-                  name="group"
-                  value={formData.group}
+                  name="group_id"
+                  value={formData.group_id}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5F9EA0] focus:border-transparent transition-all appearance-none bg-white"
                 >
@@ -514,8 +514,8 @@ const TransactionEdit: React.FC = () => {
                 </label>
                 <select
                   id="event"
-                  name="event"
-                  value={formData.event}
+                  name="event_id"
+                  value={formData.event_id}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5F9EA0] focus:border-transparent transition-all appearance-none bg-white"
                 >
