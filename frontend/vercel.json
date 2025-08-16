@@ -10,6 +10,10 @@
       }
     }
   ],
+  "env": {
+    "VITE_CLOUDINARY_CLOUD_NAME": "dfaittd9e",
+    "VITE_CLOUDINARY_UPLOAD_PRESET": "pangcah_unsigned"
+  },
   "routes": [
     {
       "src": "/assets/(.*)",

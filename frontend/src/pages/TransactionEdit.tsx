@@ -196,7 +196,7 @@ const TransactionEdit: React.FC = () => {
     if (!currentUser || !transaction) return
     
     // 驗證必填欄位
-    if (!formData.amount || !formData.category_id || formData.category_id === '') {
+    if (!formData.amount || !formData.category_id || formData.category_id === 0) {
       alert('請填寫所有必填欄位（金額和分類為必填）')
       return
     }

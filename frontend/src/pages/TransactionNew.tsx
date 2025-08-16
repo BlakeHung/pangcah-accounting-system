@@ -152,11 +152,11 @@ const TransactionNew: React.FC = () => {
 
   // 獲取選定群組的成員
   const { data: groupMembers = [] } = useQuery({
-    queryKey: ['group-members', formData.group],
+    queryKey: ['group-members', formData.group_id],
     queryFn: async (): Promise<User[]> => {
-      if (!formData.group) return []
+      if (!formData.group_id) return []
       try {
-        const response = await axios.get(`/api/v1/groups/${formData.group}/`)
+        const response = await axios.get(`/api/v1/groups/${formData.group_id}/`)
         const group = response.data
         // 合併管理者和普通成員
         const managers = group.managers || []
@@ -178,7 +178,7 @@ const TransactionNew: React.FC = () => {
         return []
       }
     },
-    enabled: !!formData.group && !!currentUser
+    enabled: !!formData.group_id && !!currentUser
   })
 
   // 獲取活動
@@ -244,12 +244,12 @@ const TransactionNew: React.FC = () => {
   // 檢查是否可以分帳
   const canSplit = (): boolean => {
     if (formData.type !== 'EXPENSE') return false
-    if (!formData.event || !formData.group) return false
+    if (!formData.event_id || !formData.group_id) return false
     
     // ADMIN 用戶可以使用所有分帳功能，不受活動權限限制
     if (currentUser?.role === 'ADMIN') return true
     
-    const selectedEvent = events.find(e => e.id.toString() === formData.event.toString())
+    const selectedEvent = events.find(e => e.id.toString() === formData.event_id.toString())
     if (!selectedEvent) return false
     
     return selectedEvent.allow_split && selectedEvent.status === 'ACTIVE' && selectedEvent.enabled
@@ -372,7 +372,7 @@ const TransactionNew: React.FC = () => {
     if (!currentUser) return
     
     // 驗證必填欄位
-    if (!formData.amount || !formData.category_id || formData.category_id === '') {
+    if (!formData.amount || !formData.category_id || formData.category_id === 0) {
       alert('請填寫所有必填欄位（金額和分類為必填）')
       return
     }
@@ -654,7 +654,7 @@ const TransactionNew: React.FC = () => {
                 <select
                   id="group"
                   name="group"
-                  value={formData.group}
+                  value={formData.group_id}
                   onChange={handleGroupChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all appearance-none bg-white"
                 >
@@ -676,7 +676,7 @@ const TransactionNew: React.FC = () => {
                 <select
                   id="event"
                   name="event"
-                  value={formData.event}
+                  value={formData.event_id}
                   onChange={handleEventChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent transition-all appearance-none bg-white"
                 >
@@ -701,7 +701,7 @@ const TransactionNew: React.FC = () => {
                     )
                   })}
                 </select>
-                {(formData.event && events.find(e => e.id.toString() === formData.event.toString())?.allow_split) && (
+                {(formData.event_id && events.find(e => e.id.toString() === formData.event_id.toString())?.allow_split) && (
                   <div className="mt-2 p-2 rounded-lg bg-blue-50">
                     <p className="text-xs flex items-center gap-1 text-blue-600">
                       🔄 此活動支持分帳功能
@@ -837,13 +837,13 @@ const TransactionNew: React.FC = () => {
                 </>
               )}
 
-              {formData.split_type !== 'NONE' && !formData.group && (
+              {formData.split_type !== 'NONE' && !formData.group_id && (
                 <div className="split-warning">
                   ⚠️ 請先選擇群組才能設定分帳
                 </div>
               )}
 
-              {formData.split_type !== 'NONE' && formData.group && groupMembers.length === 0 && (
+              {formData.split_type !== 'NONE' && formData.group_id && groupMembers.length === 0 && (
                 <div className="split-warning">
                   ⚠️ 該群組沒有可用的成員
                 </div>
