@@ -103,7 +103,7 @@ const TransactionEdit: React.FC = () => {
   useEffect(() => {
     if (transaction) {
       setFormData({
-        amount: Math.abs(parseFloat(transaction.amount)).toString(),
+        amount: Math.abs(parseFloat(String(transaction.amount))).toString(),
         type: transaction.type,
         date: new Date(transaction.date).toISOString().slice(0, 16),
         description: transaction.description,

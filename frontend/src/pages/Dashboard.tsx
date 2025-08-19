@@ -3,33 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
 import { useSnackbar } from '../contexts/SnackbarContext'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  BarElement,
-} from 'chart.js'
-import { Line, Doughnut, Bar } from 'react-chartjs-2'
 import Layout from '../components/Layout'
-
-// 註冊 Chart.js 組件
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  BarElement
-)
+import {
+  IncomeExpenseTrendChart,
+  CategoryPieChart,
+  GroupComparisonChart
+} from '../components/Charts'
+import { DashboardExpense } from '../types/expense'
+import { mockExpenseData, mockCategories } from '../utils/mockData'
 
 interface User {
   username: string
@@ -57,8 +38,13 @@ interface Group {
 interface Category {
   id: number
   name: string
-  description: string
-  is_income: boolean
+  type: 'EXPENSE' | 'INCOME'
+  is_default: boolean
+  created_at?: string
+  updated_at?: string
+  // 保留舊欄位兼容性
+  description?: string
+  is_income?: boolean
 }
 
 interface Event {
@@ -71,24 +57,7 @@ interface Event {
   group: number
 }
 
-interface Expense {
-  id: number
-  amount: string
-  description: string
-  date: string
-  category: number
-  category_name: string
-  group: number
-  group_name: string
-  event?: number
-  event_name?: string
-  user_name: string
-  splits: Array<{
-    user: number
-    user_name: string
-    amount: string
-  }>
-}
+// 使用共用的 DashboardExpense 類型定義
 
 // Dashboard 圖標組件
 const DashboardIcons = {
@@ -138,36 +107,80 @@ const Dashboard: React.FC = () => {
         ])
 
         const groups: Group[] = groupsRes.data.results || []
-        const categories: Category[] = categoriesRes.data.results || []
         const events: Event[] = eventsRes.data.results || []
-        const expenses: Expense[] = expensesRes.data.results || []
+        
+        // 初始化 expenses 和 categories
+        let rawExpenses = expensesRes.data.results || []
+        let categories: Category[] = categoriesRes.data.results || []
+        
+        // 轉換後端數據格式為前端需要的格式
+        let expenses: DashboardExpense[] = rawExpenses.map((expense: any) => ({
+          id: expense.id,
+          amount: expense.amount,
+          type: expense.type,
+          description: expense.description,
+          date: expense.date,
+          category: expense.category?.id || expense.category,  // 處理物件或數字的情況
+          category_name: expense.category_name || expense.category?.name,
+          group: expense.group?.id || expense.group,
+          group_name: expense.group_name || expense.group?.name,
+          event: expense.event?.id || expense.event,
+          event_name: expense.event_name,
+          user_name: expense.user?.name || expense.user_name,
+          splits: expense.splits || []
+        }))
+        
+        // 如果沒有數據，使用模擬數據進行測試
+        const USE_MOCK_DATA = false // 設為 true 可強制使用模擬數據
+        if ((expenses.length === 0 && categories.length === 0) || USE_MOCK_DATA) {
+          console.log('⚠️ 使用模擬數據進行測試')
+          expenses = mockExpenseData as DashboardExpense[]
+          categories = mockCategories as Category[]
+        }
+        
+        // 開發模式下顯示調試信息
+        if (import.meta.env.DEV) {
+          console.log('Dashboard 數據統計 - 總交易數:', expenses.length)
+          if (expenses.length === 0) {
+            console.warn('⚠️ 後端API無數據，使用模擬數據')
+          }
+        }
 
         // 計算統計數據
-        // 注意：後端儲存邏輯 - 負數代表支出，正數代表收入
+        // 使用 type 字段來區分收入和支出
         const totalExpenses = expenses.reduce((sum, expense) => {
-          const amount = parseFloat(expense.amount)
-          // 負數金額代表支出，取絕對值
-          return sum + (amount < 0 ? Math.abs(amount) : 0)
+          if (expense.type === 'EXPENSE') {
+            return sum + Math.abs(parseFloat(String(expense.amount)))
+          }
+          return sum
         }, 0)
 
         const totalIncome = expenses.reduce((sum, expense) => {
-          const amount = parseFloat(expense.amount)
-          // 正數金額代表收入
-          return sum + (amount > 0 ? amount : 0)
+          if (expense.type === 'INCOME') {
+            return sum + Math.abs(parseFloat(String(expense.amount)))
+          }
+          return sum
         }, 0)
 
         const balance = totalIncome - totalExpenses
 
-        // 按分類統計
-        const categoryStats = categories.map(category => {
-          const categoryExpenses = expenses.filter(expense => 
-            expense.category === category.id
-          )
-          const total = categoryExpenses.reduce((sum, expense) => 
-            sum + Math.abs(parseFloat(expense.amount)), 0
-          )
-          return { ...category, total, count: categoryExpenses.length }
-        })
+        // 按分類統計（只統計支出）
+        const categoryStats = categories
+          .filter(category => category.type === 'EXPENSE')  // 只處理支出類別
+          .map(category => {
+            const categoryExpenses = expenses.filter(expense => 
+              expense.category === category.id && expense.type === 'EXPENSE'
+            )
+            const total = categoryExpenses.reduce((sum, expense) => 
+              sum + Math.abs(parseFloat(String(expense.amount))), 0
+            )
+            return { ...category, total, count: categoryExpenses.length }
+          })
+        
+        // 開發模式下顯示分類統計
+        if (import.meta.env.DEV && categoryStats.some(c => c.total > 0)) {
+          console.log('支出分類統計:', categoryStats.filter(c => c.total > 0).map(c => `${c.name}: NT$${c.total}`).join(', '))
+        }
 
         // 最近交易
         const recentTransactions = expenses
@@ -201,24 +214,24 @@ const Dashboard: React.FC = () => {
     enabled: !!user
   })
 
-  // 計算月度趨勢 - 保留原有邏輯
-  const calculateMonthlyTrend = (expenses: Expense[]) => {
+  // 計算月度趨勢 - 使用 type 字段
+  const calculateMonthlyTrend = (expenses: DashboardExpense[]) => {
     const monthlyStats: { [key: string]: { income: number, expense: number } } = {}
     
     expenses.forEach(expense => {
       const date = new Date(expense.date)
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-      const amount = parseFloat(expense.amount)
+      const amount = Math.abs(parseFloat(String(expense.amount)))
       
       if (!monthlyStats[monthKey]) {
         monthlyStats[monthKey] = { income: 0, expense: 0 }
       }
       
-      // 後端邏輯：正數=收入，負數=支出
-      if (amount > 0) {
+      // 使用 type 字段來區分收入和支出
+      if (expense.type === 'INCOME') {
         monthlyStats[monthKey].income += amount
-      } else {
-        monthlyStats[monthKey].expense += Math.abs(amount)
+      } else if (expense.type === 'EXPENSE') {
+        monthlyStats[monthKey].expense += amount
       }
     })
 
@@ -229,46 +242,7 @@ const Dashboard: React.FC = () => {
     return { labels, incomeData, expenseData }
   }
 
-  // 圖表配置
-  const lineChartData = dashboardData?.monthlyData ? {
-    labels: dashboardData.monthlyData.labels.map(label => {
-      const [year, month] = label.split('-')
-      return `${year}年${month}月`
-    }),
-    datasets: [
-      {
-        label: '收入 (部落進項)',
-        data: dashboardData.monthlyData.incomeData,
-        borderColor: '#4CAF50', // papa-emerald
-        backgroundColor: 'rgba(76, 175, 80, 0.1)',
-        tension: 0.4,
-      },
-      {
-        label: '支出 (部落開銷)',
-        data: dashboardData.monthlyData.expenseData,
-        borderColor: '#FF7043', // papa-tide  
-        backgroundColor: 'rgba(255, 112, 67, 0.1)',
-        tension: 0.4,
-      }
-    ]
-  } : null
-
-  const doughnutData = dashboardData?.categoryStats ? {
-    labels: dashboardData.categoryStats.filter(cat => cat.total > 0).map(cat => cat.name),
-    datasets: [{
-      data: dashboardData.categoryStats.filter(cat => cat.total > 0).map(cat => cat.total),
-      backgroundColor: [
-        '#4CAF50', // papa-emerald
-        '#FF7043', // papa-tide
-        '#E91E63', // papa-ocean
-        '#FF8F00', // papa-dawn
-        '#689F38', // papa-betel
-        '#546E7A', // papa-cave
-      ],
-      borderWidth: 2,
-      borderColor: '#FFFFFF',
-    }]
-  } : null
+  // ECharts 組件已直接在 JSX 中使用數據
 
   if (isLoading) {
     return (
@@ -386,41 +360,15 @@ const Dashboard: React.FC = () => {
               <div className="text-2xl opacity-60">🌊</div>
             </div>
             <div className="h-80">
-              {lineChartData ? (
-                <Line 
-                  data={lineChartData}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: { 
-                        position: 'top',
-                        labels: {
-                          usePointStyle: true,
-                          font: { size: 12 }
-                        }
-                      },
-                      title: { display: false }
-                    },
-                    scales: {
-                      y: { 
-                        beginAtZero: true,
-                        grid: {
-                          color: 'rgba(84, 106, 122, 0.1)'
-                        }
-                      },
-                      x: {
-                        grid: {
-                          color: 'rgba(84, 106, 122, 0.1)'
-                        }
-                      }
-                    },
-                    elements: {
-                      line: {
-                        tension: 0.4
-                      }
-                    }
-                  }}
+              {dashboardData?.monthlyData ? (
+                <IncomeExpenseTrendChart 
+                  data={dashboardData.monthlyData.labels.map((label, index) => ({
+                    date: `${label.split('-')[0]}年${label.split('-')[1]}月`,
+                    income: dashboardData.monthlyData.incomeData[index],
+                    expense: dashboardData.monthlyData.expenseData[index]
+                  }))}
+                  title="收支趨勢分析"
+                  height={320}
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-gray-500">
@@ -441,22 +389,22 @@ const Dashboard: React.FC = () => {
               <div className="text-2xl opacity-60">⛰️</div>
             </div>
             <div className="h-80">
-              {doughnutData ? (
-                <Doughnut 
-                  data={doughnutData}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: { 
-                        position: 'bottom',
-                        labels: {
-                          usePointStyle: true,
-                          font: { size: 11 }
-                        }
-                      }
-                    }
-                  }}
+              {(() => {
+                // 生產環境下移除調試信息
+                const hasData = dashboardData?.categoryStats && dashboardData.categoryStats.some(cat => cat.total > 0)
+                return hasData
+              })() ? (
+                <CategoryPieChart 
+                  data={dashboardData.categoryStats
+                    .filter(cat => cat.total > 0)
+                    .map((cat, index) => ({
+                      name: cat.name,
+                      value: cat.total,
+                      color: ['#4CAF50', '#FF7043', '#E91E63', '#FF8F00', '#689F38', '#546E7A'][index % 6]
+                    }))}
+                  title="支出分類分布"
+                  height={320}
+                  type="doughnut"
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-gray-500">
@@ -524,16 +472,16 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="bg-white rounded-2xl shadow-papa-soft overflow-hidden" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(84, 54, 34, 0.005) 10px, rgba(84, 54, 34, 0.005) 20px)' }}>
             {dashboardData?.recentTransactions?.length > 0 ? (
-              dashboardData.recentTransactions.map((transaction: Expense, index) => (
+              dashboardData.recentTransactions.map((transaction: DashboardExpense, index) => (
                 <div 
                   key={transaction.id} 
                   className={`flex items-center p-4 cursor-pointer hover:bg-papa-mist/30 transition-colors ${index !== dashboardData.recentTransactions.length - 1 ? 'border-b border-papa-cave/10' : ''}`}
                   onClick={() => navigate(`/transactions/${transaction.id}`)}
                   title="點擊查看詳情"
                 >
-                  <div className={`flex items-center justify-center w-12 h-12 rounded-full mr-4 ${parseFloat(transaction.amount) > 0 ? 'bg-emerald-50' : 'bg-orange-50'}`}>
+                  <div className={`flex items-center justify-center w-12 h-12 rounded-full mr-4 ${transaction.type === 'INCOME' ? 'bg-emerald-50' : 'bg-orange-50'}`}>
                     <span className="text-xl">
-                      {parseFloat(transaction.amount) > 0 ? '🌊' : '⛰️'}
+                      {transaction.type === 'INCOME' ? '🌊' : '⛰️'}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
@@ -546,8 +494,8 @@ const Dashboard: React.FC = () => {
                       {new Date(transaction.date).toLocaleDateString('zh-TW')}
                     </p>
                   </div>
-                  <div className={`text-right font-bold ${parseFloat(transaction.amount) > 0 ? 'text-emerald-600' : 'text-orange-600'}`}>
-                    {parseFloat(transaction.amount) > 0 ? '+' : ''}NT$ {Math.abs(parseFloat(transaction.amount)).toLocaleString()}
+                  <div className={`text-right font-bold ${transaction.type === 'INCOME' ? 'text-emerald-600' : 'text-orange-600'}`}>
+                    {transaction.type === 'INCOME' ? '+' : ''}NT$ {Math.abs(parseFloat(String(transaction.amount))).toLocaleString()}
                   </div>
                 </div>
               ))
@@ -639,7 +587,7 @@ const Dashboard: React.FC = () => {
             </button>
           </div>
           <div className="space-y-3">
-            {dashboardData?.recentTransactions?.slice(0, 5).map((transaction: Expense) => (
+            {dashboardData?.recentTransactions?.slice(0, 5).map((transaction: DashboardExpense) => (
               <div 
                 key={transaction.id} 
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg active:bg-gray-100 transition-colors"
@@ -647,15 +595,15 @@ const Dashboard: React.FC = () => {
               >
                 <div className="flex items-center gap-3">
                   <div className="text-lg">
-                    {parseFloat(transaction.amount) > 0 ? '🌊' : '⛰️'}
+                    {transaction.type === 'INCOME' ? '🌊' : '⛰️'}
                   </div>
                   <div>
                     <p className="font-medium text-sm">{transaction.description || '交易記錄'}</p>
                     <p className="text-xs text-gray-500">{new Date(transaction.date).toLocaleDateString('zh-TW')}</p>
                   </div>
                 </div>
-                <div className={`font-bold text-sm ${parseFloat(transaction.amount) > 0 ? 'text-emerald-600' : 'text-orange-600'}`}>
-                  {parseFloat(transaction.amount) > 0 ? '+' : ''}NT$ {Math.abs(parseFloat(transaction.amount)).toLocaleString()}
+                <div className={`font-bold text-sm ${transaction.type === 'INCOME' ? 'text-emerald-600' : 'text-orange-600'}`}>
+                  {transaction.type === 'INCOME' ? '+' : ''}NT$ {Math.abs(parseFloat(String(transaction.amount))).toLocaleString()}
                 </div>
               </div>
             ))}

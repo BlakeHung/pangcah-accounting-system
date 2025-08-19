@@ -201,13 +201,13 @@ const Transactions: React.FC = () => {
               <div>
                 <h3 className="text-sm font-medium text-gray-600 mb-1">淨額</h3>
                 <p className={`text-2xl font-bold ${
-                  (filteredTransactions.filter(t => t.type === 'INCOME').reduce((sum, t) => sum + parseFloat(t.amount), 0) -
-                   filteredTransactions.filter(t => t.type === 'EXPENSE').reduce((sum, t) => sum + Math.abs(parseFloat(t.amount)), 0)) >= 0
+                  (filteredTransactions.filter(t => t.type === 'INCOME').reduce((sum, t) => sum + parseFloat(String(t.amount)), 0) -
+                   filteredTransactions.filter(t => t.type === 'EXPENSE').reduce((sum, t) => sum + Math.abs(parseFloat(String(t.amount))), 0)) >= 0
                     ? 'text-green-600' : 'text-red-600'
                 }`}>
                   NT$ {(
-                    filteredTransactions.filter(t => t.type === 'INCOME').reduce((sum, t) => sum + parseFloat(t.amount), 0) -
-                    filteredTransactions.filter(t => t.type === 'EXPENSE').reduce((sum, t) => sum + Math.abs(parseFloat(t.amount)), 0)
+                    filteredTransactions.filter(t => t.type === 'INCOME').reduce((sum, t) => sum + parseFloat(String(t.amount)), 0) -
+                    filteredTransactions.filter(t => t.type === 'EXPENSE').reduce((sum, t) => sum + Math.abs(parseFloat(String(t.amount))), 0)
                   ).toLocaleString()}
                 </p>
               </div>
@@ -287,7 +287,7 @@ const Transactions: React.FC = () => {
                           <span className={`text-lg font-bold ${
                             transaction.type === 'EXPENSE' ? 'text-red-600' : 'text-green-600'
                           }`}>
-                            {transaction.type === 'EXPENSE' ? '-' : '+'}NT$ {Math.abs(parseFloat(transaction.amount)).toLocaleString()}
+                            {transaction.type === 'EXPENSE' ? '-' : '+'}NT$ {Math.abs(parseFloat(String(transaction.amount))).toLocaleString()}
                           </span>
                         </div>
                       </div>

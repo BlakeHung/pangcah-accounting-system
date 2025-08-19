@@ -18,14 +18,13 @@
     "cloudinary-core": "^2.14.0",
     "cloudinary-react": "^1.8.1",
     "d3": "^7.8.5",
-    "echarts": "^5.4.3",
+    "echarts": "^5.6.0",
     "echarts-for-react": "^3.0.2",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.1",
     "socket.io-client": "^4.7.4",
-    "tailwindcss": "^3.4.17",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
@@ -41,6 +40,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5.2.2",
     "vite": "^5.0.8"
   }

@@ -157,11 +157,11 @@ const ActivityDetail: React.FC = () => {
   const calculateExpenseStats = () => {
     const totalExpenses = expenses
       .filter(expense => expense.type === 'EXPENSE')
-      .reduce((sum, expense) => sum + parseFloat(expense.amount), 0)
+      .reduce((sum, expense) => sum + Math.abs(parseFloat(String(expense.amount))), 0)
     
     const totalIncome = expenses
       .filter(expense => expense.type === 'INCOME')
-      .reduce((sum, expense) => sum + parseFloat(expense.amount), 0)
+      .reduce((sum, expense) => sum + Math.abs(parseFloat(String(expense.amount))), 0)
 
     return { totalExpenses, totalIncome, netAmount: totalIncome - totalExpenses }
   }
@@ -332,7 +332,7 @@ const ActivityDetail: React.FC = () => {
                         {expense.description || '無描述'}
                       </span>
                       <span className={`expense-amount ${expense.type.toLowerCase()}`}>
-                        {expense.type === 'EXPENSE' ? '-' : '+'}NT$ {parseFloat(expense.amount).toLocaleString()}
+                        {expense.type === 'EXPENSE' ? '-' : '+'}NT$ {Math.abs(parseFloat(String(expense.amount))).toLocaleString()}
                       </span>
                     </div>
                     <div className="expense-details">

@@ -295,7 +295,7 @@ const TransactionDetail: React.FC = () => {
                 <div className={`text-3xl font-bold ${
                   transaction.type === 'EXPENSE' ? 'text-red-600' : 'text-green-600'
                 }`}>
-                  {transaction.type === 'EXPENSE' ? '-' : '+'}NT$ {parseFloat(transaction.amount).toLocaleString()}
+                  {transaction.type === 'EXPENSE' ? '-' : '+'}NT$ {parseFloat(String(transaction.amount)).toLocaleString()}
                 </div>
                 <div className="text-xs text-gray-500 mt-2">
                   {transaction.type === 'EXPENSE' ? '支出' : '收入'}
@@ -410,7 +410,7 @@ const TransactionDetail: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">總金額:</span>
-                      <span className="font-semibold text-gray-800">NT$ {parseFloat(transaction.amount).toLocaleString()}</span>
+                      <span className="font-semibold text-gray-800">NT$ {parseFloat(String(transaction.amount)).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600">分攤總計:</span>
