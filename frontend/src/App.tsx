@@ -16,7 +16,6 @@ import TransactionNew from './pages/TransactionNew'
 import TransactionDetail from './pages/TransactionDetail'
 import TransactionEdit from './pages/TransactionEdit'
 import ActivityNew from './pages/ActivityNew'
-import ActivityDetail from './pages/ActivityDetail'
 import ActivityEdit from './pages/ActivityEdit'
 import ActivityManager from './pages/ActivityManager'
 import Categories from './pages/Categories'
@@ -106,7 +105,7 @@ function App() {
             
             <Route path="/activities/:id" element={
               <PrivateRoute>
-                <ActivityDetail />
+                <ActivityManager />
               </PrivateRoute>
             } />
             

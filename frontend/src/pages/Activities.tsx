@@ -483,7 +483,7 @@ const Activities: React.FC = () => {
                 <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
                   <button
                     onClick={() => {
-                      navigate(`/activities/${selectedActivity.id}`)
+                      navigate(`/activities/${selectedActivity.id}/manage`)
                       setSelectedActivity(null)
                     }}
                     className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition-colors font-medium"
