@@ -432,8 +432,8 @@ class Command(BaseCommand):
             return
         
         # 為每個家族創建一年的日常支出
-        start_date = datetime(2024, 1, 1)
-        end_date = datetime(2024, 12, 31)
+        start_date = timezone.make_aware(datetime(2024, 1, 1))
+        end_date = timezone.make_aware(datetime(2024, 12, 31))
         current_date = start_date
         
         daily_transactions = []
@@ -553,7 +553,7 @@ class Command(BaseCommand):
                     # 借貸金額 (5000-50000)
                     amount = random.randint(5000, 50000)
                     
-                    lending_date = datetime(2024, month, random.randint(1, 28))
+                    lending_date = timezone.make_aware(datetime(2024, month, random.randint(1, 28)))
                     
                     lending_reasons = [
                         '準備祭典活動資金',
@@ -597,9 +597,8 @@ class Command(BaseCommand):
                             category=repayment_category,
                             amount=Decimal(str(amount)),
                             description=f'償還{lender.name}借款 - {reason}',
-                            date=repayment_date,
-                            user=borrower,
-                            created_by=borrower
+                            date=timezone.make_aware(repayment_date),
+                            user=borrower
                         )
         
         self.stdout.write(self.style.SUCCESS(f'✅ 創建了 {len(lending_records)} 筆借貸記錄'))
@@ -639,7 +638,7 @@ class Command(BaseCommand):
                 if random.random() < 0.8:  # 80%機率有收入
                     earner = random.choice(family_members).user
                     amount = random.randint(15000, 45000)  # 農產品收入
-                    date = datetime(2024, month, random.randint(1, 28))
+                    date = timezone.make_aware(datetime(2024, month, random.randint(1, 28)))
                     
                     # 負數表示收入
                     expense = Expense.objects.create(
@@ -656,7 +655,7 @@ class Command(BaseCommand):
                 if random.random() < 0.3:  # 30%機率有手工藝收入
                     earner = random.choice(family_members).user
                     amount = random.randint(3000, 12000)
-                    date = datetime(2024, month, random.randint(1, 28))
+                    date = timezone.make_aware(datetime(2024, month, random.randint(1, 28)))
                     
                     crafts = ['傳統編織包', '木雕藝品', '陶瓷作品', '竹編器具', '傳統服飾']
                     craft = random.choice(crafts)
@@ -675,7 +674,7 @@ class Command(BaseCommand):
                 if random.random() < 0.6:  # 60%機率有導覽收入
                     earner = random.choice(family_members).user
                     amount = random.randint(5000, 20000)
-                    date = datetime(2024, month, random.randint(1, 28))
+                    date = timezone.make_aware(datetime(2024, month, random.randint(1, 28)))
                     
                     expense = Expense.objects.create(
                         group=family_group,
@@ -691,7 +690,7 @@ class Command(BaseCommand):
                 if random.random() < 0.9:  # 90%機率有補助
                     earner = random.choice(family_members).user
                     amount = random.randint(8000, 25000)
-                    date = datetime(2024, month, 15)  # 固定每季15號
+                    date = timezone.make_aware(datetime(2024, month, 15))  # 固定每季15號
                     
                     subsidies = ['原住民族綜合發展基金', '文化傳承補助', '長者照護津貼', '農業補助']
                     subsidy = random.choice(subsidies)
