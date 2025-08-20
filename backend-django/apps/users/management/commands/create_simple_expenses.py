@@ -1,10 +1,10 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from apps.groups.models import Group
 from apps.categories.models import Category
 from apps.events.models import Event
 from apps.expenses.models import Expense
-from datetime import datetime
 from decimal import Decimal
 
 User = get_user_model()
@@ -49,7 +49,7 @@ class Command(BaseCommand):
                 category=category,
                 amount=Decimal(str(expense_data['amount'])),
                 description=expense_data['description'],
-                date=datetime.now(),
+                date=timezone.now(),
                 paid_by=admin,
                 created_by=admin
             )
