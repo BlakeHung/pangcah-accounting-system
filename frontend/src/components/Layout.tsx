@@ -304,7 +304,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* 側邊欄 */}
-      <aside className={`bg-white shadow-lg border-r border-gray-200 flex flex-col transition-all duration-300 overflow-hidden ${
+      <aside className={`bg-white shadow-lg border-r border-gray-200 flex flex-col transition-all duration-300 overflow-hidden h-screen fixed left-0 top-0 z-20 ${
         isSidebarCollapsed ? 'w-16' : 'w-64'
       }`}>
         {/* Logo 區域 - 參考行動版設計 */}
@@ -415,7 +415,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
         
         {/* 用戶信息區域 */}
         <div className="p-4 border-t border-gray-200">
-          <div className={`flex items-center p-3 rounded-lg bg-gray-50 transition-all duration-300 ${
+          <div className={`flex items-center p-3 rounded-lg bg-gray-50 transition-all duration-300 relative group ${
             isSidebarCollapsed ? 'justify-center' : 'gap-3'
           }`}>
             <div className="w-10 h-10 bg-gradient-to-br from-[#2E8B57] to-[#5F9EA0] rounded-full flex items-center justify-center text-white font-medium flex-shrink-0">
@@ -438,15 +438,16 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                 </button>
               </>
             )}
-            {/* 收起時的登出按鈕 */}
+            {/* 收起時的用戶資訊提示 */}
             {isSidebarCollapsed && (
-              <div className="absolute left-full ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 flex items-center gap-2">
+                <span>{user.name || user.username}</span>
                 <button
                   onClick={handleLogout}
-                  className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                  className="p-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
                   title="登出系統"
                 >
-                  <span className="text-sm">🚪</span>
+                  <span className="text-xs">🚪</span>
                 </button>
               </div>
             )}
@@ -455,7 +456,9 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
       </aside>
 
       {/* 主內容區域 */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${
+        isSidebarCollapsed ? 'ml-16' : 'ml-64'
+      }`}>
         {/* 頂部欄 */}
         <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">

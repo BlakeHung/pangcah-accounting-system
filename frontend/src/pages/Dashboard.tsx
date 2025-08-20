@@ -232,8 +232,13 @@ const Dashboard: React.FC = () => {
     enabled: !!user
   })
 
-  // 計算月度趨勢 - 使用 type 字段
+  // 計算趨勢資料 - 自動判斷按月份或按天數顯示
   const calculateMonthlyTrend = (expenses: DashboardExpense[]) => {
+    if (expenses.length === 0) {
+      return { labels: [], incomeData: [], expenseData: [], timeUnit: 'none' }
+    }
+
+    // 先按月份統計
     const monthlyStats: { [key: string]: { income: number, expense: number } } = {}
     
     expenses.forEach(expense => {
@@ -245,7 +250,6 @@ const Dashboard: React.FC = () => {
         monthlyStats[monthKey] = { income: 0, expense: 0 }
       }
       
-      // 使用 type 字段來區分收入和支出
       if (expense.type === 'INCOME') {
         monthlyStats[monthKey].income += amount
       } else if (expense.type === 'EXPENSE') {
@@ -253,11 +257,43 @@ const Dashboard: React.FC = () => {
       }
     })
 
-    const labels = Object.keys(monthlyStats).sort().slice(-6)
+    const allMonths = Object.keys(monthlyStats).sort()
+    
+    // 如果所有資料都在同一個月，改用天數分布
+    if (allMonths.length === 1) {
+      const dailyStats: { [key: string]: { income: number, expense: number } } = {}
+      
+      expenses.forEach(expense => {
+        const date = new Date(expense.date)
+        const dayKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+        const amount = Math.abs(parseFloat(String(expense.amount)))
+        
+        if (!dailyStats[dayKey]) {
+          dailyStats[dayKey] = { income: 0, expense: 0 }
+        }
+        
+        if (expense.type === 'INCOME') {
+          dailyStats[dayKey].income += amount
+        } else if (expense.type === 'EXPENSE') {
+          dailyStats[dayKey].expense += amount
+        }
+      })
+      
+      const allDays = Object.keys(dailyStats).sort()
+      // 如果天數過多，只取最近30天
+      const labels = allDays.length > 30 ? allDays.slice(-30) : allDays
+      const incomeData = labels.map(label => dailyStats[label]?.income || 0)
+      const expenseData = labels.map(label => dailyStats[label]?.expense || 0)
+      
+      return { labels, incomeData, expenseData, timeUnit: 'daily' }
+    }
+    
+    // 多個月份的情況，按月份顯示
+    const labels = allMonths.length > 6 ? allMonths.slice(-6) : allMonths
     const incomeData = labels.map(label => monthlyStats[label]?.income || 0)
     const expenseData = labels.map(label => monthlyStats[label]?.expense || 0)
 
-    return { labels, incomeData, expenseData }
+    return { labels, incomeData, expenseData, timeUnit: 'monthly' }
   }
 
   // ECharts 組件已直接在 JSX 中使用數據
@@ -408,26 +444,48 @@ const Dashboard: React.FC = () => {
                 <h3 className="text-xl font-bold text-gray-800">
                   收支趨勢
                 </h3>
-                <p className="text-sm text-gray-500">近6個月收支變化</p>
+                <p className="text-sm text-gray-500">
+                  {dashboardData?.monthlyData?.timeUnit === 'daily' 
+                    ? '單月內按天數分布的收支變化'
+                    : '基於實際支出資料的收支變化'
+                  }
+                </p>
               </div>
               <div className="text-2xl opacity-60">🌊</div>
             </div>
             <div className="h-80">
-              {dashboardData?.monthlyData ? (
+              {dashboardData?.monthlyData && dashboardData.monthlyData.labels.length > 0 ? (
                 <IncomeExpenseTrendChart 
-                  data={dashboardData.monthlyData.labels.map((label, index) => ({
-                    date: `${label.split('-')[0]}年${label.split('-')[1]}月`,
-                    income: dashboardData.monthlyData.incomeData[index],
-                    expense: dashboardData.monthlyData.expenseData[index]
-                  }))}
-                  title="收支趨勢分析"
+                  data={dashboardData.monthlyData.labels.map((label, index) => {
+                    let formattedDate: string
+                    if (dashboardData.monthlyData.timeUnit === 'daily') {
+                      // 日期格式：2025-08-01 → 8月1日
+                      const parts = label.split('-')
+                      formattedDate = `${parseInt(parts[1])}月${parseInt(parts[2])}日`
+                    } else {
+                      // 月份格式：2025-08 → 2025年8月  
+                      const parts = label.split('-')
+                      formattedDate = `${parts[0]}年${parseInt(parts[1])}月`
+                    }
+                    
+                    return {
+                      date: formattedDate,
+                      income: dashboardData.monthlyData.incomeData[index],
+                      expense: dashboardData.monthlyData.expenseData[index]
+                    }
+                  })}
+                  title={dashboardData.monthlyData.timeUnit === 'daily' 
+                    ? `每日收支趨勢 (${dashboardData.monthlyData.labels.length} 天)`
+                    : `每月收支趨勢 (${dashboardData.monthlyData.labels.length} 個月)`
+                  }
                   height={320}
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-gray-500">
                   <div className="text-center">
                     <div className="text-4xl opacity-60 mb-4">🌊</div>
-                    <p>暫無數據</p>
+                    <p>暫無足夠的資料來生成趨勢圖</p>
+                    <p className="text-xs mt-2">需要至少一筆支出記錄</p>
                   </div>
                 </div>
               )}
