@@ -66,7 +66,7 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
       icon: '📊',
       defaultConfig: {
         type: 'chart',
-        dateRange: { preset: 'month' },
+        dateRange: { startDate: '', endDate: '', preset: 'month' },
         groupBy: ['category'],
         metrics: [
           { field: 'amount', aggregation: 'sum', label: '總支出', format: 'currency' },
@@ -92,7 +92,7 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
       icon: '👥',
       defaultConfig: {
         type: 'table',
-        dateRange: { preset: 'month' },
+        dateRange: { startDate: '', endDate: '', preset: 'month' },
         groupBy: ['userName'],
         metrics: [
           { field: 'amount', aggregation: 'sum', label: '總交易金額', format: 'currency' },
@@ -111,7 +111,7 @@ const CustomReportBuilder: React.FC<CustomReportBuilderProps> = ({
       icon: '🎯',
       defaultConfig: {
         type: 'chart',
-        dateRange: { preset: 'month' },
+        dateRange: { startDate: '', endDate: '', preset: 'month' },
         groupBy: ['category'],
         metrics: [
           { field: 'amount', aggregation: 'sum', label: '實際支出', format: 'currency' }

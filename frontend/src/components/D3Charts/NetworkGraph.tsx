@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react'
 import * as d3 from 'd3'
 
-interface Node {
+interface NetworkNode extends d3.SimulationNodeDatum {
   id: string
   name: string
   group: string
@@ -10,20 +10,20 @@ interface Node {
   color?: string
 }
 
-interface Link {
-  source: string
-  target: string
+interface NetworkLink extends d3.SimulationLinkDatum<NetworkNode> {
+  source: string | NetworkNode
+  target: string | NetworkNode
   value: number
   type: 'expense' | 'income' | 'transfer'
 }
 
 interface NetworkGraphProps {
-  nodes: Node[]
-  links: Link[]
+  nodes: NetworkNode[]
+  links: NetworkLink[]
   width?: number
   height?: number
-  onNodeClick?: (node: Node) => void
-  onNodeHover?: (node: Node | null) => void
+  onNodeClick?: (node: NetworkNode) => void
+  onNodeHover?: (node: NetworkNode | null) => void
 }
 
 const NetworkGraph: React.FC<NetworkGraphProps> = ({
@@ -35,7 +35,7 @@ const NetworkGraph: React.FC<NetworkGraphProps> = ({
   onNodeHover
 }) => {
   const svgRef = useRef<SVGSVGElement>(null)
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null)
+  const [selectedNode, setSelectedNode] = useState<NetworkNode | null>(null)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; content: string } | null>(null)
 
   useEffect(() => {
@@ -60,8 +60,8 @@ const NetworkGraph: React.FC<NetworkGraphProps> = ({
     const container = svg.append('g')
 
     // 創建力導向模擬
-    const simulation = d3.forceSimulation<Node>(nodes)
-      .force('link', d3.forceLink<Node, Link>(links)
+    const simulation = d3.forceSimulation<NetworkNode>(nodes)
+      .force('link', d3.forceLink<NetworkNode, NetworkLink>(links)
         .id(d => d.id)
         .distance(d => 50 + d.value * 0.1)
         .strength(0.5)
@@ -72,7 +72,7 @@ const NetworkGraph: React.FC<NetworkGraphProps> = ({
       )
       .force('center', d3.forceCenter(width / 2, height / 2))
       .force('collision', d3.forceCollide()
-        .radius(d => getNodeRadius(d.value) + 2)
+        .radius(d => getNodeRadius((d as NetworkNode).value) + 2)
       )
 
     // 定義顏色方案
@@ -104,7 +104,7 @@ const NetworkGraph: React.FC<NetworkGraphProps> = ({
       .enter().append('g')
       .attr('class', 'node')
       .style('cursor', 'pointer')
-      .call(d3.drag<SVGGElement, Node>()
+      .call(d3.drag<SVGGElement, NetworkNode>()
         .on('start', dragstarted)
         .on('drag', dragged)
         .on('end', dragended)
@@ -152,15 +152,15 @@ const NetworkGraph: React.FC<NetworkGraphProps> = ({
         )
         
         connectedLinks.forEach(l => {
-          connectedNodes.add(typeof l.source === 'string' ? l.source : l.source.id)
-          connectedNodes.add(typeof l.target === 'string' ? l.target : l.target.id)
+          connectedNodes.add(typeof l.source === 'string' ? l.source : (l.source as NetworkNode).id)
+          connectedNodes.add(typeof l.target === 'string' ? l.target : (l.target as NetworkNode).id)
         })
 
         // 降低未連接節點的透明度
         node.style('opacity', n => connectedNodes.has(n.id) ? 1 : 0.3)
         link.style('opacity', l => 
-          (typeof l.source === 'string' ? l.source : l.source.id) === d.id ||
-          (typeof l.target === 'string' ? l.target : l.target.id) === d.id ? 1 : 0.1
+          (typeof l.source === 'string' ? l.source : (l.source as NetworkNode).id) === d.id ||
+          (typeof l.target === 'string' ? l.target : (l.target as NetworkNode).id) === d.id ? 1 : 0.1
         )
 
         // 顯示 tooltip
@@ -216,28 +216,28 @@ const NetworkGraph: React.FC<NetworkGraphProps> = ({
     // 模擬更新
     simulation.on('tick', () => {
       link
-        .attr('x1', d => (d.source as any).x)
-        .attr('y1', d => (d.source as any).y)
-        .attr('x2', d => (d.target as any).x)
-        .attr('y2', d => (d.target as any).y)
+        .attr('x1', d => (d.source as NetworkNode).x || 0)
+        .attr('y1', d => (d.source as NetworkNode).y || 0)
+        .attr('x2', d => (d.target as NetworkNode).x || 0)
+        .attr('y2', d => (d.target as NetworkNode).y || 0)
 
       node
-        .attr('transform', d => `translate(${d.x},${d.y})`)
+        .attr('transform', d => `translate(${d.x || 0},${d.y || 0})`)
     })
 
     // 拖拽函數
-    function dragstarted(event: any, d: Node) {
+    function dragstarted(event: any, d: NetworkNode) {
       if (!event.active) simulation.alphaTarget(0.3).restart()
       d.fx = d.x
       d.fy = d.y
     }
 
-    function dragged(event: any, d: Node) {
+    function dragged(event: any, d: NetworkNode) {
       d.fx = event.x
       d.fy = event.y
     }
 
-    function dragended(event: any, d: Node) {
+    function dragended(event: any, d: NetworkNode) {
       if (!event.active) simulation.alphaTarget(0)
       d.fx = null
       d.fy = null

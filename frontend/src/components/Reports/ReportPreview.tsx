@@ -77,19 +77,19 @@ const ReportPreview: React.FC<ReportPreviewProps> = ({
         config.metrics.forEach(metric => {
           switch (metric.aggregation) {
             case 'sum':
-              result[metric.label] = items.reduce((sum, item) => sum + (item[metric.field] || 0), 0)
+              result[metric.label] = (items as any[]).reduce((sum, item) => sum + (item[metric.field] || 0), 0)
               break
             case 'count':
-              result[metric.label] = items.length
+              result[metric.label] = (items as any[]).length
               break
             case 'avg':
-              result[metric.label] = items.reduce((sum, item) => sum + (item[metric.field] || 0), 0) / items.length
+              result[metric.label] = (items as any[]).reduce((sum, item) => sum + (item[metric.field] || 0), 0) / (items as any[]).length
               break
             case 'min':
-              result[metric.label] = Math.min(...items.map(item => item[metric.field] || 0))
+              result[metric.label] = Math.min(...(items as any[]).map(item => item[metric.field] || 0))
               break
             case 'max':
-              result[metric.label] = Math.max(...items.map(item => item[metric.field] || 0))
+              result[metric.label] = Math.max(...(items as any[]).map(item => item[metric.field] || 0))
               break
           }
         })

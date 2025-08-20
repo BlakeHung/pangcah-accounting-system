@@ -12,7 +12,7 @@ interface User {
 }
 
 interface LayoutProps {
-  user: User | null
+  user?: User | null
   children: React.ReactNode
   dashboardData?: any
 }

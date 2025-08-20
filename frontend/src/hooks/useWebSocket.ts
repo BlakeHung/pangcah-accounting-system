@@ -35,7 +35,7 @@ export const useWebSocket = (options: WebSocketHookOptions): WebSocketHookReturn
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'reconnecting'>('disconnected')
   
   const reconnectAttempts = useRef(0)
-  const reconnectTimeout = useRef<NodeJS.Timeout>()
+  const reconnectTimeout = useRef<ReturnType<typeof setTimeout>>()
   const eventHandlers = useRef<Map<string, ((data: any) => void)[]>>(new Map())
 
   const connect = useCallback(() => {

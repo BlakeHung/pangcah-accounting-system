@@ -15,6 +15,12 @@ interface SankeyLink {
   category?: string
 }
 
+interface SankeyNodeWithPosition extends SankeyNode {
+  x: number
+  y: number
+  dy: number
+}
+
 interface SankeyDiagramProps {
   nodes: SankeyNode[]
   links: SankeyLink[]
@@ -53,9 +59,11 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
       .attr('transform', `translate(${margin.left}, ${margin.top})`)
 
     // 創建簡化的 Sankey 佈局
-    const createSankeyLayout = () => {
+    const createSankeyLayout = (): { nodes: SankeyNodeWithPosition[], links: SankeyLink[] } => {
       // 計算節點位置
-      const nodeMap = new Map(nodes.map(d => [d.id, { ...d, x: 0, y: 0, dy: 0 }]))
+      const nodeMap = new Map<string, SankeyNodeWithPosition>(
+        nodes.map(d => [d.id, { ...d, x: 0, y: 0, dy: 0 }])
+      )
       
       // 根據類別分配 X 位置
       const categories = Array.from(new Set(nodes.map(d => d.category)))
@@ -67,7 +75,6 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
       // 為每個類別的節點分配 Y 位置
       categories.forEach(category => {
         const categoryNodes = nodes.filter(d => d.category === category)
-        const totalValue = categoryNodes.reduce((sum, d) => sum + (d.value || 0), 0)
         const yScale = d3.scaleBand()
           .domain(categoryNodes.map(d => d.id))
           .range([0, innerHeight])
@@ -118,7 +125,7 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
     })
 
     // 創建連接線的路徑生成器
-    const linkPath = (d: any) => {
+    const linkPath = (d: SankeyLink) => {
       const source = sankeyNodes.find(n => n.id === d.source)
       const target = sankeyNodes.find(n => n.id === d.target)
       
@@ -230,12 +237,13 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
       .style('pointer-events', 'none')
 
     // 添加類別標籤
+    const categories = Array.from(new Set(nodes.map(d => d.category)))
     const categoryLabels = g.append('g')
       .attr('class', 'category-labels')
       .selectAll('text')
       .data(categories)
       .enter().append('text')
-      .text(d => {
+      .text((d: string) => {
         switch(d) {
           case 'income': return '收入來源'
           case 'expense': return '支出類別'
@@ -244,7 +252,7 @@ const SankeyDiagram: React.FC<SankeyDiagramProps> = ({
           default: return d
         }
       })
-      .attr('x', d => (d3.scalePoint().domain(categories).range([0, innerWidth]).padding(0.1))(d) || 0)
+      .attr('x', (d: string) => (d3.scalePoint().domain(categories).range([0, innerWidth]).padding(0.1))(d) || 0)
       .attr('y', -5)
       .attr('text-anchor', 'middle')
       .attr('font-size', '14px')

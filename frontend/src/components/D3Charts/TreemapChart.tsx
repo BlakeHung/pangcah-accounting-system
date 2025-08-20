@@ -82,13 +82,13 @@ const TreemapChart: React.FC<TreemapChartProps> = ({
       .data(root.leaves())
       .enter().append('g')
       .attr('class', 'cell')
-      .attr('transform', d => `translate(${d.x0},${d.y0})`)
+      .attr('transform', d => `translate(${(d as any).x0},${(d as any).y0})`)
       .style('cursor', 'pointer')
 
     // 單元格矩形
     cell.append('rect')
-      .attr('width', d => Math.max(0, d.x1 - d.x0))
-      .attr('height', d => Math.max(0, d.y1 - d.y0))
+      .attr('width', d => Math.max(0, (d as any).x1 - (d as any).x0))
+      .attr('height', d => Math.max(0, (d as any).y1 - (d as any).y0))
       .attr('fill', d => {
         const category = d.data.category || d.data.name
         return `url(#gradient-${category.replace(/\s+/g, '-')})`
@@ -134,54 +134,54 @@ const TreemapChart: React.FC<TreemapChartProps> = ({
 
     // 單元格文字標籤
     cell.append('text')
-      .attr('x', d => (d.x1 - d.x0) / 2)
-      .attr('y', d => (d.y1 - d.y0) / 2 - 5)
+      .attr('x', d => ((d as any).x1 - (d as any).x0) / 2)
+      .attr('y', d => ((d as any).y1 - (d as any).y0) / 2 - 5)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
       .attr('font-size', d => {
-        const area = (d.x1 - d.x0) * (d.y1 - d.y0)
+        const area = ((d as any).x1 - (d as any).x0) * ((d as any).y1 - (d as any).y0)
         return Math.min(14, Math.sqrt(area) / 8) + 'px'
       })
       .attr('font-weight', 'bold')
       .attr('fill', '#fff')
       .style('pointer-events', 'none')
       .text(d => {
-        const area = (d.x1 - d.x0) * (d.y1 - d.y0)
+        const area = ((d as any).x1 - (d as any).x0) * ((d as any).y1 - (d as any).y0)
         return area > 1000 ? d.data.name : ''
       })
 
     // 單元格數值標籤
     cell.append('text')
-      .attr('x', d => (d.x1 - d.x0) / 2)
-      .attr('y', d => (d.y1 - d.y0) / 2 + 12)
+      .attr('x', d => ((d as any).x1 - (d as any).x0) / 2)
+      .attr('y', d => ((d as any).y1 - (d as any).y0) / 2 + 12)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
       .attr('font-size', d => {
-        const area = (d.x1 - d.x0) * (d.y1 - d.y0)
+        const area = ((d as any).x1 - (d as any).x0) * ((d as any).y1 - (d as any).y0)
         return Math.min(12, Math.sqrt(area) / 10) + 'px'
       })
       .attr('fill', '#fff')
       .style('pointer-events', 'none')
       .text(d => {
-        const area = (d.x1 - d.x0) * (d.y1 - d.y0)
+        const area = ((d as any).x1 - (d as any).x0) * ((d as any).y1 - (d as any).y0)
         return area > 800 ? `NT$ ${d.data.value.toLocaleString()}` : ''
       })
 
     // 百分比標籤
     cell.append('text')
-      .attr('x', d => (d.x1 - d.x0) / 2)
-      .attr('y', d => (d.y1 - d.y0) / 2 + 26)
+      .attr('x', d => ((d as any).x1 - (d as any).x0) / 2)
+      .attr('y', d => ((d as any).y1 - (d as any).y0) / 2 + 26)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
       .attr('font-size', d => {
-        const area = (d.x1 - d.x0) * (d.y1 - d.y0)
+        const area = ((d as any).x1 - (d as any).x0) * ((d as any).y1 - (d as any).y0)
         return Math.min(10, Math.sqrt(area) / 12) + 'px'
       })
       .attr('fill', '#fff')
       .attr('opacity', 0.9)
       .style('pointer-events', 'none')
       .text(d => {
-        const area = (d.x1 - d.x0) * (d.y1 - d.y0)
+        const area = ((d as any).x1 - (d as any).x0) * ((d as any).y1 - (d as any).y0)
         const percentage = ((d.data.value / root.value!) * 100)
         return area > 600 && percentage > 2 ? `${percentage.toFixed(1)}%` : ''
       })
