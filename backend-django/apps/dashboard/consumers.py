@@ -318,72 +318,37 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
 
 class RealtimeStatsConsumer(AsyncWebsocketConsumer):
-    """即時統計 Consumer"""
+    """即時統計 Consumer - 輕量化版本"""
     
     async def connect(self):
         """WebSocket 連線"""
-        self.stats_group_name = 'realtime_stats'
-        
-        # 加入群組
-        await self.channel_layer.group_add(
-            self.stats_group_name,
-            self.channel_name
-        )
-        
         await self.accept()
         
-        # 發送當前統計資料
-        await self.send_current_stats()
-
-    async def disconnect(self, close_code):
-        """WebSocket 斷線"""
-        await self.channel_layer.group_discard(
-            self.stats_group_name,
-            self.channel_name
-        )
-
-    async def send_current_stats(self):
-        """發送當前統計資料"""
-        stats = await self.get_current_stats()
+        # 發送簡單的連線確認訊息
         await self.send(text_data=json.dumps({
-            'type': 'stats_update',
-            'data': stats,
+            'type': 'connection_established',
+            'data': {
+                'status': 'connected',
+                'message': 'WebSocket 連線成功',
+                'server_time': timezone.now().isoformat()
+            },
             'timestamp': timezone.now().isoformat()
         }))
 
-    # 群組消息處理方法
-    async def stats_update(self, event):
-        """處理統計更新訊息"""
-        await self.send(text_data=json.dumps({
-            'type': 'stats_update',
-            'data': event['data'],
-            'timestamp': event.get('timestamp', timezone.now().isoformat())
-        }))
+    async def disconnect(self, close_code):
+        """WebSocket 斷線"""
+        pass
 
-    @database_sync_to_async
-    def get_current_stats(self):
-        """取得當前統計資料"""
-        from django.contrib.auth import get_user_model
-        from apps.expenses.models import Expense
-        from django.db.models import Sum, Count
-        
-        User = get_user_model()
-        
-        # 計算系統統計
-        total_users = User.objects.count()
-        active_users_today = User.objects.filter(
-            last_login__date=timezone.now().date()
-        ).count()
-        
-        total_expenses = Expense.objects.aggregate(
-            sum=Sum('amount'),
-            count=Count('id')
-        )
-        
-        return {
-            'total_users': total_users,
-            'active_users_today': active_users_today,
-            'total_expense_amount': float(total_expenses['sum'] or 0),
-            'total_expense_count': total_expenses['count'],
-            'server_time': timezone.now().isoformat()
-        }
+    async def receive(self, text_data):
+        """接收客戶端訊息"""
+        try:
+            data = json.loads(text_data)
+            
+            # 簡單的 ping-pong 機制
+            if data.get('type') == 'ping':
+                await self.send(text_data=json.dumps({
+                    'type': 'pong',
+                    'timestamp': timezone.now().isoformat()
+                }))
+        except json.JSONDecodeError:
+            pass
