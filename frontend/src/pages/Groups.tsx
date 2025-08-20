@@ -85,7 +85,7 @@ const Groups: React.FC = () => {
     queryKey: ['users'],
     queryFn: async () => {
       try {
-        const response = await axios.get('/api/v1/users/')
+        const response = await axios.get('/api/v1/auth/users/')
         return response.data.results || []
       } catch (error) {
         console.warn('無法獲取用戶列表:', error)

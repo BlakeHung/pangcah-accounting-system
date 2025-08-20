@@ -80,12 +80,13 @@ apiClient.interceptors.response.use(
 // API 端點常數
 export const API_ENDPOINTS = {
   // 認證相關
-  LOGIN: '/api/v1/auth/users/login/',
-  USER_ME: '/api/v1/auth/users/me/',
-  USER_PREFERENCES: '/api/v1/auth/users/me/preferences/',
+  LOGIN: '/api/v1/auth/login/',
+  TOKEN_REFRESH: '/api/v1/auth/refresh/',
   
   // 用戶管理
   USERS: '/api/v1/auth/users/',
+  USER_ME: '/api/v1/auth/users/me/',
+  USER_PREFERENCES: '/api/v1/auth/users/me/preferences/',
   
   // 群組管理
   GROUPS: '/api/v1/groups/',
