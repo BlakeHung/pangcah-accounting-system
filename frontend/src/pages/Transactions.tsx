@@ -222,9 +222,9 @@ const Transactions: React.FC = () => {
             <span className="text-gray-700 font-medium text-sm">篩選類型：</span>
             <div className="flex gap-2 flex-wrap">
               {[
-                { key: 'ALL', label: '全部', icon: '📊', count: filteredTransactions.length },
-                { key: 'EXPENSE', label: '支出', icon: '💸', count: filteredTransactions.filter(t => t.type === 'EXPENSE').length },
-                { key: 'INCOME', label: '收入', icon: '🌾', count: filteredTransactions.filter(t => t.type === 'INCOME').length }
+                { key: 'ALL', label: '全部', icon: '📊', count: transactions?.length || 0 },
+                { key: 'EXPENSE', label: '支出', icon: '💸', count: transactions?.filter(t => t.type === 'EXPENSE').length || 0 },
+                { key: 'INCOME', label: '收入', icon: '🌾', count: transactions?.filter(t => t.type === 'INCOME').length || 0 }
               ].map(type => (
                 <button
                   key={type.key}
@@ -240,7 +240,7 @@ const Transactions: React.FC = () => {
                   <span className={`text-xs px-1.5 py-0.5 rounded-full ${
                     typeFilter === type.key ? 'bg-white/20' : 'bg-white'
                   }`}>
-                    {typeFilter === 'ALL' ? transactions?.length || 0 : type.count}
+                    {type.count}
                   </span>
                 </button>
               ))}
