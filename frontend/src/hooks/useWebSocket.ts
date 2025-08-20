@@ -162,8 +162,8 @@ export const useWebSocket = (options: WebSocketHookOptions): WebSocketHookReturn
 export const useRealtimeData = () => {
   const wsOptions: WebSocketHookOptions = {
     url: import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/realtime-stats',
-    reconnectInterval: 3000,
-    maxReconnectAttempts: 5
+    reconnectInterval: 5000,  // 增加重連間隔
+    maxReconnectAttempts: 3   // 減少重連次數，避免資源耗盡
   }
 
   return useWebSocket(wsOptions)
