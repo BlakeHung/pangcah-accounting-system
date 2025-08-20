@@ -214,3 +214,52 @@ class UserViewSet(viewsets.ModelViewSet):
                 'success': False,
                 'error': f'測試支出創建失敗: {str(e)}'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def improve_expense_descriptions(self, request):
+        """改善支出記錄描述名稱"""
+        
+        # 只有系統管理員可以執行
+        if request.user.role != 'ADMIN':
+            return Response(
+                {'error': '只有系統管理員可以執行此操作'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        try:
+            # 捕獲命令輸出
+            stdout_backup = sys.stdout
+            stderr_backup = sys.stderr
+            
+            stdout_capture = StringIO()
+            stderr_capture = StringIO()
+            
+            sys.stdout = stdout_capture
+            sys.stderr = stderr_capture
+            
+            # 執行管理命令
+            call_command('improve_expense_descriptions')
+            
+            # 還原標準輸出
+            sys.stdout = stdout_backup
+            sys.stderr = stderr_backup
+            
+            output = stdout_capture.getvalue()
+            error_output = stderr_capture.getvalue()
+            
+            return Response({
+                'success': True,
+                'message': '支出記錄描述改善成功',
+                'output': output,
+                'errors': error_output if error_output else None
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            # 還原標準輸出
+            sys.stdout = stdout_backup 
+            sys.stderr = stderr_backup
+            
+            return Response({
+                'success': False,
+                'error': f'支出描述改善失敗: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
