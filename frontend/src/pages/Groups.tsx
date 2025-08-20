@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Layout from '../components/Layout'
+import { useSnackbar } from '../contexts/SnackbarContext'
 
 interface User {
   id: number
@@ -49,6 +50,7 @@ const PAPAIcons = {
 const Groups: React.FC = () => {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { showSnackbar } = useSnackbar()
   
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [editingGroup, setEditingGroup] = useState<Group | null>(null)
@@ -94,38 +96,57 @@ const Groups: React.FC = () => {
     }
   })
 
-  // 創建群組 - 暫時顯示提示訊息
+  // 創建群組
   const createGroupMutation = useMutation({
     mutationFn: async (data: GroupForm) => {
-      // API 尚未實作，顯示提示訊息
-      throw new Error('群組創建功能尚在開發中')
+      const response = await axios.post('/api/v1/groups/', data)
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups'] })
+      setShowCreateForm(false)
+      resetForm()
+      showSnackbar('群組創建成功！', 'success')
     },
     onError: (error: any) => {
-      alert(error.message || '群組創建功能尚在開發中')
+      const message = error.response?.data?.detail || error.message || '群組創建失敗'
+      showSnackbar(message, 'error')
     }
   })
 
-  // 更新群組 - 暫時顯示提示訊息
+  // 更新群組
   const updateGroupMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number, data: GroupForm }) => {
-      // API 尚未實作，顯示提示訊息
-      throw new Error('群組更新功能尚在開發中')
+      const response = await axios.put(`/api/v1/groups/${id}/`, data)
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups'] })
+      setEditingGroup(null)
+      setShowCreateForm(false)
+      resetForm()
+      showSnackbar('群組更新成功！', 'success')
     },
     onError: (error: any) => {
-      alert(error.message || '群組更新功能尚在開發中')
+      const message = error.response?.data?.detail || error.message || '群組更新失敗'
+      showSnackbar(message, 'error')
       setEditingGroup(null)
       resetForm()
     }
   })
 
-  // 刪除群組 - 暫時顯示提示訊息
+  // 刪除群組
   const deleteGroupMutation = useMutation({
     mutationFn: async (id: number) => {
-      // API 尚未實作，顯示提示訊息
-      throw new Error('群組刪除功能尚在開發中')
+      await axios.delete(`/api/v1/groups/${id}/`)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['groups'] })
+      showSnackbar('群組刪除成功！', 'success')
     },
     onError: (error: any) => {
-      alert(error.message || '群組刪除功能尚在開發中')
+      const message = error.response?.data?.detail || error.message || '群組刪除失敗'
+      showSnackbar(message, 'error')
     }
   })
 
@@ -139,11 +160,11 @@ const Groups: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // 顯示功能尚在開發中的提示
-    alert('群組管理功能尚在開發中，敬請期待！')
-    setShowCreateForm(false)
-    setEditingGroup(null)
-    resetForm()
+    if (editingGroup) {
+      updateGroupMutation.mutate({ id: editingGroup.id, data: groupForm })
+    } else {
+      createGroupMutation.mutate(groupForm)
+    }
   }
 
   const startEdit = (group: Group) => {
@@ -277,10 +298,14 @@ const Groups: React.FC = () => {
                           </button>
                           <button
                             onClick={() => {
-                              alert('群組刪除功能尚在開發中')
+                              const confirmMessage = `確定要刪除群組「${group.name}」嗎？此操作無法復原。`
+                              if (window.confirm(confirmMessage)) {
+                                deleteGroupMutation.mutate(group.id)
+                              }
                             }}
                             className="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors flex items-center justify-center text-sm"
                             title="刪除群組"
+                            disabled={deleteGroupMutation.isPending}
                           >
                             🗑️
                           </button>
@@ -319,13 +344,16 @@ const Groups: React.FC = () => {
               </div>
             ) : (
               <div className="bg-white rounded-xl p-12 shadow-lg text-center">
-                <div className="text-6xl mb-4 opacity-50">🔧</div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">群組功能建置中</h3>
-                <p className="text-gray-600 mb-6">群組管理功能正在開發中，即將推出。敬請期待！</p>
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-sm">
-                  <span>⚠️</span>
-                  <span>此功能尚在開發中</span>
-                </div>
+                <div className="text-6xl mb-4 opacity-50">👥</div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">還沒有群組</h3>
+                <p className="text-gray-600 mb-6">建立你的第一個群組，開始管理家族成員吧！</p>
+                <button
+                  onClick={() => setShowCreateForm(true)}
+                  className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-6 py-3 rounded-lg transition-colors font-medium flex items-center gap-2 mx-auto"
+                >
+                  <span>➕</span>
+                  <span>建立新群組</span>
+                </button>
               </div>
             )}
           </div>
