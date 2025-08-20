@@ -457,7 +457,7 @@ const Analytics: React.FC = () => {
                             value: cat.value,
                             percentage: cat.percentage
                           }))}
-                        type="pie"
+                        mode="pie"
                       />
                     )}
                   </div>
