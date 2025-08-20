@@ -261,8 +261,8 @@ class Command(BaseCommand):
         """創建一年四季的文化活動"""
         self.stdout.write('\n🎭 創建一年四季的阿美族文化活動...')
         
-        # 2024年的活動時間
-        base_year = 2024
+        # 2025年的活動時間
+        base_year = 2025
         
         seasonal_events = [
             {
@@ -432,8 +432,8 @@ class Command(BaseCommand):
             return
         
         # 為每個家族創建一年的日常支出
-        start_date = timezone.make_aware(datetime(2024, 1, 1))
-        end_date = timezone.make_aware(datetime(2024, 12, 31))
+        start_date = timezone.make_aware(datetime(2025, 1, 1))
+        end_date = timezone.make_aware(datetime(2025, 12, 31))
         current_date = start_date
         
         daily_transactions = []
@@ -553,7 +553,7 @@ class Command(BaseCommand):
                     # 借貸金額 (5000-50000)
                     amount = random.randint(5000, 50000)
                     
-                    lending_date = timezone.make_aware(datetime(2024, month, random.randint(1, 28)))
+                    lending_date = timezone.make_aware(datetime(2025, month, random.randint(1, 28)))
                     
                     lending_reasons = [
                         '準備祭典活動資金',
@@ -589,7 +589,7 @@ class Command(BaseCommand):
                     # 70%機率在3-6個月內償還
                     if random.random() < 0.7:
                         repayment_month = min(12, month + random.randint(3, 6))
-                        repayment_date = timezone.make_aware(datetime(2024, repayment_month, random.randint(1, 28)))
+                        repayment_date = timezone.make_aware(datetime(2025, repayment_month, random.randint(1, 28)))
                         
                         # 創建償還記錄
                         repayment_expense = Expense.objects.create(
@@ -638,7 +638,7 @@ class Command(BaseCommand):
                 if random.random() < 0.8:  # 80%機率有收入
                     earner = random.choice(family_members).user
                     amount = random.randint(15000, 45000)  # 農產品收入
-                    date = timezone.make_aware(datetime(2024, month, random.randint(1, 28)))
+                    date = timezone.make_aware(datetime(2025, month, random.randint(1, 28)))
                     
                     # 負數表示收入
                     expense = Expense.objects.create(
@@ -655,7 +655,7 @@ class Command(BaseCommand):
                 if random.random() < 0.3:  # 30%機率有手工藝收入
                     earner = random.choice(family_members).user
                     amount = random.randint(3000, 12000)
-                    date = timezone.make_aware(datetime(2024, month, random.randint(1, 28)))
+                    date = timezone.make_aware(datetime(2025, month, random.randint(1, 28)))
                     
                     crafts = ['傳統編織包', '木雕藝品', '陶瓷作品', '竹編器具', '傳統服飾']
                     craft = random.choice(crafts)
@@ -674,7 +674,7 @@ class Command(BaseCommand):
                 if random.random() < 0.6:  # 60%機率有導覽收入
                     earner = random.choice(family_members).user
                     amount = random.randint(5000, 20000)
-                    date = timezone.make_aware(datetime(2024, month, random.randint(1, 28)))
+                    date = timezone.make_aware(datetime(2025, month, random.randint(1, 28)))
                     
                     expense = Expense.objects.create(
                         group=family_group,
@@ -690,7 +690,7 @@ class Command(BaseCommand):
                 if random.random() < 0.9:  # 90%機率有補助
                     earner = random.choice(family_members).user
                     amount = random.randint(8000, 25000)
-                    date = timezone.make_aware(datetime(2024, month, 15))  # 固定每季15號
+                    date = timezone.make_aware(datetime(2025, month, 15))  # 固定每季15號
                     
                     subsidies = ['原住民族綜合發展基金', '文化傳承補助', '長者照護津貼', '農業補助']
                     subsidy = random.choice(subsidies)
@@ -709,7 +709,7 @@ class Command(BaseCommand):
                 month = random.randint(1, 12)
                 earner = random.choice(family_members).user
                 amount = random.randint(8000, 35000)
-                date = timezone.make_aware(datetime(2024, month, random.randint(1, 28)))
+                date = timezone.make_aware(datetime(2025, month, random.randint(1, 28)))
                 
                 jobs = ['採果工作', '建築臨時工', '餐廳服務', '市場擺攤', '祭典表演']
                 job = random.choice(jobs)
