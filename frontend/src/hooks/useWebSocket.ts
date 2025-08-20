@@ -161,7 +161,31 @@ export const useWebSocket = (options: WebSocketHookOptions): WebSocketHookReturn
 // 預設的即時資料 Hook
 export const useRealtimeData = () => {
   const wsOptions: WebSocketHookOptions = {
-    url: import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws',
+    url: import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/realtime-stats',
+    reconnectInterval: 3000,
+    maxReconnectAttempts: 5
+  }
+
+  return useWebSocket(wsOptions)
+}
+
+// 特定用戶儀表板 WebSocket
+export const useDashboardWebSocket = (userId: string) => {
+  const baseUrl = import.meta.env.VITE_WS_URL?.replace('/ws/realtime-stats', '') || 'ws://localhost:8000'
+  const wsOptions: WebSocketHookOptions = {
+    url: `${baseUrl}/ws/dashboard/${userId}/`,
+    reconnectInterval: 3000,
+    maxReconnectAttempts: 5
+  }
+
+  return useWebSocket(wsOptions)
+}
+
+// 通知 WebSocket
+export const useNotificationWebSocket = (userId: string) => {
+  const baseUrl = import.meta.env.VITE_WS_URL?.replace('/ws/realtime-stats', '') || 'ws://localhost:8000'
+  const wsOptions: WebSocketHookOptions = {
+    url: `${baseUrl}/ws/notifications/${userId}/`,
     reconnectInterval: 3000,
     maxReconnectAttempts: 5
   }
