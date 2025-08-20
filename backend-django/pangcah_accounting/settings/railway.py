@@ -8,6 +8,10 @@ import dj_database_url
 DEBUG = False
 ALLOWED_HOSTS = ['*']
 
+# 禁用自動重載（生產環境不需要）
+USE_TZ = True
+AUTO_RELOAD = False
+
 # Get DATABASE_URL from environment
 DATABASE_URL = os.environ.get('DATABASE_URL')
 

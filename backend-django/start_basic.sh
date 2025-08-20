@@ -23,4 +23,5 @@ gunicorn pangcah_accounting.wsgi:application \
   --workers 1 \
   --max-requests 200 \
   --timeout 30 \
-  --log-level info
+  --log-level info \
+  --disable-redirect-access-to-syslog
