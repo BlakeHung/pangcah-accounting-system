@@ -132,6 +132,7 @@ class Event(models.Model):
         verbose_name = "活動"
         verbose_name_plural = "活動"
         db_table = "events"
+        ordering = ['-start_date', '-created_at']  # 按開始日期和創建時間倒序
         indexes = [
             models.Index(fields=['status']),
             models.Index(fields=['enabled']),

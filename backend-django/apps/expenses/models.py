@@ -104,6 +104,7 @@ class Expense(models.Model):
         verbose_name = "支出記錄"
         verbose_name_plural = "支出記錄"
         db_table = "expenses"
+        ordering = ['-date', '-created_at']  # 按日期和創建時間倒序
         indexes = [
             models.Index(fields=['type']),
             models.Index(fields=['date']),
