@@ -457,26 +457,26 @@ class Command(BaseCommand):
                     if category_name == '餐飲':
                         amount = random.randint(500, 3000)
                         descriptions = [
-                            f'{family_name}家族聚餐', f'購買{family_name}家族食材',
-                            f'{family_name}家族外食', f'傳統食物製作材料'
+                            '家族聚餐', '購買食材',
+                            '家人外食', '傳統食物材料'
                         ]
                     elif category_name == '交通':
                         amount = random.randint(200, 1500)
                         descriptions = [
-                            f'{family_name}家族交通費', f'前往部落交通',
-                            f'長者就醫交通', f'採買物資交通'
+                            '家族交通費', '前往部落交通',
+                            '長者就醫交通', '採買物資交通'
                         ]
                     elif category_name == '生活用品':
                         amount = random.randint(300, 2500)
                         descriptions = [
-                            f'{family_name}家族生活用品', f'傳統工藝材料',
-                            f'家族服飾購買', f'日常清潔用品'
+                            '家族生活用品', '傳統工藝材料',
+                            '家族服飾', '日常清潔用品'
                         ]
                     else:  # 其他
                         amount = random.randint(100, 2000)
                         descriptions = [
-                            f'{family_name}家族雜項支出', f'文化學習費用',
-                            f'長者照護用品', f'家族維護費用'
+                            '家族雜項支出', '文化學習費用',
+                            '長者照護用品', '家族維護費用'
                         ]
                     
                     description = random.choice(descriptions)
@@ -645,7 +645,7 @@ class Command(BaseCommand):
                         group=family_group,
                         category=income_categories['農產品銷售'],
                         amount=Decimal(str(-amount)),  # 負數表示收入
-                        description=f'{family_name}家族 {["春季", "春季", "", "", "", "", "", "", "", "", "秋季", "秋季"][month-1]}農產品銷售',
+                        description=f'{["春季", "春季", "", "", "", "", "", "", "", "", "秋季", "秋季"][month-1]}農產品銷售',
                         date=date,
                         user=earner                    )
                     income_records.append(expense)
@@ -664,7 +664,7 @@ class Command(BaseCommand):
                         group=family_group,
                         category=income_categories['手工藝品銷售'],
                         amount=Decimal(str(-amount)),
-                        description=f'{family_name}家族{craft}銷售',
+                        description=f'手工藝品銷售 - {craft}',
                         date=date,
                         user=earner                    )
                     income_records.append(expense)
@@ -680,7 +680,7 @@ class Command(BaseCommand):
                         group=family_group,
                         category=income_categories['觀光導覽'],
                         amount=Decimal(str(-amount)),
-                        description=f'{family_name}家族文化導覽服務',
+                        description='文化導覽服務',
                         date=date,
                         user=earner                    )
                     income_records.append(expense)
@@ -699,7 +699,7 @@ class Command(BaseCommand):
                         group=family_group,
                         category=income_categories['補助津貼'],
                         amount=Decimal(str(-amount)),
-                        description=f'{family_name}家族{subsidy}',
+                        description=f'{subsidy}',
                         date=date,
                         user=earner                    )
                     income_records.append(expense)
@@ -718,7 +718,7 @@ class Command(BaseCommand):
                     group=family_group,
                     category=income_categories['季節性工作'],
                     amount=Decimal(str(-amount)),
-                    description=f'{family_name}家族{job}收入',
+                    description=f'{job}收入',
                     date=date,
                     user=earner                )
                 income_records.append(expense)
