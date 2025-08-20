@@ -16,4 +16,5 @@ echo "Collecting static files..."
 python manage.py collectstatic --noinput --settings=pangcah_accounting.settings.railway
 
 echo "Starting ASGI server with WebSocket support on port $PORT..."
-daphne -b 0.0.0.0 -p $PORT pangcah_accounting.asgi:application
+# 使用推薦的 gunicorn + uvicorn 配置
+gunicorn pangcah_accounting.asgi:application -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$PORT
