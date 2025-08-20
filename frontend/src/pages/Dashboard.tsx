@@ -16,7 +16,7 @@ import { mockExpenseData, mockCategories } from '../utils/mockData'
 import { 
   loadDashboardConfig, 
   checkAndCreateAlerts,
-  loadAlertNotifications 
+  loadAlertNotifications
 } from '../utils/dashboardConfig'
 
 interface User {

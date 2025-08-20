@@ -118,6 +118,7 @@ export const clearAllNotifications = (): void => {
   localStorage.removeItem('alert_notifications')
 }
 
+
 // 載入財務目標
 export const loadFinancialGoals = (): FinancialGoal[] => {
   try {

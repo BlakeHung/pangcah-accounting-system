@@ -131,6 +131,21 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
                 {user.role === 'ADMIN' ? '系統管理員' : '一般用戶'}
               </div>
             </div>
+            
+            {/* 行動版通知中心按鈕 */}
+            <button
+              onClick={() => setIsNotificationOpen(true)}
+              className="relative w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 active:bg-blue-100 transition-colors"
+              title="通知中心"
+            >
+              <span className="text-lg">🔔</span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center" style={{fontSize: '10px'}}>
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+            
             <button
               onClick={handleLogout}
               className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-red-600 active:bg-red-100 transition-colors"
@@ -209,6 +224,18 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
             </button>
           </div>
         </nav>
+        
+        {/* 行動版通知中心 */}
+        <NotificationCenter
+          isOpen={isNotificationOpen}
+          onClose={() => {
+            setIsNotificationOpen(false)
+            // 關閉後重新載入未讀數量
+            const notifications = loadAlertNotifications()
+            const unread = notifications.filter(n => !n.read).length
+            setUnreadCount(unread)
+          }}
+        />
       </div>
     )
   }
@@ -388,20 +415,19 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
             
             {/* 快速操作按鈕 */}
             <div className="flex items-center gap-3">
-              {/* 通知中心按鈕 */}
-              {unreadCount > 0 && (
-                <button
-                  onClick={() => setIsNotificationOpen(true)}
-                  className="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <span className="text-xl">🔔</span>
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
-                  )}
-                </button>
-              )}
+              {/* 通知中心按鈕 - 桌面版一直顯示 */}
+              <button
+                onClick={() => setIsNotificationOpen(true)}
+                className="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                title="通知中心"
+              >
+                <span className="text-xl">🔔</span>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
               
               <button
                 onClick={() => navigate('/transactions/new')}
