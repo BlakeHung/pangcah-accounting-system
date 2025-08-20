@@ -27,6 +27,7 @@ THIRD_PARTY_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'drf_spectacular',
+    'channels',
 ]
 
 LOCAL_APPS = [
@@ -35,6 +36,9 @@ LOCAL_APPS = [
     'apps.events',
     'apps.expenses',
     'apps.groups',
+    'apps.dashboard',
+    'apps.reports',
+    'apps.monitoring',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -69,6 +73,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'pangcah_accounting.wsgi.application'
+ASGI_APPLICATION = 'pangcah_accounting.asgi.application'
 
 # Database
 DATABASES = {
@@ -176,4 +181,26 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'INFO',
     },
+}
+
+# Channels 設定
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [config('REDIS_URL', default='redis://localhost:6379/0')],
+        },
+    },
+}
+
+# WebSocket 設定
+WEBSOCKET_ENABLED = config('WEBSOCKET_ENABLED', default=True, cast=bool)
+WEBSOCKET_HEARTBEAT_INTERVAL = config('WEBSOCKET_HEARTBEAT_INTERVAL', default=30, cast=int)
+
+# 即時推送設定
+REALTIME_NOTIFICATIONS = {
+    'EXPENSE_UPDATES': True,
+    'SYSTEM_ALERTS': True,
+    'USER_ACTIVITIES': True,
+    'DASHBOARD_METRICS': True,
 }

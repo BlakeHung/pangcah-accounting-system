@@ -22,6 +22,9 @@ def api_root(request):
             'expenses': '/api/v1/expenses/',
             'groups': '/api/v1/groups/',
             'auth': '/api/v1/auth/',
+            'dashboard': '/api/v1/dashboard/',
+            'reports': '/api/v1/reports/',
+            'monitoring': '/api/v1/monitoring/',
         }
     })
 
@@ -43,6 +46,9 @@ urlpatterns = [
     path('api/v1/events/', include('apps.events.urls')),
     path('api/v1/expenses/', include('apps.expenses.urls')),
     path('api/v1/groups/', include('apps.groups.urls')),
+    path('api/v1/dashboard/', include('apps.dashboard.urls')),
+    path('api/v1/reports/', include('apps.reports.urls')),
+    path('api/v1/monitoring/', include('apps.monitoring.urls')),
 ]
 
 # Serve media files in development
