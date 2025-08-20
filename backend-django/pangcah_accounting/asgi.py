@@ -14,7 +14,7 @@ from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
 
 # Django setup
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pangcah_accounting.settings.production')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pangcah_accounting.settings.railway')
 
 django_asgi_app = get_asgi_application()
 

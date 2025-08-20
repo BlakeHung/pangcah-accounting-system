@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Starting Pangcah Accounting API..."
+echo "Starting Pangcah Accounting API with WebSocket support..."
 
 # 設定 PORT 預設值
 if [ -z "$PORT" ]; then
@@ -7,5 +7,13 @@ if [ -z "$PORT" ]; then
 fi
 echo "PORT: $PORT"
 
-echo "Starting server on port $PORT..."
-python manage.py runserver 0.0.0.0:$PORT --settings=pangcah_accounting.settings.railway
+# 運行資料庫遷移
+echo "Running database migrations..."
+python manage.py migrate --settings=pangcah_accounting.settings.railway
+
+# 收集靜態文件
+echo "Collecting static files..."
+python manage.py collectstatic --noinput --settings=pangcah_accounting.settings.railway
+
+echo "Starting ASGI server with WebSocket support on port $PORT..."
+daphne -b 0.0.0.0 -p $PORT pangcah_accounting.asgi:application

@@ -44,6 +44,31 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_ALL_ORIGINS = True  # Temporary for testing
 
+# Redis for Channels (WebSocket)
+REDIS_URL = os.environ.get('REDIS_URL')
+if REDIS_URL:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [REDIS_URL],
+            },
+        },
+    }
+    print(f"✅ Redis configured for WebSocket: {REDIS_URL[:50]}...")
+else:
+    # Fallback to in-memory channel layer (不推薦用於生產環境)
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        },
+    }
+    print("⚠️  Using in-memory channel layer (WebSocket may not work properly)")
+
+# WebSocket settings
+WEBSOCKET_ENABLED = True
+WEBSOCKET_HEARTBEAT_INTERVAL = 30
+
 # Security
 SECURE_SSL_REDIRECT = False  # Railway handles HTTPS
 SESSION_COOKIE_SECURE = True
