@@ -297,7 +297,7 @@ class Command(BaseCommand):
         
         for event_data in seasonal_events:
             # 設定活動開始日期
-            start_date = datetime(base_year, event_data['month'], 15)  # 每月15號開始
+            start_date = timezone.make_aware(datetime(base_year, event_data['month'], 15))  # 每月15號開始
             end_date = start_date + timedelta(days=event_data['duration_days']-1)
             
             event, created = Event.objects.get_or_create(
@@ -589,7 +589,7 @@ class Command(BaseCommand):
                     # 70%機率在3-6個月內償還
                     if random.random() < 0.7:
                         repayment_month = min(12, month + random.randint(3, 6))
-                        repayment_date = datetime(2024, repayment_month, random.randint(1, 28))
+                        repayment_date = timezone.make_aware(datetime(2024, repayment_month, random.randint(1, 28)))
                         
                         # 創建償還記錄
                         repayment_expense = Expense.objects.create(
@@ -597,7 +597,7 @@ class Command(BaseCommand):
                             category=repayment_category,
                             amount=Decimal(str(amount)),
                             description=f'償還{lender.name}借款 - {reason}',
-                            date=timezone.make_aware(repayment_date),
+                            date=repayment_date,
                             user=borrower
                         )
         
@@ -709,7 +709,7 @@ class Command(BaseCommand):
                 month = random.randint(1, 12)
                 earner = random.choice(family_members).user
                 amount = random.randint(8000, 35000)
-                date = datetime(2024, month, random.randint(1, 28))
+                date = timezone.make_aware(datetime(2024, month, random.randint(1, 28)))
                 
                 jobs = ['採果工作', '建築臨時工', '餐廳服務', '市場擺攤', '祭典表演']
                 job = random.choice(jobs)
