@@ -59,14 +59,14 @@ class Command(BaseCommand):
         # 3. 創建預設分類
         self.stdout.write('\n📂 創建預設分類...')
         categories_data = [
-            {'name': '餐飲', 'type': 'EXPENSE', 'description': '餐廳、飲料、食材等'},
-            {'name': '交通', 'type': 'EXPENSE', 'description': '油資、大眾運輸、停車費等'},
-            {'name': '娛樂', 'type': 'EXPENSE', 'description': '電影、遊戲、旅遊等'},
-            {'name': '生活用品', 'type': 'EXPENSE', 'description': '日常用品、衣物等'},
-            {'name': '醫療', 'type': 'EXPENSE', 'description': '看診、藥品、保健品等'},
-            {'name': '教育', 'type': 'EXPENSE', 'description': '書籍、課程、學費等'},
-            {'name': '居家', 'type': 'EXPENSE', 'description': '房租、水電、維修等'},
-            {'name': '其他', 'type': 'EXPENSE', 'description': '其他支出'},
+            {'name': '餐飲', 'type': 'EXPENSE'},
+            {'name': '交通', 'type': 'EXPENSE'},
+            {'name': '娛樂', 'type': 'EXPENSE'},
+            {'name': '生活用品', 'type': 'EXPENSE'},
+            {'name': '醫療', 'type': 'EXPENSE'},
+            {'name': '教育', 'type': 'EXPENSE'},
+            {'name': '居家', 'type': 'EXPENSE'},
+            {'name': '其他', 'type': 'EXPENSE'},
         ]
         
         for cat_data in categories_data:
@@ -74,7 +74,6 @@ class Command(BaseCommand):
                 name=cat_data['name'],
                 defaults={
                     'type': cat_data['type'],
-                    'description': cat_data['description'],
                     'is_default': True
                 }
             )
