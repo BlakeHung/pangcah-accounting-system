@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db import transaction, models
 from django.utils import timezone
+from django.utils.dateparse import parse_date
 from decimal import Decimal
 from .models import Expense, ExpenseSplit, SplitType
 from .serializers import ExpenseSerializer, ExpenseSplitSerializer
@@ -20,7 +21,7 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        """根據用戶權限過濾查詢集"""
+        """根據用戶權限和查詢參數過濾查詢集"""
         queryset = Expense.objects.select_related(
             'user', 'category', 'event', 'group'
         ).prefetch_related('splits__participant')
@@ -34,6 +35,55 @@ class ExpenseViewSet(viewsets.ModelViewSet):
                 models.Q(group__managers=self.request.user) |
                 models.Q(group__members__user=self.request.user)
             ).distinct()
+        
+        # 日期範圍過濾
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
+        
+        if start_date:
+            try:
+                start_date_obj = parse_date(start_date)
+                if start_date_obj:
+                    queryset = queryset.filter(date__gte=start_date_obj)
+            except ValueError:
+                pass  # 忽略無效的日期格式
+        
+        if end_date:
+            try:
+                end_date_obj = parse_date(end_date)
+                if end_date_obj:
+                    # 包含結束日期當天的所有記錄
+                    from datetime import datetime, time
+                    end_datetime = datetime.combine(end_date_obj, time.max)
+                    queryset = queryset.filter(date__lte=end_datetime)
+            except ValueError:
+                pass  # 忽略無效的日期格式
+        
+        # 其他查詢參數過濾
+        event_id = self.request.query_params.get('event')
+        if event_id:
+            try:
+                queryset = queryset.filter(event_id=int(event_id))
+            except (ValueError, TypeError):
+                pass
+        
+        group_id = self.request.query_params.get('group')
+        if group_id:
+            try:
+                queryset = queryset.filter(group_id=int(group_id))
+            except (ValueError, TypeError):
+                pass
+        
+        expense_type = self.request.query_params.get('type')
+        if expense_type and expense_type.upper() in ['EXPENSE', 'INCOME']:
+            queryset = queryset.filter(type=expense_type.upper())
+        
+        category_id = self.request.query_params.get('category')
+        if category_id:
+            try:
+                queryset = queryset.filter(category_id=int(category_id))
+            except (ValueError, TypeError):
+                pass
         
         return queryset
     

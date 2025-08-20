@@ -287,6 +287,13 @@ const Dashboard: React.FC = () => {
                 <span>📊</span>
                 <span>查看記錄</span>
               </button>
+              <button
+                onClick={() => navigate('/analytics')}
+                className="bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-lg transition-all flex items-center gap-2 backdrop-blur-sm border border-white/20"
+              >
+                <span>📈</span>
+                <span>進階分析</span>
+              </button>
             </div>
           </div>
         </section>

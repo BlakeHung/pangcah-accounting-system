@@ -20,6 +20,7 @@ import ActivityEdit from './pages/ActivityEdit'
 import ActivityManager from './pages/ActivityManager'
 import Categories from './pages/Categories'
 import Settings from './pages/Settings'
+import Analytics from './pages/Analytics'
 
 // 樣式
 import './App.css'
@@ -130,6 +131,12 @@ function App() {
             <Route path="/settings" element={
               <PrivateRoute>
                 <Settings />
+              </PrivateRoute>
+            } />
+            
+            <Route path="/analytics" element={
+              <PrivateRoute>
+                <Analytics />
               </PrivateRoute>
             } />
             
