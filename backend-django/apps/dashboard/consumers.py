@@ -318,37 +318,20 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
 
 class RealtimeStatsConsumer(AsyncWebsocketConsumer):
-    """即時統計 Consumer - 輕量化版本"""
+    """即時統計 Consumer - 極簡版本 for Railway Free Tier"""
     
     async def connect(self):
         """WebSocket 連線"""
         await self.accept()
         
-        # 發送簡單的連線確認訊息
-        await self.send(text_data=json.dumps({
-            'type': 'connection_established',
-            'data': {
-                'status': 'connected',
-                'message': 'WebSocket 連線成功',
-                'server_time': timezone.now().isoformat()
-            },
-            'timestamp': timezone.now().isoformat()
-        }))
+        # 發送最簡單的確認訊息
+        await self.send(text_data='{"type":"connected","status":"ok"}')
 
     async def disconnect(self, close_code):
         """WebSocket 斷線"""
         pass
 
     async def receive(self, text_data):
-        """接收客戶端訊息"""
-        try:
-            data = json.loads(text_data)
-            
-            # 簡單的 ping-pong 機制
-            if data.get('type') == 'ping':
-                await self.send(text_data=json.dumps({
-                    'type': 'pong',
-                    'timestamp': timezone.now().isoformat()
-                }))
-        except json.JSONDecodeError:
-            pass
+        """接收客戶端訊息 - 只回應 ping"""
+        if text_data == '{"type":"ping"}':
+            await self.send(text_data='{"type":"pong"}')

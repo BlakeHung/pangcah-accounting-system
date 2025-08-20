@@ -19,14 +19,16 @@ echo "Starting ASGI server with WebSocket support on port $PORT..."
 
 # 嘗試 gunicorn，如果失敗則使用 daphne
 if command -v gunicorn &> /dev/null; then
-    echo "Using gunicorn + uvicorn..."
+    echo "Using gunicorn + uvicorn (Railway Free Tier optimized)..."
     gunicorn pangcah_accounting.asgi:application \
       -k uvicorn.workers.UvicornWorker \
       -b 0.0.0.0:$PORT \
       --workers 1 \
-      --worker-connections 50 \
-      --max-requests 500 \
-      --timeout 30
+      --worker-connections 10 \
+      --max-requests 100 \
+      --timeout 30 \
+      --graceful-timeout 20 \
+      --keep-alive 5
 else
     echo "Fallback to daphne..."
     daphne -b 0.0.0.0 -p $PORT pangcah_accounting.asgi:application
