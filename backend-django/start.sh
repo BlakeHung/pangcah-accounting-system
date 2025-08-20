@@ -16,5 +16,18 @@ echo "Collecting static files..."
 python manage.py collectstatic --noinput --settings=pangcah_accounting.settings.railway
 
 echo "Starting ASGI server with WebSocket support on port $PORT..."
-# 使用推薦的 gunicorn + uvicorn 配置
-gunicorn pangcah_accounting.asgi:application -k uvicorn.workers.UvicornWorker -b 0.0.0.0:$PORT
+
+# 嘗試 gunicorn，如果失敗則使用 daphne
+if command -v gunicorn &> /dev/null; then
+    echo "Using gunicorn + uvicorn..."
+    gunicorn pangcah_accounting.asgi:application \
+      -k uvicorn.workers.UvicornWorker \
+      -b 0.0.0.0:$PORT \
+      --workers 1 \
+      --worker-connections 50 \
+      --max-requests 500 \
+      --timeout 30
+else
+    echo "Fallback to daphne..."
+    daphne -b 0.0.0.0 -p $PORT pangcah_accounting.asgi:application
+fi
