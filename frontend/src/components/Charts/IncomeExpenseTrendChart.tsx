@@ -61,9 +61,28 @@ const IncomeExpenseTrendChart: React.FC<IncomeExpenseTrendChartProps> = ({
         return result;
       }
     },
-    toolbox: defaultToolbox,
+    toolbox: {
+      feature: {
+        dataZoom: {
+          yAxisIndex: 'none',
+          title: {
+            zoom: '縮放',
+            back: '還原'
+          }
+        },
+        restore: {
+          title: '重設'
+        },
+        saveAsImage: {
+          name: '阿美族家族記帳系統圖表',
+          title: '儲存為圖片'
+        }
+      },
+      right: 10,
+      top: 10
+    },
     legend: {
-      data: ['收入 (部落進項)', '支出 (部落開銷)'],
+      data: ['收入', '支出'],
       top: 30,
       left: 'center',
       textStyle: {
@@ -147,7 +166,7 @@ const IncomeExpenseTrendChart: React.FC<IncomeExpenseTrendChartProps> = ({
         }
       },
       {
-        name: '支出 (部落開銷)',
+        name: '支出',
         type: 'line',
         smooth: true,
         symbol: 'circle',

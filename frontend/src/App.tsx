@@ -21,6 +21,7 @@ import ActivityManager from './pages/ActivityManager'
 import Categories from './pages/Categories'
 import Settings from './pages/Settings'
 import Analytics from './pages/Analytics'
+import DashboardSettings from './pages/DashboardSettings'
 
 // 樣式
 import './App.css'
@@ -137,6 +138,12 @@ function App() {
             <Route path="/analytics" element={
               <PrivateRoute>
                 <Analytics />
+              </PrivateRoute>
+            } />
+            
+            <Route path="/dashboard/settings" element={
+              <PrivateRoute>
+                <DashboardSettings />
               </PrivateRoute>
             } />
             

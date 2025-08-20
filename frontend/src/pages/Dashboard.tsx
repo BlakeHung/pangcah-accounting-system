@@ -7,10 +7,17 @@ import Layout from '../components/Layout'
 import {
   IncomeExpenseTrendChart,
   CategoryPieChart,
-  GroupComparisonChart
+  GroupComparisonChart,
+  BarChart
 } from '../components/Charts'
 import { DashboardExpense } from '../types/expense'
+import { DashboardConfig } from '../types/dashboard'
 import { mockExpenseData, mockCategories } from '../utils/mockData'
+import { 
+  loadDashboardConfig, 
+  checkAndCreateAlerts,
+  loadAlertNotifications 
+} from '../utils/dashboardConfig'
 
 interface User {
   username: string
@@ -72,6 +79,8 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate()
   const { showSnackbar } = useSnackbar()
   const [user, setUser] = useState<User | null>(null)
+  const [config, setConfig] = useState<DashboardConfig | null>(null)
+  const [unreadNotifications, setUnreadNotifications] = useState(0)
 
   useEffect(() => {
     const token = localStorage.getItem('access_token')
@@ -88,6 +97,15 @@ const Dashboard: React.FC = () => {
       
       // 設置 axios 認證頭
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      
+      // 載入儀表板配置
+      const dashboardConfig = loadDashboardConfig()
+      setConfig(dashboardConfig)
+      
+      // 載入未讀通知數量
+      const notifications = loadAlertNotifications()
+      const unread = notifications.filter(n => !n.read).length
+      setUnreadNotifications(unread)
     } catch (error) {
       console.error('Failed to parse user data:', error)
       navigate('/login')
@@ -293,6 +311,13 @@ const Dashboard: React.FC = () => {
               >
                 <span>📈</span>
                 <span>進階分析</span>
+              </button>
+              <button
+                onClick={() => navigate('/dashboard/settings')}
+                className="bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-lg transition-all flex items-center gap-2 backdrop-blur-sm border border-white/20"
+              >
+                <span>⚙️</span>
+                <span>個人化設定</span>
               </button>
             </div>
           </div>

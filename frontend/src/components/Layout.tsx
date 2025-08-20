@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { useSnackbar } from '../contexts/SnackbarContext'
+import NotificationCenter from './NotificationCenter'
+import { loadAlertNotifications } from '../utils/dashboardConfig'
 
 interface User {
   username: string
@@ -47,6 +49,8 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
   const [isMobile, setIsMobile] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
     const checkDevice = () => {
@@ -57,6 +61,22 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
     window.addEventListener('resize', checkDevice)
     
     return () => window.removeEventListener('resize', checkDevice)
+  }, [])
+
+  // 載入未讀通知數量
+  useEffect(() => {
+    const updateUnreadCount = () => {
+      const notifications = loadAlertNotifications()
+      const unread = notifications.filter(n => !n.read).length
+      setUnreadCount(unread)
+    }
+
+    updateUnreadCount()
+    
+    // 每30秒更新一次通知數量
+    const interval = setInterval(updateUnreadCount, 30000)
+    
+    return () => clearInterval(interval)
   }, [])
 
   const handleLogout = () => {
@@ -368,6 +388,21 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
             
             {/* 快速操作按鈕 */}
             <div className="flex items-center gap-3">
+              {/* 通知中心按鈕 */}
+              {unreadCount > 0 && (
+                <button
+                  onClick={() => setIsNotificationOpen(true)}
+                  className="relative p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <span className="text-xl">🔔</span>
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </button>
+              )}
+              
               <button
                 onClick={() => navigate('/transactions/new')}
                 className="bg-[#2E8B57] hover:bg-[#1F5F3F] text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium shadow-lg"
@@ -384,6 +419,18 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
           {children}
         </main>
       </div>
+      
+      {/* 通知中心 */}
+      <NotificationCenter
+        isOpen={isNotificationOpen}
+        onClose={() => {
+          setIsNotificationOpen(false)
+          // 關閉後重新載入未讀數量
+          const notifications = loadAlertNotifications()
+          const unread = notifications.filter(n => !n.read).length
+          setUnreadCount(unread)
+        }}
+      />
     </div>
   )
 }

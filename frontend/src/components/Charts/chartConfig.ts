@@ -58,11 +58,18 @@ export const defaultLegend = {
 export const defaultToolbox = {
   feature: {
     dataZoom: {
-      yAxisIndex: 'none'
+      yAxisIndex: 'none',
+      title: {
+        zoom: '縮放',
+        back: '還原'
+      }
     },
-    restore: {},
+    restore: {
+      title: '重設'
+    },
     saveAsImage: {
-      name: '阿美族家族記帳系統圖表'
+      name: '阿美族家族記帳系統圖表',
+      title: '儲存為圖片'
     }
   },
   right: 10,
