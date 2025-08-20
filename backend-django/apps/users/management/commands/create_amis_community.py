@@ -418,11 +418,18 @@ class Command(BaseCommand):
         self.stdout.write('\n🛒 創建日常交易記錄...')
         
         # 日常支出分類
+        available_categories = Category.objects.filter(type='EXPENSE')
+        self.stdout.write(f'找到 {available_categories.count()} 個支出分類: {[cat.name for cat in available_categories]}')
+        
         daily_categories = {
-            cat.name: cat for cat in Category.objects.filter(
+            cat.name: cat for cat in available_categories.filter(
                 name__in=['餐飲', '交通', '生活用品', '其他']
             )
         }
+        
+        if not daily_categories:
+            self.stdout.write(self.style.WARNING('⚠️ 找不到日常支出分類，跳過交易記錄創建'))
+            return
         
         # 為每個家族創建一年的日常支出
         start_date = datetime(2024, 1, 1)
