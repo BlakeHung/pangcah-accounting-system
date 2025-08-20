@@ -30,7 +30,10 @@ const NavigationIcons = {
   History: () => <span>📋</span>,
   Settings: () => <span>⚙️</span>,
   Users: () => <span>👥</span>,
-  Activity: () => <span>🎉</span>
+  Activity: () => <span>🎉</span>,
+  Realtime: () => <span>📡</span>,
+  Reports: () => <span>📝</span>,
+  Visualization: () => <span>🎨</span>
 }
 // 導航項目配置
 const navigationItems = [
@@ -39,6 +42,9 @@ const navigationItems = [
   { path: '/transactions', label: '支出記錄', icon: 'Mountain', description: '記錄收入與支出' },
   { path: '/activities', label: '活動管理', icon: 'Activity', description: '管理活動與分帳' },
   { path: '/categories', label: '分類管理', icon: 'History', description: '設定支出分類' },
+  { path: '/dashboard/realtime', label: '即時監控', icon: 'Realtime', description: '即時系統監控與活動' },
+  { path: '/reports', label: '自訂報表', icon: 'Reports', description: '建立客製化分析報表' },
+  { path: '/visualization', label: '互動視覺', icon: 'Visualization', description: 'D3.js 互動式圖表' },
   { path: '/settings', label: '系統設定', icon: 'Settings', description: '系統偏好設定' }
 ]
 
@@ -51,6 +57,7 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [isNotificationOpen, setIsNotificationOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false)
 
   useEffect(() => {
     const checkDevice = () => {
@@ -212,18 +219,71 @@ const Layout: React.FC<LayoutProps> = ({ user, children, dashboardData }) => {
             </button>
             
             <button 
-              onClick={() => navigate('/settings')} 
+              onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
               className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 min-w-16 ${
-                isActive('/settings') 
+                isMoreMenuOpen
                   ? 'text-[#2E8B57] bg-green-50' 
                   : 'text-gray-500 active:bg-gray-100'
               }`}
             >
-              <div className="text-2xl">⚙️</div>
-              <span className="text-xs font-medium">設定</span>
+              <div className="text-2xl">⋯</div>
+              <span className="text-xs font-medium">更多</span>
             </button>
           </div>
         </nav>
+        
+        {/* 更多功能選單 */}
+        {isMoreMenuOpen && (
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setIsMoreMenuOpen(false)}>
+            <div className="absolute bottom-20 left-4 right-4 bg-white rounded-xl shadow-xl max-w-sm mx-auto">
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">更多功能</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => {
+                      navigate('/dashboard/realtime')
+                      setIsMoreMenuOpen(false)
+                    }}
+                    className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <span className="text-2xl">📡</span>
+                    <span className="text-sm font-medium text-gray-800">即時監控</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate('/reports')
+                      setIsMoreMenuOpen(false)
+                    }}
+                    className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <span className="text-2xl">📝</span>
+                    <span className="text-sm font-medium text-gray-800">自訂報表</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate('/visualization')
+                      setIsMoreMenuOpen(false)
+                    }}
+                    className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <span className="text-2xl">🎨</span>
+                    <span className="text-sm font-medium text-gray-800">互動視覺</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate('/settings')
+                      setIsMoreMenuOpen(false)
+                    }}
+                    className="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <span className="text-2xl">⚙️</span>
+                    <span className="text-sm font-medium text-gray-800">系統設定</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* 行動版通知中心 */}
         <NotificationCenter

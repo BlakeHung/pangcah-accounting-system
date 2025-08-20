@@ -319,6 +319,27 @@ const Dashboard: React.FC = () => {
                 <span>⚙️</span>
                 <span>個人化設定</span>
               </button>
+              <button
+                onClick={() => navigate('/dashboard/realtime')}
+                className="bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-lg transition-all flex items-center gap-2 backdrop-blur-sm border border-white/20"
+              >
+                <span>📡</span>
+                <span>即時監控</span>
+              </button>
+              <button
+                onClick={() => navigate('/reports')}
+                className="bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-lg transition-all flex items-center gap-2 backdrop-blur-sm border border-white/20"
+              >
+                <span>📝</span>
+                <span>自訂報表</span>
+              </button>
+              <button
+                onClick={() => navigate('/visualization')}
+                className="bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-lg transition-all flex items-center gap-2 backdrop-blur-sm border border-white/20"
+              >
+                <span>🎨</span>
+                <span>互動視覺</span>
+              </button>
             </div>
           </div>
         </section>

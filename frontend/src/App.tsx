@@ -22,6 +22,9 @@ import Categories from './pages/Categories'
 import Settings from './pages/Settings'
 import Analytics from './pages/Analytics'
 import DashboardSettings from './pages/DashboardSettings'
+import { RealtimeDashboard } from './components/Realtime'
+import ReportsPage from './pages/ReportsPage'
+import InteractiveVisualization from './pages/InteractiveVisualization'
 
 // 樣式
 import './App.css'
@@ -144,6 +147,24 @@ function App() {
             <Route path="/dashboard/settings" element={
               <PrivateRoute>
                 <DashboardSettings />
+              </PrivateRoute>
+            } />
+            
+            <Route path="/dashboard/realtime" element={
+              <PrivateRoute>
+                <RealtimeDashboard />
+              </PrivateRoute>
+            } />
+            
+            <Route path="/reports" element={
+              <PrivateRoute>
+                <ReportsPage />
+              </PrivateRoute>
+            } />
+            
+            <Route path="/visualization" element={
+              <PrivateRoute>
+                <InteractiveVisualization />
               </PrivateRoute>
             } />
             
