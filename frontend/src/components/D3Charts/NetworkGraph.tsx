@@ -59,6 +59,16 @@ const NetworkGraph: React.FC<NetworkGraphProps> = ({
 
     const container = svg.append('g')
 
+    // 定義節點半徑函數 (需要在使用前定義)
+    const getNodeRadius = (value: number) => {
+      return Math.sqrt(value) * 0.5 + 5
+    }
+
+    // 定義顏色方案
+    const colorScale = d3.scaleOrdinal<string>()
+      .domain(['user', 'category', 'transaction'])
+      .range(['#4F46E5', '#10B981', '#F59E0B'])
+
     // 創建力導向模擬
     const simulation = d3.forceSimulation<NetworkNode>(nodes)
       .force('link', d3.forceLink<NetworkNode, NetworkLink>(links)
@@ -74,16 +84,6 @@ const NetworkGraph: React.FC<NetworkGraphProps> = ({
       .force('collision', d3.forceCollide()
         .radius(d => getNodeRadius((d as NetworkNode).value) + 2)
       )
-
-    // 定義顏色方案
-    const colorScale = d3.scaleOrdinal<string>()
-      .domain(['user', 'category', 'transaction'])
-      .range(['#4F46E5', '#10B981', '#F59E0B'])
-
-    // 定義節點半徑
-    const getNodeRadius = (value: number) => {
-      return Math.sqrt(value) * 0.5 + 5
-    }
 
     // 創建連接線
     const link = container.append('g')
