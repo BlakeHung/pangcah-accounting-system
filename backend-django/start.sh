@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Starting Pangcah Accounting API with WebSocket support..."
+echo "Starting Pangcah Accounting API (Railway Hobby Plan)..."
 
 # 設定 PORT 預設值
 if [ -z "$PORT" ]; then
@@ -15,21 +15,17 @@ python manage.py migrate --settings=pangcah_accounting.settings.railway
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --settings=pangcah_accounting.settings.railway
 
-echo "Starting ASGI server with WebSocket support on port $PORT..."
+echo "Starting optimized HTTP server on port $PORT..."
 
-# 嘗試 gunicorn，如果失敗則使用 daphne
-if command -v gunicorn &> /dev/null; then
-    echo "Using gunicorn + uvicorn (Railway Free Tier optimized)..."
-    gunicorn pangcah_accounting.asgi:application \
-      -k uvicorn.workers.UvicornWorker \
-      -b 0.0.0.0:$PORT \
-      --workers 1 \
-      --worker-connections 10 \
-      --max-requests 100 \
-      --timeout 30 \
-      --graceful-timeout 20 \
-      --keep-alive 5
-else
-    echo "Fallback to daphne..."
-    daphne -b 0.0.0.0 -p $PORT pangcah_accounting.asgi:application
-fi
+# 使用 gunicorn + WSGI 以獲得最佳穩定性
+gunicorn pangcah_accounting.wsgi:application \
+  -b 0.0.0.0:$PORT \
+  --workers 2 \
+  --worker-class sync \
+  --max-requests 500 \
+  --max-requests-jitter 50 \
+  --timeout 60 \
+  --keep-alive 5 \
+  --log-level info \
+  --access-logfile - \
+  --error-logfile -

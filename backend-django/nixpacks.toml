@@ -1,5 +1,5 @@
 [providers]
-python = { runtime = "python-3.11" }
+python = "3.11"
 
 [phases.setup]
 nixPkgs = ["python311", "gcc"]
