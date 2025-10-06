@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Starting Pangcah Accounting API (Serverless Mode)..."
+echo "Starting Pangcah Accounting API (Basic Mode - No WebSocket)..."
 
 # 設定 PORT 預設值
 if [ -z "$PORT" ]; then
@@ -15,17 +15,13 @@ python manage.py migrate --settings=pangcah_accounting.settings.railway
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --settings=pangcah_accounting.settings.railway
 
-echo "Starting serverless HTTP server on port $PORT..."
+echo "Starting basic HTTP server on port $PORT..."
 
-# Serverless 優化配置
+# 使用標準的 gunicorn，不需要 WebSocket
 gunicorn pangcah_accounting.wsgi:application \
   -b 0.0.0.0:$PORT \
   --workers 1 \
-  --worker-class sync \
-  --max-requests 100 \
-  --max-requests-jitter 10 \
-  --timeout 120 \
-  --keep-alive 2 \
+  --max-requests 200 \
+  --timeout 30 \
   --log-level info \
-  --access-logfile - \
-  --error-logfile -
+  --disable-redirect-access-to-syslog
