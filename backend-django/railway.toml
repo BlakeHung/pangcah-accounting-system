@@ -1,0 +1,11 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "bash start_basic.sh"
+healthcheckPath = "/api/health/"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+
+[experimental]
+serverless = true

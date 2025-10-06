@@ -8,4 +8,4 @@ nixPkgs = ["python311", "gcc"]
 cmds = ["pip install -r requirements.txt"]
 
 [start]
-cmd = "bash start.sh"
+cmd = "bash start_basic.sh"

@@ -28,10 +28,21 @@ def api_root(request):
         }
     })
 
+def health_check(request):
+    """簡單的健康檢查端點，用於 Railway serverless"""
+    return JsonResponse({
+        'status': 'healthy',
+        'message': 'Pangcah Accounting API is running',
+        'mode': 'serverless'
+    })
+
 urlpatterns = [
     # Root API info
     path('', api_root, name='api-root'),
-    
+
+    # Health check for Railway serverless
+    path('api/health/', health_check, name='health-check'),
+
     # Admin
     path('admin/', admin.site.urls),
     
