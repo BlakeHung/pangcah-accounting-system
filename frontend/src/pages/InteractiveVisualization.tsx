@@ -43,6 +43,8 @@ const InteractiveVisualization: React.FC = () => {
   const [maxAmount, setMaxAmount] = useState<number>(0)
   const [showFilters, setShowFilters] = useState(false)
 
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
+
   // 載入資料
   useEffect(() => {
     const loadData = async () => {
@@ -329,8 +331,19 @@ const InteractiveVisualization: React.FC = () => {
   }
 
   return (
-    <Layout>
+    <Layout user={currentUser}>
       <div className="p-6 space-y-6">
+        {/* 測試中標籤 */}
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2">
+          <div className="flex items-center gap-2">
+            <span className="text-yellow-600">🧪</span>
+            <div>
+              <p className="text-sm font-medium text-yellow-800">測試中功能</p>
+              <p className="text-xs text-yellow-600">此功能正在開發測試階段</p>
+            </div>
+          </div>
+        </div>
+
         {/* 標題 */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">互動式資料視覺化</h1>

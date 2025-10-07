@@ -22,7 +22,7 @@ import Categories from './pages/Categories'
 import Settings from './pages/Settings'
 import Analytics from './pages/Analytics'
 import DashboardSettings from './pages/DashboardSettings'
-import { RealtimeDashboard } from './components/Realtime'
+import RealtimePage from './pages/RealtimePage'
 import ReportsPage from './pages/ReportsPage'
 import InteractiveVisualization from './pages/InteractiveVisualization'
 
@@ -152,7 +152,7 @@ function App() {
             
             <Route path="/dashboard/realtime" element={
               <PrivateRoute>
-                <RealtimeDashboard />
+                <RealtimePage />
               </PrivateRoute>
             } />
             
